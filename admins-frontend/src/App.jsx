@@ -2,16 +2,16 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import SuperAdminLayout from './admins/components/SuperAdmin/SuperAdminLayout';
 
-import Dashboard from './admins/components/Dashboard/Dashboard';
-import UsersList from './admins/components/Users/UsersList';
-import AdminsList from './admins/components/Admins/AdminsList';
-import CityAdminsList from './admins/components/CityAdmins/CityAdminsList';
-import GymsList from './admins/components/Gyms/GymsList';
-import GymOwnersList from './admins/components/GymOwners/GymOwnersList';
-import TrainersList from './admins/components/Trainers/TrainersList';
-import DietitiansList from './admins/components/Dietitians/DietitiansList';
-import Payments from './admins/components/Payments/Payments';
-import CMSManagement from './admins/components/CMS/CMSManagement';
+import Dashboard from './admins/components/SuperAdmin/Dashboard/Dashboard';
+import UsersList from './admins/components/SuperAdmin/Users/UsersList';
+import AdminsList from './admins/components/SuperAdmin/Admins/AdminsList';
+import CityAdminsList from './admins/components/SuperAdmin/CityAdmins/CityAdminsList';
+import GymsList from './admins/components/SuperAdmin/Gyms/GymsList';
+import GymOwnersList from './admins/components/SuperAdmin/GymOwners/GymOwnersList';
+import TrainersList from './admins/components/SuperAdmin/Trainers/TrainersList';
+import DietitiansList from './admins/components/SuperAdmin/Dietitians/DietitiansList';
+import Payments from './admins/components/SuperAdmin/Payments/Payments';
+import CMSManagement from './admins/components/SuperAdmin/CMS/CMSManagement';
 import SetupPassword from './admins/pages/SetupPassword';
 import Login from './admins/pages/Login';
 
