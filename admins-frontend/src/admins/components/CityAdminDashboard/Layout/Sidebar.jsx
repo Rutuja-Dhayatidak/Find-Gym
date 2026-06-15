@@ -8,6 +8,7 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/city-admin/dashboard', icon: '📊' },
     { name: 'Users', path: '/city-admin/users', icon: '👥' },
     { name: 'Gyms', path: '/city-admin/gyms', icon: '🏢' },
+    { name: 'Gym Owner Requests', path: '/city-admin/gym-owners', icon: '📝' },
     { name: 'Trainers', path: '/city-admin/trainers', icon: '🏋️' },
     { name: 'Dietitians', path: '/city-admin/dietitians', icon: '🥗' },
     { name: 'Analytics', path: '/city-admin/analytics', icon: '📈' },

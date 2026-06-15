@@ -12,7 +12,7 @@ const sendSetupEmail = async (email, fullName, token) => {
       }
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5174';
     const setupLink = `${frontendUrl}/admin/setup-password?token=${token}`;
 
     const mailOptions = {

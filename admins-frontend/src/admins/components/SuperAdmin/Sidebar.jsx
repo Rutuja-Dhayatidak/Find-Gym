@@ -20,7 +20,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Dashboard', icon: LayoutDashboard, path: '/super-admin' },
     { name: 'Users', icon: Users, path: '/super-admin/users' },
     { name: 'Admins', icon: Shield, path: '/super-admin/admins' },
-    { name: 'City Admins', icon: MapPin, path: '/super-admin/city-admins' },
     { name: 'Gyms', icon: Dumbbell, path: '/super-admin/gyms' },
     { name: 'Gym Owners', icon: UserSquare2, path: '/super-admin/gym-owners' },
     { name: 'Trainers', icon: Activity, path: '/super-admin/trainers' },

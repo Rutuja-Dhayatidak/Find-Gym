@@ -9,12 +9,22 @@ import UserRegister from './components/UserRegister';
 import FindGym from './components/FindGym';
 import UserProfile from './components/UserProfile';
 import Footer from './components/Footer';
+import GymOwnerRegistration from './pages/GymOwnerRegistration';
+import GymOwnerLogin from './pages/GymOwnerLogin';
+import GymOwnerDashboard from './pages/GymOwnerDashboard';
+import AddGymForm from './pages/AddGymForm';
 
 // Conditional Navbar wrapper
 const Navigation = () => {
   const location = useLocation();
-  if (location.pathname === '/gyms') return null;
+  if (location.pathname === '/gyms' || location.pathname.startsWith('/gym-owner')) return null;
   return <Navbar />;
+};
+
+const FooterWrapper = () => {
+  const location = useLocation();
+  if (location.pathname.startsWith('/gym-owner')) return null;
+  return <Footer />;
 };
 
 function App() {
@@ -64,10 +74,14 @@ function App() {
             <Route path="/login" element={<UserLogin />} />
             <Route path="/register" element={<UserRegister />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/gym-owner/register" element={<GymOwnerRegistration />} />
+            <Route path="/gym-owner/login" element={<GymOwnerLogin />} />
+            <Route path="/gym-owner/dashboard" element={<GymOwnerDashboard />} />
+            <Route path="/gym-owner/add-gym" element={<AddGymForm />} />
           </Routes>
         </div>
         <div className={`pb-[70px] lg:pb-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pr-0" : "lg:pr-[100px]"}`}>
-          <Footer />
+          <FooterWrapper />
         </div>
       </div>
     </Router>

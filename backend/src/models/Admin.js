@@ -17,12 +17,16 @@ const adminSchema = new mongoose.Schema({
   },
   adminType: {
     type: String,
-    enum: ['Platform Admin', 'City Admin', 'Gym Manager', 'city_admin'],
+    enum: ['Platform Admin', 'City Admin', 'Gym Manager', 'city_admin', 'platform_admin'],
     required: true,
   },
   assignedCities: {
     type: [String],
     default: [],
+  },
+  city: {
+    type: String,
+    default: null,
   },
   status: {
     type: String,

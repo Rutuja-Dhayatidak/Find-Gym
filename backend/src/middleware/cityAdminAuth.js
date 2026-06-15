@@ -38,7 +38,7 @@ const cityAdminAuth = async (req, res, next) => {
     }
 
     const role = admin.adminType;
-    const isAuthorizedRole = ['Super Admin', 'Platform Admin', 'City Admin', 'city_admin'].includes(role);
+    const isAuthorizedRole = ['Super Admin', 'Platform Admin', 'platform_admin', 'City Admin', 'city_admin'].includes(role);
     if (!isAuthorizedRole) {
       return res.status(403).json({ success: false, message: 'Access denied. Unauthorized admin type.' });
     }
@@ -47,7 +47,7 @@ const cityAdminAuth = async (req, res, next) => {
 
     // Enforce city authorization
     if (role === 'city_admin' || role === 'City Admin') {
-      const targetCity = req.query.city || req.body.city;
+      const targetCity = req.query?.city || req.body?.city;
       if (targetCity) {
         const hasAccess = admin.assignedCities && admin.assignedCities.some(
           c => c.toLowerCase() === targetCity.toLowerCase()

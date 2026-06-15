@@ -17,7 +17,7 @@ const platformAdminAuth = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Admin not found' });
     }
 
-    if (admin.adminType !== 'Platform Admin') {
+    if (admin.adminType !== 'Platform Admin' && admin.adminType !== 'platform_admin') {
       return res.status(403).json({ success: false, message: 'Access denied. Platform Admin only.' });
     }
 

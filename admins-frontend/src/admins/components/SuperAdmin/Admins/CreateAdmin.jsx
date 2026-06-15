@@ -10,14 +10,14 @@ const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
     phone: '',
     adminType: '',
     status: 'Active',
+    city: '',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const adminTypeOptions = [
-    { value: 'Platform Admin', label: 'Platform Admin - Full access to entire platform' },
-    { value: 'City Admin', label: 'City Admin - Access to specific city/cities' },
-    { value: 'Gym Manager', label: 'Gym Manager - Access to specific gym(s)' }
+    { value: 'platform_admin', label: 'Platform Admin' },
+    { value: 'city_admin', label: 'City Admin' }
   ];
 
   const validateForm = () => {
@@ -36,6 +36,9 @@ const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
     if (!formData.adminType) {
       newErrors.adminType = 'Please select an Admin Type';
     }
+    if (formData.adminType === 'city_admin' && (!formData.city || !formData.city.trim())) {
+      newErrors.city = 'City is required for City Admin';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -47,32 +50,44 @@ const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
     try {
       const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('superAdminToken');
+
+      const payload = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        adminType: formData.adminType,
+        status: formData.status,
+        city: formData.adminType === 'city_admin' ? formData.city.trim() : undefined,
+      };
+
       const response = await fetch(`${baseUrl}/api/admins/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${token}` // TODO: Add your auth token here
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
       
       if (response.ok && data.success) {
-        alert(`✅ Admin Created Successfully!\nSetup email has been sent to: ${formData.email}\nThe admin must click the link to set their password.\nLink expires in 24 hours.`);
+        alert(data.message || `Admin Created Successfully!`);
         setFormData({
           fullName: '',
           email: '',
           phone: '',
           adminType: '',
           status: 'Active',
+          city: '',
         });
         if (onSuccess) onSuccess();
         onClose();
       } else {
         alert(data.message || 'Failed to create admin');
         if (data.message && data.message.toLowerCase().includes('email')) {
-          setErrors(prev => ({ ...prev, email: 'Email already exists' }));
+          setErrors(prev => ({ ...prev, email: data.message }));
         }
       }
     } catch (error) {
@@ -137,6 +152,20 @@ const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
             </select>
             {errors.adminType && <p className="text-red-500 text-xs mt-1">{errors.adminType}</p>}
           </div>
+
+          {formData.adminType === 'city_admin' && (
+            <div>
+              <FormInput 
+                label="City" 
+                placeholder="Enter city (e.g. Pune)" 
+                value={formData.city || ''}
+                onChange={(e) => setFormData({...formData, city: e.target.value})}
+                error={errors.city}
+                className={errors.city ? 'border-red-500' : ''}
+              />
+              {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+            </div>
+          )}
 
           <div className="mb-4">
             <label className="block text-sm font-bold text-gray-700 mb-1">Status</label>

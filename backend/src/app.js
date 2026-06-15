@@ -7,10 +7,15 @@ const superadminGymRoutes = require('./routes/superadminGymRoutes');
 const superadminCmsRoutes = require('./routes/superadminCmsRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cityAdminRoutes = require('./routes/cityAdminRoutes');
+const authRoutes = require('./routes/authRoutes');
+const gymRoutes = require('./routes/gymRoutes');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Serve static files for CMS
@@ -29,5 +34,7 @@ app.use('/api/superadmin/gyms', superadminGymRoutes);
 app.use('/api/superadmin/cms', superadminCmsRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/city-admin', cityAdminRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/gyms', gymRoutes);
 
 module.exports = app;

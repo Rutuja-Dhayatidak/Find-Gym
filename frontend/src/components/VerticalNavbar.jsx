@@ -5,6 +5,8 @@ export const VerticalNavbar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  if (currentPath.startsWith('/gym-owner')) return null;
+
   const menuItems = [
     {
       name: "Home",
@@ -172,6 +174,8 @@ export const VerticalNavbar = () => {
 export const MobileBottomNav = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+
+  if (currentPath.startsWith('/gym-owner')) return null;
 
   const menuItems = [
     {

@@ -5,10 +5,11 @@ const Gym = require('../models/Gym');
 const Trainer = require('../models/Trainer');
 const Dietitian = require('../models/Dietitian');
 const ActivityLog = require('../models/ActivityLog');
+const GymOwner = require('../models/GymOwner');
 
 // Helper to get authorized cities for query
 const getAuthorizedCities = (admin, requestedCity) => {
-  const isGlobalAdmin = ['Super Admin', 'Platform Admin'].includes(admin.adminType);
+  const isGlobalAdmin = ['Super Admin', 'Platform Admin', 'platform_admin'].includes(admin.adminType);
   if (isGlobalAdmin) {
     return requestedCity ? [requestedCity] : null;
   }
@@ -34,14 +35,16 @@ exports.getDashboardData = async (req, res) => {
       });
     }
 
-    const query = cities ? { city: { $in: cities } } : {};
+    const cityRegexes = cities ? cities.map(c => new RegExp(`^${c}$`, 'i')) : null;
+    const query = cityRegexes ? { city: { $in: cityRegexes } } : {};
+    const gymQuery = cityRegexes ? { 'location.city': { $in: cityRegexes } } : {};
     
     // For users, the field is 'city'. Let's ensure User model has city.
-    const userQuery = cities ? { city: { $in: cities }, role: 'member' } : { role: 'member' };
+    const userQuery = cityRegexes ? { city: { $in: cityRegexes }, role: 'member' } : { role: 'member' };
 
     const totalUsers = await User.countDocuments(userQuery);
-    const totalGyms = await Gym.countDocuments(query);
-    const pendingGyms = await Gym.countDocuments({ ...query, status: 'pending' });
+    const totalGyms = await Gym.countDocuments(gymQuery);
+    const pendingGyms = await Gym.countDocuments({ ...gymQuery, status: 'pending' });
     const verifiedTrainers = await Trainer.countDocuments({ ...query, status: 'verified' });
     const verifiedDietitians = await Dietitian.countDocuments({ ...query, status: 'verified' });
 
@@ -74,7 +77,8 @@ exports.getAllUsers = async (req, res) => {
 
     let query = { role: 'member' };
     if (cities) {
-      query.city = { $in: cities };
+      const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
+      query.city = { $in: cityRegexes };
     }
 
     if (req.query.search) {
@@ -105,15 +109,39 @@ exports.getAllGyms = async (req, res) => {
 
     let query = {};
     if (cities) {
-      query.city = { $in: cities };
+      const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
+      query['location.city'] = { $in: cityRegexes };
     }
 
     if (req.query.search) {
       query.name = new RegExp(req.query.search, 'i');
     }
 
-    const gyms = await Gym.find(query).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, data: gyms });
+    const gyms = await Gym.find(query).populate('ownerId', 'fullName email phone').sort({ createdAt: -1 });
+    
+    const formattedGyms = gyms.map(gym => {
+      const g = gym.toObject ? gym.toObject() : gym;
+      
+      let computedStatus = 'pending';
+      if (!g.active) {
+        computedStatus = 'suspended';
+      } else if (g.verified) {
+        computedStatus = 'approved';
+      } else if (g.status === 'rejected') {
+        computedStatus = 'rejected';
+      }
+      
+      return {
+        ...g,
+        status: computedStatus,
+        city: g.location?.city || g.city,
+        ownerName: g.ownerId?.fullName || g.ownerName || 'N/A',
+        email: g.ownerId?.email || g.email || 'N/A',
+        phone: g.ownerId?.phone || g.phone || 'N/A'
+      };
+    });
+
+    res.status(200).json({ success: true, data: formattedGyms });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -125,7 +153,8 @@ exports.approveGym = async (req, res) => {
     const gym = await Gym.findById(req.params.gymId);
     if (!gym) return res.status(404).json({ success: false, message: 'Gym not found' });
 
-    const cities = getAuthorizedCities(req.admin, gym.city);
+    const gymCity = gym.location?.city || gym.city;
+    const cities = getAuthorizedCities(req.admin, gymCity);
     if (cities && cities.length === 0) {
       return res.status(403).json({
         success: false,
@@ -134,7 +163,8 @@ exports.approveGym = async (req, res) => {
       });
     }
 
-    gym.status = 'approved';
+    gym.verified = true;
+    gym.active = true;
     gym.approvedBy = req.admin._id;
     gym.approvedAt = new Date();
     await gym.save();
@@ -142,8 +172,8 @@ exports.approveGym = async (req, res) => {
     await ActivityLog.create({
       type: 'gym_approved',
       adminId: req.admin._id,
-      city: gym.city,
-      description: `Gym "${gym.name}" approved in ${gym.city}`
+      city: gymCity,
+      description: `Gym "${gym.name}" approved in ${gymCity}`
     });
 
     res.status(200).json({ success: true, message: 'Gym approved successfully', data: gym });
@@ -158,7 +188,8 @@ exports.rejectGym = async (req, res) => {
     const gym = await Gym.findById(req.params.gymId);
     if (!gym) return res.status(404).json({ success: false, message: 'Gym not found' });
 
-    const cities = getAuthorizedCities(req.admin, gym.city);
+    const gymCity = gym.location?.city || gym.city;
+    const cities = getAuthorizedCities(req.admin, gymCity);
     if (cities && cities.length === 0) {
       return res.status(403).json({
         success: false,
@@ -167,6 +198,8 @@ exports.rejectGym = async (req, res) => {
       });
     }
 
+    gym.verified = false;
+    gym.active = false;
     gym.status = 'rejected';
     gym.rejectedAt = new Date();
     await gym.save();
@@ -174,7 +207,7 @@ exports.rejectGym = async (req, res) => {
     await ActivityLog.create({
       type: 'gym_rejected',
       adminId: req.admin._id,
-      city: gym.city,
+      city: gymCity,
       description: `Gym "${gym.name}" rejected. Reason: ${req.body.reason || 'Not specified'}`
     });
 
@@ -190,7 +223,8 @@ exports.suspendGym = async (req, res) => {
     const gym = await Gym.findById(req.params.gymId);
     if (!gym) return res.status(404).json({ success: false, message: 'Gym not found' });
 
-    const cities = getAuthorizedCities(req.admin, gym.city);
+    const gymCity = gym.location?.city || gym.city;
+    const cities = getAuthorizedCities(req.admin, gymCity);
     if (cities && cities.length === 0) {
       return res.status(403).json({
         success: false,
@@ -199,14 +233,14 @@ exports.suspendGym = async (req, res) => {
       });
     }
 
-    gym.status = 'suspended';
+    gym.active = false;
     gym.suspendedAt = new Date();
     await gym.save();
 
     await ActivityLog.create({
       type: 'gym_suspended',
       adminId: req.admin._id,
-      city: gym.city,
+      city: gymCity,
       description: `Gym "${gym.name}" suspended`
     });
 
@@ -230,7 +264,8 @@ exports.getAllTrainers = async (req, res) => {
 
     let query = {};
     if (cities) {
-      query.city = { $in: cities };
+      const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
+      query.city = { $in: cityRegexes };
     }
 
     if (req.query.search) {
@@ -351,7 +386,8 @@ exports.getAllDietitians = async (req, res) => {
 
     let query = {};
     if (cities) {
-      query.city = { $in: cities };
+      const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
+      query.city = { $in: cityRegexes };
     }
 
     if (req.query.search) {
@@ -452,7 +488,8 @@ exports.getActivityLogs = async (req, res) => {
 
     let query = {};
     if (cities) {
-      query.city = { $in: cities };
+      const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
+      query.city = { $in: cityRegexes };
     }
 
     const logs = await ActivityLog.find(query)
@@ -499,6 +536,82 @@ exports.changePassword = async (req, res) => {
     await admin.save();
 
     res.status(200).json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 17. Get All Gym Owners
+exports.getAllGymOwners = async (req, res) => {
+  try {
+    let query = {};
+    if (req.query.status) {
+      query.status = req.query.status;
+    }
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      query.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex }
+      ];
+    }
+    const owners = await GymOwner.find(query).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: owners });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 18. Approve Gym Owner
+exports.approveGymOwner = async (req, res) => {
+  try {
+    const owner = await GymOwner.findById(req.params.ownerId);
+    if (!owner) return res.status(404).json({ success: false, message: 'Gym Owner not found' });
+
+    owner.status = 'active';
+    owner.verifiedBy = {
+      adminId: req.admin._id,
+      adminRole: 'city_admin',
+      verifiedAt: new Date()
+    };
+    if (owner.bankAccount) {
+      owner.bankAccount.verified = true;
+    }
+    if (owner.kyc) {
+      owner.kyc.verified = true;
+    }
+    await owner.save();
+
+    await ActivityLog.create({
+      type: 'gym_owner_approved',
+      adminId: req.admin._id,
+      description: `Gym Owner "${owner.name}" approved`
+    });
+
+    res.status(200).json({ success: true, message: 'Gym Owner approved successfully', data: owner });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 19. Reject Gym Owner
+exports.rejectGymOwner = async (req, res) => {
+  try {
+    const owner = await GymOwner.findById(req.params.ownerId);
+    if (!owner) return res.status(404).json({ success: false, message: 'Gym Owner not found' });
+
+    owner.status = 'rejected';
+    owner.rejectionReason = req.body.reason || 'Rejected by City Admin';
+    await owner.save();
+
+    await ActivityLog.create({
+      type: 'gym_owner_rejected',
+      adminId: req.admin._id,
+      description: `Gym Owner "${owner.name}" rejected. Reason: ${req.body.reason || 'None'}`
+    });
+
+    res.status(200).json({ success: true, message: 'Gym Owner rejected successfully', data: owner });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -10,6 +10,7 @@ const CityAdminDashboard = () => {
     if (path.includes('/dashboard')) return 'Dashboard Overview';
     if (path.includes('/users')) return 'Users Management';
     if (path.includes('/gyms')) return 'Gyms Management';
+    if (path.includes('/gym-owners')) return 'Gym Owner Requests';
     if (path.includes('/trainers')) return 'Trainers Management';
     if (path.includes('/dietitians')) return 'Dietitians Management';
     if (path.includes('/analytics')) return 'Analytics Overview';

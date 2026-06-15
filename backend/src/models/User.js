@@ -27,9 +27,14 @@ const userSchema = new mongoose.Schema({
   phoneVerified: { type: Boolean, default: false },
   role: {
     type: String,
-    enum: ["superadmin", "admin", "trainer", "member"],
+    enum: ["superadmin", "admin", "trainer", "member", "gym_owner", "customer", "city_admin"],
     default: "member",
   },
+  gymOwnerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "GymOwner",
+    default: null
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

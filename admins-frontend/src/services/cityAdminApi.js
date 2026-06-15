@@ -50,6 +50,22 @@ export const suspendGym = async (gymId) => {
   return response.data;
 };
 
+// 3.5. Gym Owners
+export const getAllGymOwners = async (params) => {
+  const response = await api.get('/gym-owners', { params });
+  return response.data;
+};
+
+export const approveGymOwner = async (ownerId) => {
+  const response = await api.patch(`/gym-owners/${ownerId}/approve`);
+  return response.data;
+};
+
+export const rejectGymOwner = async (ownerId, reason) => {
+  const response = await api.patch(`/gym-owners/${ownerId}/reject`, { reason });
+  return response.data;
+};
+
 // 4. Trainers
 export const getAllTrainers = async (params) => {
   const response = await api.get('/trainers', { params });
@@ -112,6 +128,9 @@ export default {
   approveGym,
   rejectGym,
   suspendGym,
+  getAllGymOwners,
+  approveGymOwner,
+  rejectGymOwner,
   getAllTrainers,
   approveTrainer,
   rejectTrainer,

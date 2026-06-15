@@ -151,7 +151,7 @@ const GymsList = () => {
                     <td className="p-4">{gym.ownerName}</td>
                     <td className="p-4">{gym.email}</td>
                     <td className="p-4">{gym.phone}</td>
-                    <td className="p-4">{gym.city}</td>
+                    <td className="p-4">{gym.location?.city || gym.city}</td>
                     <td className="p-4">
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-semibold ${

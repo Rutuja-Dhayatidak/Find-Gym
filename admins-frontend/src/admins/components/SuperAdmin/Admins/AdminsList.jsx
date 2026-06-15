@@ -18,7 +18,12 @@ const AdminsList = () => {
     try {
       setLoading(true);
       const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
-      const response = await fetch(`${baseUrl}/api/admins/all`);
+      const token = localStorage.getItem('superAdminToken');
+      const response = await fetch(`${baseUrl}/api/admins/all`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       if (response.ok && data.success) {
         setAdmins(data.admins);
@@ -46,8 +51,12 @@ const AdminsList = () => {
     
     try {
       const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('superAdminToken');
       const response = await fetch(`${baseUrl}/api/admins/${adminToDelete._id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       const data = await response.json();
       
@@ -91,7 +100,22 @@ const AdminsList = () => {
     { 
       title: 'Role', 
       key: 'adminType',
-      render: (row) => <span className="text-gray-500">{row.adminType}</span>
+      render: (row) => {
+        let displayRole = row.adminType;
+        if (row.adminType === 'platform_admin' || row.adminType === 'Platform Admin') displayRole = 'Platform Admin';
+        else if (row.adminType === 'city_admin' || row.adminType === 'City Admin') displayRole = 'City Admin';
+        return <span className="text-gray-500">{displayRole}</span>;
+      }
+    },
+    {
+      title: 'City / Assigned City',
+      key: 'assignedCities',
+      render: (row) => {
+        const cityStr = row.assignedCities && row.assignedCities.length > 0
+          ? row.assignedCities.join(', ')
+          : (row.city || '-');
+        return <span className="text-gray-500">{cityStr}</span>;
+      }
     },
     { 
       title: 'Actions', 

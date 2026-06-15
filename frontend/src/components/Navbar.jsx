@@ -141,6 +141,20 @@ const Navbar = () => {
 
 
               <Link
+                to="/gym-owner/login"
+                className="
+                  text-zinc-300
+                  hover:text-[#FF7A00]
+                  font-semibold
+                  text-sm
+                  transition-all
+                  mr-2
+                "
+              >
+                Owner Portal
+              </Link>
+
+              <Link
                 to="/register"
                 className="
                   px-6

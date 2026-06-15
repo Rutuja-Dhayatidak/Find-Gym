@@ -1,35 +1,101 @@
 const mongoose = require('mongoose');
 
 const gymSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  address: { type: String },
-  city: { type: String, required: true },
-  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  ownerName: { type: String, required: true },
-  email: { type: String, required: true },
-  phone: { type: String, required: true },
-  website: { type: String },
-  membersCount: { type: Number, default: 0 },
-  revenue: { type: Number, default: 0 },
-  monthlyRevenue: { type: Number, default: 0 },
-  status: { type: String, enum: ['pending', 'approved', 'suspended', 'rejected'], default: 'pending' },
-  equipment: [{ type: String }],
+  ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'GymOwner',
+    required: true
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 100
+  },
+  description: {
+    type: String,
+    required: true,
+    minlength: 20,
+    maxlength: 1000
+  },
+  phone: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  
+  location: {
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zipCode: { type: String, required: true },
+    latitude: { type: Number },
+    longitude: { type: Number }
+  },
+  
+  hours: {
+    monday: { open: String, close: String, closed: Boolean },
+    tuesday: { open: String, close: String, closed: Boolean },
+    wednesday: { open: String, close: String, closed: Boolean },
+    thursday: { open: String, close: String, closed: Boolean },
+    friday: { open: String, close: String, closed: Boolean },
+    saturday: { open: String, close: String, closed: Boolean },
+    sunday: { open: String, close: String, closed: Boolean }
+  },
+  
+  capacity: {
+    type: Number,
+    required: true,
+    min: 20,
+    max: 10000
+  },
+  currentMembers: {
+    type: Number,
+    default: 0
+  },
+  amenities: {
+    type: [String],
+    default: []
+  },
+  images: {
+    type: [String],
+    default: []
+  },
+  
+  verified: {
+    type: Boolean,
+    default: false
+  },
+  active: {
+    type: Boolean,
+    default: true
+  },
+  
+  rating: {
+    average: { type: Number, default: 0 },
+    count: { type: Number, default: 0 }
+  },
+  
+  trainers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Trainer'
+  }],
   classes: [{
-    name: { type: String },
-    timings: { type: String },
-    trainer: { type: String }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Class'
   }],
-  rating: { type: Number, default: 0 },
-  documents: [{
-    type: { type: String },
-    verified: { type: Boolean, default: false },
-    url: { type: String }
+  memberships: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Membership'
   }],
-  totalBookings: { type: Number, default: 0 },
-  approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
-  approvedAt: { type: Date },
-  rejectedAt: { type: Date },
-  suspendedAt: { type: Date }
+  monthlyRevenue: {
+    type: Number,
+    default: 0
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Gym', gymSchema);

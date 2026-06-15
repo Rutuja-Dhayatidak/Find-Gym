@@ -6,12 +6,48 @@ const { sendSetupEmail } = require('../utils/emailService');
 // Create Admin (Super Admin only)
 exports.createAdmin = async (req, res) => {
   try {
-    const { fullName, email, phone, adminType, status, assignedCities } = req.body;
+    const { fullName, email, phone, adminType, status, city, assignedCities } = req.body;
+
+    // Validation
+    if (!fullName || !fullName.trim()) {
+      return res.status(400).json({ success: false, message: 'Name is required' });
+    }
+    if (!email || !email.trim()) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+    if (!phone || !phone.trim()) {
+      return res.status(400).json({ success: false, message: 'Phone is required' });
+    }
+    if (!adminType) {
+      return res.status(400).json({ success: false, message: 'Admin type is required' });
+    }
+
+    // Clean adminType
+    let resolvedAdminType = adminType;
+    if (adminType === 'platform_admin') {
+      resolvedAdminType = 'platform_admin';
+    } else if (adminType === 'city_admin') {
+      resolvedAdminType = 'city_admin';
+    }
+
+    // If city admin, city is required
+    let finalAssignedCities = assignedCities || [];
+    let savedCity = city;
+    if (resolvedAdminType === 'city_admin') {
+      const selectedCity = city || (assignedCities && assignedCities[0]);
+      if (!selectedCity) {
+        return res.status(400).json({ success: false, message: 'City is required for city admin' });
+      }
+      savedCity = selectedCity;
+      finalAssignedCities = [selectedCity];
+    } else {
+      savedCity = null;
+    }
 
     // Check if email already exists
-    const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
+    const existingAdmin = await Admin.findOne({ email: email.toLowerCase().trim() });
     if (existingAdmin) {
-      return res.status(400).json({ success: false, message: 'Email already exists.' });
+      return res.status(400).json({ success: false, message: 'Email already exists' });
     }
 
     // Generate setup token
@@ -20,41 +56,51 @@ exports.createAdmin = async (req, res) => {
 
     // Create admin
     const admin = new Admin({
-      fullName,
-      email: email.toLowerCase(),
-      phone,
-      adminType,
+      fullName: fullName.trim(),
+      email: email.toLowerCase().trim(),
+      phone: phone.trim(),
+      adminType: resolvedAdminType,
       status: status || 'Active',
-      assignedCities: assignedCities || [],
+      assignedCities: finalAssignedCities,
+      city: savedCity,
       setupToken,
       setupTokenExpiry,
       passwordSet: false,
       emailVerified: false,
-      // createdBy: req.user._id // Assuming req.user is set by auth middleware
     });
 
     await admin.save();
 
-    // Send email (don't await to avoid blocking response, or await if you want to ensure it sent)
-    const emailSent = await sendSetupEmail(admin.email, admin.fullName, setupToken);
-
-    if (!emailSent) {
-      console.warn('Admin created but email failed to send');
+    // Send email safely
+    let emailSent = false;
+    let emailWarning = '';
+    try {
+      emailSent = await sendSetupEmail(admin.email, admin.fullName, setupToken);
+      if (!emailSent) {
+        emailWarning = ' (Warning: Invitation email failed to send)';
+        console.warn('Admin created but email failed to send');
+      }
+    } catch (err) {
+      emailWarning = ' (Warning: Invitation email failed to send)';
+      console.error('Failed to send setup email:', err);
     }
 
     res.status(201).json({
       success: true,
-      message: 'Admin created successfully. Setup email sent.',
+      message: `Admin created successfully.${emailWarning}`,
       admin: {
         _id: admin._id,
         fullName: admin.fullName,
         email: admin.email,
-        adminType: admin.adminType,
+        phone: admin.phone,
+        role: admin.adminType,
+        city: admin.city,
         status: admin.status
       }
     });
 
   } catch (error) {
+    console.error('Error in createAdmin controller:', error);
     res.status(500).json({ success: false, message: 'Failed to create admin.', error: error.message });
   }
 };

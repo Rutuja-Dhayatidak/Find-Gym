@@ -5,7 +5,6 @@ import SuperAdminLayout from './admins/components/SuperAdmin/SuperAdminLayout';
 import Dashboard from './admins/components/SuperAdmin/Dashboard/Dashboard';
 import UsersList from './admins/components/SuperAdmin/Users/UsersList';
 import AdminsList from './admins/components/SuperAdmin/Admins/AdminsList';
-import CityAdminsList from './admins/components/SuperAdmin/CityAdmins/CityAdminsList';
 import GymsList from './admins/components/SuperAdmin/Gyms/GymsList';
 import GymOwnersList from './admins/components/SuperAdmin/GymOwners/GymOwnersList';
 import TrainersList from './admins/components/SuperAdmin/Trainers/TrainersList';
@@ -36,6 +35,7 @@ import CADietitiansList from './admins/components/CityAdminDashboard/Dietitians/
 import CAAnalytics from './admins/components/CityAdminDashboard/Analytics/Analytics';
 import CAActivityLogs from './admins/components/CityAdminDashboard/ActivityLogs/ActivityLogs';
 import CASettings from './admins/components/CityAdminDashboard/Settings/Settings';
+import CAGymOwnersList from './admins/components/CityAdminDashboard/GymOwners/GymOwnersList';
 
 function App() {
   return (
@@ -50,7 +50,6 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="users" element={<UsersList />} />
           <Route path="admins" element={<AdminsList />} />
-          <Route path="city-admins" element={<CityAdminsList />} />
           <Route path="gyms" element={<GymsList />} />
           <Route path="gym-owners" element={<GymOwnersList />} />
           <Route path="trainers" element={<TrainersList />} />
@@ -81,6 +80,7 @@ function App() {
           <Route path="dashboard" element={<CADashboard />} />
           <Route path="users" element={<CAUsersList />} />
           <Route path="gyms" element={<CAGymsList />} />
+          <Route path="gym-owners" element={<CAGymOwnersList />} />
           <Route path="trainers" element={<CATrainersList />} />
           <Route path="dietitians" element={<CADietitiansList />} />
           <Route path="analytics" element={<CAAnalytics />} />

@@ -13,6 +13,10 @@ router.patch('/gyms/:gymId/approve', cityAdminController.approveGym);
 router.patch('/gyms/:gymId/reject', cityAdminController.rejectGym);
 router.patch('/gyms/:gymId/suspend', cityAdminController.suspendGym);
 
+router.get('/gym-owners', cityAdminController.getAllGymOwners);
+router.patch('/gym-owners/:ownerId/approve', cityAdminController.approveGymOwner);
+router.patch('/gym-owners/:ownerId/reject', cityAdminController.rejectGymOwner);
+
 router.get('/trainers', cityAdminController.getAllTrainers);
 router.patch('/trainers/:trainerId/approve', cityAdminController.approveTrainer);
 router.patch('/trainers/:trainerId/reject', cityAdminController.rejectTrainer);
