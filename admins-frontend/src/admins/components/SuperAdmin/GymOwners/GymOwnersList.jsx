@@ -1,17 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Table from '../../common/Table';
 import Badge from '../../common/Badge';
 import Button from '../../common/Button';
+import { getAllGymOwners } from '../../../../services/superApi';
 
 const GymOwnersList = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [owners, setOwners] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const owners = [
-    { id: 'OWN-101', name: 'Rahul Bajaj', email: 'rahul.b@example.com', phone: '+91 9876543201', gyms: 2, kyc: 'Verified', status: 'Active' },
-    { id: 'OWN-102', name: 'Vikram Singh', email: 'vikram.s@example.com', phone: '+91 9876543202', gyms: 1, kyc: 'Pending', status: 'Active' },
-    { id: 'OWN-103', name: 'Neha Sharma', email: 'neha.s@example.com', phone: '+91 9876543203', gyms: 3, kyc: 'Rejected', status: 'Blocked' },
-  ];
+  const fetchOwners = async () => {
+    try {
+      setLoading(true);
+      const res = await getAllGymOwners();
+      if (res.data && res.data.owners) {
+        const formattedOwners = res.data.owners.map(o => ({
+          id: o._id,
+          name: o.name,
+          email: o.email,
+          phone: o.phone || 'N/A',
+          gyms: o.gyms ? o.gyms.length : 0,
+          kyc: o.kyc?.verified ? 'Verified' : 'Pending',
+          status: o.status ? (o.status.charAt(0).toUpperCase() + o.status.slice(1)) : 'Pending'
+        }));
+        setOwners(formattedOwners);
+      }
+    } catch (err) {
+      console.error("Failed to load owners:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOwners();
+  }, []);
 
   const columns = [
     { title: 'Owner ID', key: 'id' },
@@ -21,7 +45,7 @@ const GymOwnersList = () => {
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
-            {row.name.charAt(0)}
+            {row.name ? row.name.charAt(0) : '?'}
           </div>
           <div className="font-medium text-gray-900">{row.name}</div>
         </div>
@@ -35,7 +59,7 @@ const GymOwnersList = () => {
       key: 'kyc',
       render: (row) => {
         const variants = { 'Verified': 'success', 'Pending': 'warning', 'Rejected': 'danger' };
-        return <Badge label={row.kyc} variant={variants[row.kyc]} />;
+        return <Badge label={row.kyc} variant={variants[row.kyc] || 'default'} />;
       }
     },
     { 
@@ -53,6 +77,20 @@ const GymOwnersList = () => {
       )
     },
   ];
+
+  const filteredOwners = owners.filter(owner => 
+    owner.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    owner.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    owner.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -77,7 +115,7 @@ const GymOwnersList = () => {
           </div>
         </div>
         
-        <Table data={owners} columns={columns} />
+        <Table data={filteredOwners} columns={columns} />
       </div>
     </div>
   );

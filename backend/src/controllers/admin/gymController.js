@@ -32,6 +32,7 @@ exports.getAllGyms = async (req, res) => {
     sort[sortField] = sortOrder;
 
     const gyms = await Gym.find(query)
+      .populate('ownerId', 'name email phone')
       .sort(sort)
       .skip(skip)
       .limit(limit);
@@ -44,8 +45,10 @@ exports.getAllGyms = async (req, res) => {
         gyms: gyms.map(g => ({
           id: g._id,
           name: g.name,
-          city: g.city,
-          ownerName: g.ownerName,
+          city: g.city || g.location?.city,
+          ownerName: g.ownerId?.name || g.ownerName || 'N/A',
+          email: g.ownerId?.email || g.email || 'N/A',
+          phone: g.ownerId?.phone || g.phone || 'N/A',
           membersCount: g.membersCount,
           status: g.status,
           monthlyRevenue: g.monthlyRevenue,

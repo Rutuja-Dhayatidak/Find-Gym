@@ -11,6 +11,7 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/platform-admin/dashboard', icon: '📊' },
     { name: 'Users', path: '/platform-admin/users', icon: '👥' },
     { name: 'Gyms', path: '/platform-admin/gyms', icon: '🏢' },
+    { name: 'Gym Owners', path: '/platform-admin/gym-owners', icon: '💼' },
     { name: 'Trainers', path: '/platform-admin/trainers', icon: '🏋️' },
     { name: 'Payments', path: '/platform-admin/payments', icon: '💳' },
   ];

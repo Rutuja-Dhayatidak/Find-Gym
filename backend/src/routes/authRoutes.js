@@ -6,7 +6,11 @@ const jwt = require('jsonwebtoken');
 const GymOwner = require('../models/GymOwner');
 const User = require('../models/User');
 const { uploadToCloudinary } = require('../utils/cloudinary');
-const { sendRegistrationEmail, sendAdminNotification } = require('../utils/email');
+const { sendRegistrationEmail, sendAdminNotification, sendOTPEmail } = require('../utils/email');
+const { protectUser } = require('../middleware/authMiddleware');
+
+// In-memory OTP storage
+const otps = {};
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -164,6 +168,14 @@ router.post('/gym-owner-login', async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid credentials", statusCode: 400 });
     }
 
+    if (gymOwner.status !== 'active') {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is not approved yet. Please wait for City Admin to verify and approve your documents.",
+        statusCode: 403
+      });
+    }
+
     // Generate token
     const token = jwt.sign(
       { id: gymOwner._id, role: 'gym_owner' },
@@ -196,6 +208,260 @@ router.post('/gym-owner-login', async (req, res) => {
   } catch (error) {
     console.error("Gym owner login error:", error);
     res.status(500).json({ success: false, message: "Login failed. Please try again.", error: error.message, statusCode: 500 });
+  }
+});
+
+// POST /api/auth/register (Normal User)
+router.post('/register', upload.single('profilePhoto'), async (req, res) => {
+  try {
+    const { email, phone, password, fullName, age, gender, height, weight, fitnessGoal, location, city } = req.body;
+
+    if (!email || !password || !fullName) {
+      return res.status(400).json({ success: false, message: "Email, password and full name are required", statusCode: 400 });
+    }
+
+    // Check unique email
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Email already registered", statusCode: 400 });
+    }
+
+    // Upload file to Cloudinary if provided
+    let profilePhotoUrl = '';
+    if (req.file) {
+      try {
+        profilePhotoUrl = await uploadToCloudinary(req.file.buffer, 'profile_photos');
+      } catch (uploadError) {
+        console.error("Profile photo upload error:", uploadError);
+      }
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create User record
+    const user = new User({
+      name: fullName,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      phone,
+      age: age ? parseInt(age) : undefined,
+      gender,
+      height: height ? parseFloat(height) : undefined,
+      weight: weight ? parseFloat(weight) : undefined,
+      fitnessGoal,
+      location,
+      city,
+      profilePhoto: profilePhotoUrl,
+      role: 'member' // normal user
+    });
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User registered successfully!",
+      data: {
+        userId: user._id,
+        name: user.name,
+        email: user.email
+      },
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error("User register error:", error);
+    res.status(500).json({ success: false, message: "Registration failed. Please try again.", error: error.message, statusCode: 500 });
+  }
+});
+
+// POST /api/auth/login (Normal User)
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Please fill all required fields", statusCode: 400 });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid credentials", statusCode: 400 });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Invalid credentials", statusCode: 400 });
+    }
+
+    if (user.role === 'gym_owner') {
+      const gymOwner = await GymOwner.findOne({ email: email.toLowerCase() });
+      if (gymOwner && gymOwner.status !== 'active') {
+        return res.status(403).json({
+          success: false,
+          message: "Your account is not approved yet. Please wait for City Admin to verify and approve your documents.",
+          statusCode: 403
+        });
+      }
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '7d' }
+    );
+
+    // Set cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
+      },
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error("User login error:", error);
+    res.status(500).json({ success: false, message: "Login failed. Please try again.", error: error.message, statusCode: 500 });
+  }
+});
+
+// POST /api/auth/send-otp
+router.post('/send-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required", statusCode: 400 });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Store in-memory
+    otps[email.toLowerCase()] = {
+      otp,
+      expires: Date.now() + 10 * 60 * 1000 // 10 minutes
+    };
+
+    const emailSent = await sendOTPEmail(email.toLowerCase(), otp);
+    if (!emailSent) {
+      return res.status(500).json({ success: false, message: "Failed to send OTP email. Please try again.", statusCode: 500 });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent successfully to your email!",
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error("Send OTP error:", error);
+    res.status(500).json({ success: false, message: "Error sending OTP", error: error.message, statusCode: 500 });
+  }
+});
+
+// POST /api/auth/verify-otp
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: "Email and OTP are required", statusCode: 400 });
+    }
+
+    const record = otps[email.toLowerCase()];
+    if (!record) {
+      return res.status(400).json({ success: false, message: "No OTP found. Please request a new one.", statusCode: 400 });
+    }
+
+    if (Date.now() > record.expires) {
+      delete otps[email.toLowerCase()];
+      return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one.", statusCode: 400 });
+    }
+
+    if (record.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP code", statusCode: 400 });
+    }
+
+    // OTP verified successfully
+    delete otps[email.toLowerCase()];
+    res.status(200).json({
+      success: true,
+      message: "OTP verified successfully!",
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error("Verify OTP error:", error);
+    res.status(500).json({ success: false, message: "Error verifying OTP", error: error.message, statusCode: 500 });
+  }
+});
+
+// GET /api/auth/me (Get authenticated user profile)
+router.get('/me', protectUser, async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      data: req.user,
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error("Get user profile error:", error);
+    res.status(500).json({ success: false, message: "Server error fetching profile details", error: error.message, statusCode: 500 });
+  }
+});
+
+// PUT /api/auth/profile (Update authenticated user profile)
+router.put('/profile', protectUser, upload.single('profilePhoto'), async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found", statusCode: 404 });
+    }
+
+    const { name, phone, age, gender, height, weight, fitnessGoal, location, city } = req.body;
+
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (age) user.age = parseInt(age) || undefined;
+    if (gender) user.gender = gender;
+    if (height) user.height = parseFloat(height) || undefined;
+    if (weight) user.weight = parseFloat(weight) || undefined;
+    if (fitnessGoal) user.fitnessGoal = fitnessGoal;
+    if (location) user.location = location;
+    if (city) user.city = city;
+
+    // If file provided, upload to Cloudinary
+    if (req.file) {
+      try {
+        const profilePhotoUrl = await uploadToCloudinary(req.file.buffer, 'profile_photos');
+        user.profilePhoto = profilePhotoUrl;
+      } catch (uploadError) {
+        console.error("Profile photo upload error:", uploadError);
+      }
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully!",
+      data: user,
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ success: false, message: "Failed to update profile", error: error.message, statusCode: 500 });
   }
 });
 

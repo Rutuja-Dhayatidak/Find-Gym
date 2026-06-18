@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getAllTrainers, approveTrainer, rejectTrainer, blockTrainer } from '../../../../services/cityAdminApi';
+import { getAllTrainers, approveTrainer, rejectTrainer, blockTrainer, getTrainerDetails } from '../../../../services/cityAdminApi';
+import TrainerDetails from '../../PlatformAdmin/Trainers/TrainerDetails';
 
 const TrainersList = () => {
   const [trainers, setTrainers] = useState([]);
@@ -8,6 +9,13 @@ const TrainersList = () => {
   const [assignedCities, setAssignedCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTrainer, setSelectedTrainer] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+  const openDetails = (trainer) => {
+    setSelectedTrainer(trainer);
+    setIsDetailsModalOpen(true);
+  };
 
   useEffect(() => {
     const admin = JSON.parse(localStorage.getItem('admin') || '{}');
@@ -164,6 +172,12 @@ const TrainersList = () => {
                       </span>
                     </td>
                     <td className="p-4 space-x-2">
+                      <button
+                        onClick={() => openDetails(trainer)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-xs transition-colors"
+                      >
+                        View
+                      </button>
                       {trainer.status === 'pending' && (
                         <>
                           <button
@@ -196,6 +210,13 @@ const TrainersList = () => {
           </div>
         )}
       </div>
+      {isDetailsModalOpen && (
+        <TrainerDetails 
+          trainerId={selectedTrainer?._id} 
+          onClose={() => setIsDetailsModalOpen(false)} 
+          apiFetchDetails={getTrainerDetails}
+        />
+      )}
     </div>
   );
 };

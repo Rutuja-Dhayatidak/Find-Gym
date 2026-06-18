@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { registerUser, sendOtp, verifyOtp } from '../userServices/Auth';
+import toast from 'react-hot-toast';
 
 const UserRegister = () => {
   const [step, setStep] = useState(1);
   const [otpSent, setOtpSent] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [successMsg, setSuccessMsg] = useState('');
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -57,7 +61,7 @@ const UserRegister = () => {
     setPhotoPreview(null);
   };
 
-  const handleSendOTP = () => {
+  const handleSendOTP = async () => {
     const newErrors = {};
     if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Valid email is required to send OTP';
@@ -71,8 +75,19 @@ const UserRegister = () => {
       return;
     }
 
-    setOtpSent(true);
-    setErrors({});
+    const toastId = toast.loading("Sending OTP to email...");
+    try {
+      const res = await sendOtp(formData.email);
+      if (res.success) {
+        setOtpSent(true);
+        setErrors({});
+        toast.success(res.message || "OTP sent successfully to your email!", { id: toastId });
+      } else {
+        toast.error(res.message || "Failed to send OTP", { id: toastId });
+      }
+    } catch (err) {
+      toast.error(err.message || "Error sending OTP", { id: toastId });
+    }
   };
 
   const validateStep = () => {
@@ -80,10 +95,10 @@ const UserRegister = () => {
     if (step === 1) {
       if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Valid email is required';
       if (!formData.phone || formData.phone.length !== 10 || !/^\d{10}$/.test(formData.phone)) newErrors.phone = 'Phone number must be exactly 10 digits';
-      if (otpSent) {
-        if (!formData.otp || formData.otp.length !== 6 || !/^\d{6}$/.test(formData.otp)) newErrors.otp = 'OTP must be exactly 6 digits';
-      } else {
+      if (!otpSent) {
         newErrors.otp = 'Please send and enter OTP first';
+      } else if (!formData.otp) {
+        newErrors.otp = 'OTP is required';
       }
     } else if (step === 2) {
       const hasLetters = /[a-zA-Z]/.test(formData.password);
@@ -113,9 +128,42 @@ const UserRegister = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep()) {
-      setStep((prev) => prev + 1);
+  const handleNext = async () => {
+    if (step === 1) {
+      // Step 1 validation
+      const newErrors = {};
+      if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Valid email is required';
+      if (!formData.phone || formData.phone.length !== 10 || !/^\d{10}$/.test(formData.phone)) newErrors.phone = 'Phone number must be exactly 10 digits';
+      if (!otpSent) {
+        newErrors.otp = 'Please send and enter OTP first';
+      } else if (!formData.otp) {
+        newErrors.otp = 'OTP is required';
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+      }
+
+      const toastId = toast.loading("Verifying OTP...");
+      try {
+        const res = await verifyOtp(formData.email, formData.otp);
+        if (res.success) {
+          toast.success("OTP verified successfully!", { id: toastId });
+          setErrors({});
+          setStep((prev) => prev + 1);
+        } else {
+          toast.error(res.message || "Invalid OTP", { id: toastId });
+          setErrors({ otp: res.message || "Invalid OTP" });
+        }
+      } catch (err) {
+        toast.error(err.message || "Invalid OTP", { id: toastId });
+        setErrors({ otp: err.message || "Invalid OTP" });
+      }
+    } else {
+      if (validateStep()) {
+        setStep((prev) => prev + 1);
+      }
     }
   };
 
@@ -123,11 +171,42 @@ const UserRegister = () => {
     setStep((prev) => prev - 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateStep()) {
-      console.log('Form Data Submitted:', formData);
-      setSuccessMsg('Account created successfully!');
+      setLoading(true);
+      try {
+        const data = new FormData();
+        data.append('email', formData.email);
+        data.append('phone', formData.phoneCode + formData.phone);
+        data.append('password', formData.password);
+        data.append('fullName', formData.fullName);
+        data.append('age', formData.age);
+        data.append('gender', formData.gender);
+        data.append('height', formData.height);
+        data.append('weight', formData.weight);
+        data.append('fitnessGoal', formData.fitnessGoal);
+        data.append('location', formData.location);
+        data.append('city', formData.city);
+        if (formData.profilePhoto) {
+          data.append('profilePhoto', formData.profilePhoto);
+        }
+
+        const res = await registerUser(data);
+        if (res.success) {
+          toast.success(res.message || 'Account created successfully!');
+          setSuccessMsg('Account created successfully! Redirecting...');
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          toast.error(res.message || 'Registration failed');
+        }
+      } catch (err) {
+        toast.error(err.message || 'Registration failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -160,82 +239,82 @@ const UserRegister = () => {
   `;
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans flex flex-col lg:flex-row mt-16 lg:mt-0">
-      
-      {/* Left Panel: Brand Motivation & Value Props */}
-      <div className="relative w-full lg:w-1/2 flex flex-col justify-between p-8 md:p-16 overflow-hidden min-h-[50vh] lg:min-h-screen">
-        {/* Background Image with Dark & Orange Mask */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity lg:opacity-60" 
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop')` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/80 to-transparent lg:bg-gradient-to-r lg:from-black lg:via-black/70 lg:to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#FF7A00]/10 to-transparent pointer-events-none" />
+    <div className="min-h-screen relative text-white font-sans flex flex-col lg:flex-row overflow-hidden">
 
-        {/* Brand Text */}
-        <div className="relative z-10 max-w-lg mt-8 lg:mt-24">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
-            Join <span className="text-[#FF7A00]">Find Gym</span><br />
-            and Transform Your Life
-          </h1>
-          <p className="text-gray-300 text-sm md:text-base mb-8 leading-relaxed font-light">
-            Discover the best gyms, trainers, and fitness centers near your location. Start your fitness journey today!
-          </p>
+      {/* Full-screen background image */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=90&fit=crop')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 z-10 bg-black/65" />
+      {/* Orange radial glow */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 70% 80% at 10% 90%, rgba(234,88,12,0.18) 0%, transparent 60%)',
+        }}
+      />
 
-          {/* Value Props */}
-          <div className="space-y-5">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
-                🏋️
-              </div>
-              <div>
-                <h3 className="font-bold text-sm text-white">Top Rated Gyms</h3>
-                <p className="text-xs text-gray-400">Explore 1000+ top rated gyms near you.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
-                👤
-              </div>
-              <div>
-                <h3 className="font-bold text-sm text-white">Expert Trainers</h3>
-                <p className="text-xs text-gray-400">Train with 500+ certified and experienced trainers.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
-                ⭐
-              </div>
-              <div>
-                <h3 className="font-bold text-sm text-white">Trusted Reviews</h3>
-                <p className="text-xs text-gray-400">Read real reviews and make informed decisions.</p>
-              </div>
-            </div>
+      {/* Left panel - branding */}
+      <div className="relative z-20 hidden lg:flex flex-col justify-between flex-1 p-14 max-w-[55%]">
+        {/* Logo */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2.2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+            </svg>
           </div>
+          <span className="text-white font-black text-xl tracking-tight">Find<span className="text-orange-400">Gym</span></span>
         </div>
 
-        {/* Stats Section inside a glass box */}
-        <div className="relative z-10 mt-12 bg-white/[0.03] backdrop-blur-md border border-white/5 rounded-2xl p-5 max-w-md flex justify-around text-center shadow-xl">
-          <div>
-            <div className="text-2xl md:text-3xl font-extrabold text-[#FF7A00]">1000+</div>
-            <div className="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Gyms</div>
+        {/* Hero text */}
+        <div className="mb-10">
+          <p className="text-orange-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">Start Your Journey</p>
+          <h1 className="text-[3.2rem] font-black text-white leading-[1.08] mb-5">
+            Join <span style={{ color: '#FF7A00', textShadow: '0 0 40px rgba(255,122,0,0.4)' }}>Find Gym</span><br />
+            and Transform<br />Your Life
+          </h1>
+          <p className="text-white/55 text-[1rem] leading-[1.7] max-w-[380px]">
+            Discover the best gyms, trainers, and fitness centers near your location.
+          </p>
+          <div className="space-y-4 mt-10">
+            {[
+              { icon: '🏋️', title: 'Top Rated Gyms', desc: 'Explore 1000+ top rated gyms near you' },
+              { icon: '👤', title: 'Expert Trainers', desc: '500+ certified and experienced trainers' },
+              { icon: '⭐', title: 'Trusted Reviews', desc: 'Real reviews to make informed decisions' },
+            ].map((f) => (
+              <div key={f.title} className="flex items-center gap-3">
+                <span className="text-xl">{f.icon}</span>
+                <div>
+                  <div className="text-white text-sm font-bold">{f.title}</div>
+                  <div className="text-white/40 text-xs">{f.desc}</div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="border-l border-white/10" />
-          <div>
-            <div className="text-2xl md:text-3xl font-extrabold text-[#FF7A00]">500+</div>
-            <div className="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Trainers</div>
-          </div>
-          <div className="border-l border-white/10" />
-          <div>
-            <div className="text-2xl md:text-3xl font-extrabold text-[#FF7A00]">50+</div>
-            <div className="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Cities</div>
+          <div className="flex gap-8 mt-10">
+            {[
+              { val: '1000+', label: 'Gyms' },
+              { val: '500+', label: 'Trainers' },
+              { val: '50+', label: 'Cities' },
+            ].map((s) => (
+              <div key={s.label}>
+                <div className="text-[1.7rem] font-black text-orange-400 leading-none">{s.val}</div>
+                <div className="text-white/40 text-xs font-medium mt-0.5">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Right Panel: Active Step Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 z-10 lg:min-h-screen">
-        <div className="w-full max-w-[460px] bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative">
+      {/* Right panel - multi-step form */}
+      <div className="relative z-20 flex items-center justify-center w-full lg:w-auto lg:min-w-[460px] lg:max-w-[520px] px-6 py-12 lg:px-12 lg:bg-black/40 lg:backdrop-blur-2xl lg:border-l lg:border-white/[0.08] mt-16 lg:mt-0">
+        <div className="w-full max-w-[460px] relative">
           
           {/* Subtle Orange Glow Border Effect */}
           <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#FF7A00]/40 to-transparent blur-[1px]" />
@@ -609,9 +688,10 @@ const UserRegister = () => {
               ) : (
                 <button
                   type="submit"
-                  className={`${step > 1 ? 'w-2/3' : 'w-full'} flex justify-center items-center py-3 px-4 rounded-xl text-xs font-bold text-white bg-[#FF7A00] hover:bg-[#E66E00] shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all transform hover:-translate-y-0.5 cursor-pointer`}
+                  disabled={loading}
+                  className={`${step > 1 ? 'w-2/3' : 'w-full'} flex justify-center items-center py-3 px-4 rounded-xl text-xs font-bold text-white bg-[#FF7A00] hover:bg-[#E66E00] shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all transform hover:-translate-y-0.5 cursor-pointer disabled:opacity-50`}
                 >
-                  Create Account
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
               )}
             </div>

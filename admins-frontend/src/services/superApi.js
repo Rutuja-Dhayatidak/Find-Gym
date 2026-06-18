@@ -15,11 +15,15 @@ export const getRecentActivities = async () => {
 
 // USERS
 export const getAllUsers = async (page = 1, limit = 10, filters = {}) => {
-  return { data: { users: [], total: 0, pages: 0 } };
+  return axiosInstance.get('/superadmin/users');
 };
 
 export const getUserById = async (userId) => {
-  return { data: {} };
+  return axiosInstance.get(`/superadmin/users/${userId}`);
+};
+
+export const updateSuperadminUser = async (userId, data) => {
+  return axiosInstance.patch(`/superadmin/users/${userId}`, data);
 };
 
 // ADMINS
@@ -29,15 +33,19 @@ export const getAllAdmins = async () => {
 
 // GYMS
 export const getAllGyms = async (page = 1, limit = 10, filters = {}) => {
-  return { data: { gyms: [], total: 0, pages: 0 } };
+  return axiosInstance.get('/superadmin/gyms');
 };
 
 export const getGymById = async (gymId) => {
-  return { data: {} };
+  return axiosInstance.get(`/superadmin/gyms/${gymId}`);
+};
+
+export const updateSuperadminGym = async (gymId, data) => {
+  return axiosInstance.patch(`/superadmin/gyms/${gymId}`, data);
 };
 
 export const approveGym = async (gymId, reason) => {
-  return { data: { message: 'Gym approved successfully' } };
+  return axiosInstance.patch(`/superadmin/gyms/${gymId}`, { verified: true, reason });
 };
 
 export const rejectGym = async (gymId, reason) => {
@@ -60,4 +68,14 @@ export const uploadBanner = async (formData) => {
 
 export const getAllBanners = async () => {
   return axiosInstance.get('/superadmin/cms/banners');
+};
+
+// GYM OWNERS
+export const getAllGymOwners = async () => {
+  return axiosInstance.get('/superadmin/gym-owners');
+};
+
+// TRAINERS
+export const getAllTrainers = async () => {
+  return axiosInstance.get('/superadmin/trainers');
 };

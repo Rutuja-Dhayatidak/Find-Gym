@@ -5,7 +5,7 @@ export const VerticalNavbar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  if (currentPath.startsWith('/gym-owner')) return null;
+  if (currentPath.startsWith('/gym-owner') || currentPath.startsWith('/trainer/')) return null;
 
   const menuItems = [
     {
@@ -175,7 +175,7 @@ export const MobileBottomNav = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  if (currentPath.startsWith('/gym-owner')) return null;
+  if (currentPath.startsWith('/gym-owner') || currentPath.startsWith('/trainer/')) return null;
 
   const menuItems = [
     {

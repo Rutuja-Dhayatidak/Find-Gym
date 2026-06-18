@@ -18,6 +18,7 @@ router.patch('/gym-owners/:ownerId/approve', cityAdminController.approveGymOwner
 router.patch('/gym-owners/:ownerId/reject', cityAdminController.rejectGymOwner);
 
 router.get('/trainers', cityAdminController.getAllTrainers);
+router.get('/trainers/:trainerId', cityAdminController.getTrainerDetails);
 router.patch('/trainers/:trainerId/approve', cityAdminController.approveTrainer);
 router.patch('/trainers/:trainerId/reject', cityAdminController.rejectTrainer);
 router.patch('/trainers/:trainerId/block', cityAdminController.blockTrainer);

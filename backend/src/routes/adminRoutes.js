@@ -21,10 +21,12 @@ const gymRoutes = require('./admin/gymRoutes');
 const trainerRoutes = require('./admin/trainerRoutes');
 const paymentRoutes = require('./admin/paymentRoutes');
 const cmsRoutes = require('./admin/cmsRoutes');
+const gymOwnerRoutes = require('./admin/gymOwnerRoutes');
 
 router.use('/', dashboardRoutes);
 router.use('/users', userRoutes);
 router.use('/gyms', gymRoutes);
+router.use('/gym-owners', gymOwnerRoutes);
 router.use('/trainers', trainerRoutes);
 router.use('/', paymentRoutes); // paymentRoutes handles /transactions, /revenue/reports, /payouts
 router.use('/cms', cmsRoutes); // Assuming CMS is under /cms based on route file

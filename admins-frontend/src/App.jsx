@@ -19,6 +19,7 @@ import PlatformAdminDashboard from './pages/PlatformAdminDashboard';
 import PADashboard from './admins/components/PlatformAdmin/Dashboard/Dashboard';
 import PAUsersList from './admins/components/PlatformAdmin/Users/UsersList';
 import PAGymsList from './admins/components/PlatformAdmin/Gyms/GymsList';
+import PAGymOwnersList from './admins/components/PlatformAdmin/GymOwners/GymOwnersList';
 import PATrainersList from './admins/components/PlatformAdmin/Trainers/TrainersList';
 import PATransactionHistory from './admins/components/PlatformAdmin/Payments/TransactionHistory';
 import PARevenueReports from './admins/components/PlatformAdmin/Payments/RevenueReports';
@@ -62,6 +63,7 @@ function App() {
           <Route path="dashboard" element={<PADashboard />} />
           <Route path="users" element={<PAUsersList />} />
           <Route path="gyms" element={<PAGymsList />} />
+          <Route path="gym-owners" element={<PAGymOwnersList />} />
           <Route path="trainers" element={<PATrainersList />} />
           <Route path="payments">
             <Route index element={<PATransactionHistory />} />

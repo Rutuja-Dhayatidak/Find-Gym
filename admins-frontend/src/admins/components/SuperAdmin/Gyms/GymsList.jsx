@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, Dumbbell } from 'lucide-react';
 import Table from '../../common/Table';
 import Badge from '../../common/Badge';
 import Button from '../../common/Button';
 import GymDetails from './GymDetails';
 import ConfirmationModal from '../../common/ConfirmationModal';
+import { getAllGyms, updateSuperadminGym } from '../../../../services/superApi';
 
 const GymsList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,13 +13,48 @@ const GymsList = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [gymToSuspend, setGymToSuspend] = useState(null);
+  const [gyms, setGyms] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const gyms = [
-    { id: 'GYM-001', name: 'Gold\'s Gym Elite', city: 'Mumbai', owner: 'Rahul Bajaj', members: 1250, revenue: '₹4.5L', status: 'Approved' },
-    { id: 'GYM-002', name: 'Titan Fitness', city: 'Pune', owner: 'Vikram Singh', members: 450, revenue: '₹1.5L', status: 'Pending' },
-    { id: 'GYM-003', name: 'Iron Paradise', city: 'Bangalore', owner: 'Neha Sharma', members: 850, revenue: '₹3.0L', status: 'Approved' },
-    { id: 'GYM-004', name: 'Flex Core', city: 'Delhi', owner: 'Amit Patel', members: 320, revenue: '₹80K', status: 'Suspended' },
-  ];
+  const fetchGyms = async () => {
+    try {
+      setLoading(true);
+      const res = await getAllGyms();
+      if (res.data && res.data.gyms) {
+        const formattedGyms = res.data.gyms.map(g => {
+          let status = 'Pending';
+          if (g.verified) {
+            status = g.active ? 'Approved' : 'Suspended';
+          } else if (g.active === false) {
+            status = 'Suspended';
+          }
+          return {
+            id: g._id,
+            name: g.name,
+            city: g.location?.city || 'N/A',
+            owner: g.ownerId?.name || 'N/A',
+            members: g.currentMembers || 0,
+            revenue: g.monthlyRevenue ? `₹${g.monthlyRevenue}` : '₹0',
+            status: status,
+            raw: g
+          };
+        });
+        setUsersData(formattedGyms); // Wait! Let's call it setGyms(formattedGyms);
+      }
+    } catch (err) {
+      console.error("Failed to load gyms:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setUsersData = (data) => {
+    setGyms(data);
+  };
+
+  useEffect(() => {
+    fetchGyms();
+  }, []);
 
   const handleView = (gym) => {
     setSelectedGym(gym);
@@ -30,7 +66,16 @@ const GymsList = () => {
     setShowSuspendModal(true);
   };
 
-  const confirmSuspend = () => {
+  const confirmSuspend = async () => {
+    try {
+      const res = await updateSuperadminGym(gymToSuspend.id, { active: false });
+      if (res.data) {
+        alert("Gym suspended successfully");
+        fetchGyms();
+      }
+    } catch (err) {
+      console.error("Error suspending gym:", err);
+    }
     setShowSuspendModal(false);
   };
 
@@ -80,6 +125,20 @@ const GymsList = () => {
     },
   ];
 
+  const filteredGyms = gyms.filter(gym => 
+    gym.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    gym.owner?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    gym.city?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -108,7 +167,7 @@ const GymsList = () => {
           </div>
         </div>
         
-        <Table data={gyms} columns={columns} />
+        <Table data={filteredGyms} columns={columns} />
       </div>
 
       {showDetails && (

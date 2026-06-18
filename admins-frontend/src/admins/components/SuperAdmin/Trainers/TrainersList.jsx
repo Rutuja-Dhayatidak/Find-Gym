@@ -1,17 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Table from '../../common/Table';
 import Badge from '../../common/Badge';
 import Button from '../../common/Button';
+import { getAllTrainers } from '../../../../services/superApi';
 
 const TrainersList = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [trainers, setTrainers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const trainers = [
-    { id: 'TRN-201', name: 'Kabir Singh', email: 'kabir@example.com', gym: 'Gold\'s Gym Elite', status: 'Verified', rating: 4.8 },
-    { id: 'TRN-202', name: 'Ayesha Takia', email: 'ayesha@example.com', gym: 'Independent', status: 'Pending', rating: 4.5 },
-    { id: 'TRN-203', name: 'John Doe', email: 'john@example.com', gym: 'Titan Fitness', status: 'Verified', rating: 4.9 },
-  ];
+  const fetchTrainers = async () => {
+    try {
+      setLoading(true);
+      const res = await getAllTrainers();
+      if (res.data && res.data.trainers) {
+        const formattedTrainers = res.data.trainers.map(t => ({
+          id: t._id,
+          name: t.name,
+          email: t.email,
+          phone: t.phone || 'N/A',
+          gym: t.associatedGym || 'Independent',
+          status: t.status ? (t.status.charAt(0).toUpperCase() + t.status.slice(1)) : 'Pending',
+          rating: t.rating?.average || 0
+        }));
+        setTrainers(formattedTrainers);
+      }
+    } catch (err) {
+      console.error("Failed to load trainers:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTrainers();
+  }, []);
 
   const columns = [
     { title: 'Trainer ID', key: 'id' },
@@ -21,7 +45,7 @@ const TrainersList = () => {
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-xs">
-            {row.name.charAt(0)}
+            {row.name ? row.name.charAt(0) : '?'}
           </div>
           <div>
             <div className="font-medium text-gray-900">{row.name}</div>
@@ -35,8 +59,8 @@ const TrainersList = () => {
       title: 'Verification', 
       key: 'status',
       render: (row) => {
-        const variants = { 'Verified': 'success', 'Pending': 'warning', 'Rejected': 'danger' };
-        return <Badge label={row.status} variant={variants[row.status]} />;
+        const variants = { 'Approved': 'success', 'Pending': 'warning', 'Rejected': 'danger', 'Active': 'success' };
+        return <Badge label={row.status} variant={variants[row.status] || 'default'} />;
       }
     },
     { 
@@ -54,6 +78,19 @@ const TrainersList = () => {
       )
     },
   ];
+
+  const filteredTrainers = trainers.filter(trainer => 
+    trainer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    trainer.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -77,7 +114,7 @@ const TrainersList = () => {
             />
           </div>
         </div>
-        <Table data={trainers} columns={columns} />
+        <Table data={filteredTrainers} columns={columns} />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ const GymOwnersList = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [selectedOwnerForGyms, setSelectedOwnerForGyms] = useState(null);
 
   const fetchOwners = async () => {
     setLoading(true);
@@ -119,7 +120,14 @@ const GymOwnersList = () => {
               <tbody className="text-slate-700 text-sm divide-y divide-slate-100">
                 {owners.map((owner) => (
                   <tr key={owner._id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-medium text-slate-900">{owner.name}</td>
+                    <td className="p-4 font-medium text-slate-900">
+                      <button
+                        onClick={() => setSelectedOwnerForGyms(owner)}
+                        className="font-medium text-orange-600 hover:text-orange-800 hover:underline text-left focus:outline-none"
+                      >
+                        {owner.name}
+                      </button>
+                    </td>
                     <td className="p-4">
                       <div className="font-semibold">{owner.email}</div>
                       <div className="text-xs text-slate-500">{owner.phone}</div>
@@ -196,6 +204,65 @@ const GymOwnersList = () => {
           </div>
         )}
       </div>
+
+      {/* Gyms Modal */}
+      {selectedOwnerForGyms && (
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-900">{selectedOwnerForGyms.name}'s Gyms</h3>
+                <p className="text-slate-600 text-sm mt-1.5">List of registered gyms for this owner.</p>
+              </div>
+              <button 
+                onClick={() => setSelectedOwnerForGyms(null)}
+                className="text-slate-400 hover:text-slate-650 font-bold text-xl focus:outline-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              {!selectedOwnerForGyms.gyms || selectedOwnerForGyms.gyms.length === 0 ? (
+                <p className="text-center py-8 text-slate-500 text-base font-medium">No gyms registered by this owner yet.</p>
+              ) : (
+                <div className="space-y-4 text-left">
+                  {selectedOwnerForGyms.gyms.map((gym) => (
+                    <div key={gym._id} className="border border-slate-100 rounded-xl p-6 flex justify-between items-center bg-slate-50 hover:border-orange-100 hover:bg-orange-50/10 transition-all">
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-slate-900 text-base md:text-lg">{gym.name}</h4>
+                        <p className="text-slate-650 text-sm flex items-center gap-1.5">
+                          <span>📍</span> {gym.location?.address || gym.address}, {gym.location?.city || gym.city}
+                        </p>
+                        <p className="text-slate-500 text-sm">Capacity: {gym.capacity} members</p>
+                      </div>
+                      <span className={`px-3.5 py-1 text-sm font-semibold rounded-full border shrink-0 ${
+                        gym.verified 
+                          ? 'bg-green-50 text-green-700 border-green-200' 
+                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                      }`}>
+                        {gym.verified ? 'Verified' : 'Pending'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
+              <button 
+                onClick={() => setSelectedOwnerForGyms(null)}
+                className="px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

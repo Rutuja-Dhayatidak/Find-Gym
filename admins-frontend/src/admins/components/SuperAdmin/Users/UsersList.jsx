@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, Download, MoreVertical } from 'lucide-react';
 import Table from '../../common/Table';
 import Badge from '../../common/Badge';
 import Button from '../../common/Button';
 import UserDetails from './UserDetails';
 import ConfirmationModal from '../../common/ConfirmationModal';
+import { getAllUsers, updateSuperadminUser } from '../../../../services/superApi';
 
 const UsersList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,14 +13,34 @@ const UsersList = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [userToBlock, setUserToBlock] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data
-  const users = [
-    { id: 'usr_1a2b3c4d', name: 'Rahul Sharma', email: 'rahul.s@example.com', phone: '+91 9876543210', status: 'Active', joined: '2024-01-15' },
-    { id: 'usr_9z8y7x6w', name: 'Priya Singh', email: 'priya.s@example.com', phone: '+91 9876543211', status: 'Blocked', joined: '2024-02-10' },
-    { id: 'usr_5m4n3b2v', name: 'Amit Kumar', email: 'amit.k@example.com', phone: '+91 9876543212', status: 'Active', joined: '2024-03-05' },
-    { id: 'usr_1q2w3e4r', name: 'Sneha Patel', email: 'sneha.p@example.com', phone: '+91 9876543213', status: 'Suspended', joined: '2024-03-20' },
-  ];
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const res = await getAllUsers();
+      if (res.data && res.data.users) {
+        const formattedUsers = res.data.users.map(u => ({
+          id: u._id,
+          name: u.name,
+          email: u.email,
+          phone: u.phone || 'N/A',
+          status: u.status ? (u.status.charAt(0).toUpperCase() + u.status.slice(1)) : 'Active',
+          joined: u.joinDate ? u.joinDate.substring(0, 10) : 'N/A'
+        }));
+        setUsers(formattedUsers);
+      }
+    } catch (err) {
+      console.error("Failed to load users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const handleViewProfile = (user) => {
     setSelectedUser(user);
@@ -31,8 +52,16 @@ const UsersList = () => {
     setShowBlockModal(true);
   };
 
-  const confirmBlock = () => {
-    // API call to block user goes here
+  const confirmBlock = async () => {
+    try {
+      const res = await updateSuperadminUser(userToBlock.id, { status: 'blocked' });
+      if (res.data) {
+        alert("User blocked successfully");
+        fetchUsers();
+      }
+    } catch (err) {
+      console.error("Error blocking user:", err);
+    }
     setShowBlockModal(false);
   };
 
@@ -80,6 +109,20 @@ const UsersList = () => {
     },
   ];
 
+  const filteredUsers = users.filter(user => 
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -113,10 +156,10 @@ const UsersList = () => {
           </div>
         </div>
         
-        <Table data={users} columns={columns} />
+        <Table data={filteredUsers} columns={columns} />
         
         <div className="p-4 border-t border-gray-200 text-sm text-gray-500">
-          Showing 1-4 of 150 users
+          Showing 1-{filteredUsers.length} of {users.length} users
         </div>
       </div>
 

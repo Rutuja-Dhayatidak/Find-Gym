@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTrainerDetails } from '../../../../services/adminApi';
 
-const TrainerDetails = ({ trainerId, onClose }) => {
+const TrainerDetails = ({ trainerId, onClose, apiFetchDetails = getTrainerDetails }) => {
   const [trainer, setTrainer] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -9,7 +9,7 @@ const TrainerDetails = ({ trainerId, onClose }) => {
     const fetchDetails = async () => {
       try {
         setLoading(true);
-        const response = await getTrainerDetails(trainerId);
+        const response = await apiFetchDetails(trainerId);
         if (response.success) {
           setTrainer(response.data);
         }
@@ -53,6 +53,9 @@ const TrainerDetails = ({ trainerId, onClose }) => {
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-2xl font-bold text-slate-800">{trainer.name}</h3>
                   <p className="text-slate-500">{trainer.email} • {trainer.phone}</p>
+                  <p className="text-slate-500 mt-1">
+                    <strong>City:</strong> {trainer.city || 'N/A'} • <strong>Gender:</strong> {trainer.gender || 'N/A'} • <strong>DOB:</strong> {trainer.dateOfBirth ? new Date(trainer.dateOfBirth).toLocaleDateString() : 'N/A'}
+                  </p>
                   <div className="mt-3 flex flex-wrap gap-2 justify-center md:justify-start">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                       trainer.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 
@@ -62,14 +65,14 @@ const TrainerDetails = ({ trainerId, onClose }) => {
                       {trainer.status.toUpperCase()}
                     </span>
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold flex items-center">
-                      ⭐ {trainer.rating}
+                      ⭐ {trainer.rating || 0}
                     </span>
                   </div>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center flex items-center justify-center">
                   <div>
                     <p className="text-sm text-slate-500">Active Clients</p>
-                    <p className="text-2xl font-bold text-slate-800">{trainer.clientCount}</p>
+                    <p className="text-2xl font-bold text-slate-800">{trainer.clientCount || 0}</p>
                   </div>
                 </div>
               </div>
@@ -82,7 +85,7 @@ const TrainerDetails = ({ trainerId, onClose }) => {
                     <div className="space-y-3 text-sm">
                       <div>
                         <p className="text-slate-500">Experience</p>
-                        <p className="font-medium text-slate-800">{trainer.experience || 'Not specified'}</p>
+                        <p className="font-medium text-slate-800">{trainer.experience || 0} Years</p>
                       </div>
                       <div>
                         <p className="text-slate-500 mb-1">Specializations</p>
@@ -97,8 +100,84 @@ const TrainerDetails = ({ trainerId, onClose }) => {
                         </div>
                       </div>
                       <div>
+                        <p className="text-slate-500 mb-1">Languages</p>
+                        <div className="flex flex-wrap gap-2">
+                          {trainer.languages && trainer.languages.length > 0 ? (
+                            trainer.languages.map((lang, idx) => (
+                              <span key={idx} className="bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">
+                                {lang}
+                              </span>
+                            ))
+                          ) : <span className="text-slate-500">None listed</span>}
+                        </div>
+                      </div>
+                      <div>
                         <p className="text-slate-500">Bio</p>
                         <p className="text-slate-800 mt-1">{trainer.bio || 'No bio provided.'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <h4 className="text-lg font-semibold text-slate-800 border-b pb-2 mb-4">Pricing & Training Formats</h4>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                        <p className="text-slate-500 mb-1">Training Types Offered</p>
+                        <div className="flex flex-wrap gap-2">
+                          {trainer.trainingTypes && trainer.trainingTypes.length > 0 ? (
+                            trainer.trainingTypes.map((type, idx) => (
+                              <span key={idx} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                                {type}
+                              </span>
+                            ))
+                          ) : <span className="text-slate-500">None listed</span>}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-slate-500">Price Per Session</p>
+                          <p className="font-bold text-slate-800 text-base">₹{trainer.pricePerSession || 0}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">Price Per Month</p>
+                          <p className="font-bold text-slate-800 text-base">₹{trainer.pricePerMonth || 0}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Trial Session</p>
+                        <p className="font-medium text-slate-800">
+                          {trainer.trialSession ? `Yes (₹${trainer.trialPrice || 0})` : 'No'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <h4 className="text-lg font-semibold text-slate-800 border-b pb-2 mb-4">Availability</h4>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                        <p className="text-slate-500 mb-1">Available Days</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {trainer.availability?.days && trainer.availability.days.length > 0 ? (
+                            trainer.availability.days.map((day, idx) => (
+                              <span key={idx} className="bg-green-100 text-green-700 px-2.5 py-1 rounded text-xs font-semibold">
+                                {day}
+                              </span>
+                            ))
+                          ) : <span className="text-slate-500">Not specified</span>}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 mb-1">Preferred Time Slots</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {trainer.availability?.timeSlots && trainer.availability.timeSlots.length > 0 ? (
+                            trainer.availability.timeSlots.map((slot, idx) => (
+                              <span key={idx} className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-xs font-semibold">
+                                {slot}
+                              </span>
+                            ))
+                          ) : <span className="text-slate-500">Not specified</span>}
+                        </div>
                       </div>
                     </div>
                   </div>

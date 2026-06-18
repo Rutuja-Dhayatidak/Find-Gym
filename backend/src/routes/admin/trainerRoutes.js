@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const trainerController = require('../../controllers/admin/trainerController');
-const platformAdminAuth = require('../../middleware/platformAdminAuth');
+const adminAuth = require('../../middleware/adminAuth');
 
-router.use(platformAdminAuth);
+// Both City Admin and Platform Admin can manage trainers (role restrictions enforced in controller)
+router.use(adminAuth);
 
+router.get('/stats', trainerController.getTrainerStats);
 router.get('/', trainerController.getAllTrainers);
 router.get('/:trainerId', trainerController.getTrainerDetails);
 router.patch('/:trainerId/approve', trainerController.approveTrainer);

@@ -117,7 +117,7 @@ exports.getAllGyms = async (req, res) => {
       query.name = new RegExp(req.query.search, 'i');
     }
 
-    const gyms = await Gym.find(query).populate('ownerId', 'fullName email phone').sort({ createdAt: -1 });
+    const gyms = await Gym.find(query).populate('ownerId', 'name email phone').sort({ createdAt: -1 });
     
     const formattedGyms = gyms.map(gym => {
       const g = gym.toObject ? gym.toObject() : gym;
@@ -135,7 +135,7 @@ exports.getAllGyms = async (req, res) => {
         ...g,
         status: computedStatus,
         city: g.location?.city || g.city,
-        ownerName: g.ownerId?.fullName || g.ownerName || 'N/A',
+        ownerName: g.ownerId?.name || g.ownerName || 'N/A',
         email: g.ownerId?.email || g.email || 'N/A',
         phone: g.ownerId?.phone || g.phone || 'N/A'
       };
@@ -279,6 +279,54 @@ exports.getAllTrainers = async (req, res) => {
   }
 };
 
+// Get Trainer Details
+exports.getTrainerDetails = async (req, res) => {
+  try {
+    const trainer = await Trainer.findById(req.params.trainerId);
+    if (!trainer) return res.status(404).json({ success: false, message: 'Trainer not found' });
+
+    const cities = getAuthorizedCities(req.admin, trainer.city);
+    if (cities && cities.length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this city",
+        code: "CITY_ACCESS_DENIED"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: trainer._id,
+        name: trainer.name,
+        email: trainer.email,
+        phone: trainer.phone,
+        city: trainer.city,
+        gender: trainer.gender,
+        dateOfBirth: trainer.dateOfBirth,
+        profilePhoto: trainer.profilePhoto,
+        specializations: trainer.specializations,
+        certifications: trainer.certifications,
+        experience: trainer.experience,
+        bio: trainer.bio,
+        languages: trainer.languages,
+        trainingTypes: trainer.trainingTypes,
+        pricePerSession: trainer.pricePerSession,
+        pricePerMonth: trainer.pricePerMonth,
+        trialSession: trainer.trialSession,
+        trialPrice: trainer.trialPrice,
+        availability: trainer.availability,
+        status: trainer.status,
+        rating: trainer.rating?.average || 0,
+        clientCount: trainer.totalBookings || 0,
+        createdAt: trainer.createdAt
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // 8. Approve Trainer
 exports.approveTrainer = async (req, res) => {
   try {
@@ -294,7 +342,22 @@ exports.approveTrainer = async (req, res) => {
       });
     }
 
-    trainer.status = 'verified';
+    trainer.status = 'approved';
+    trainer.approvedAt = new Date();
+    trainer.verifiedBy = {
+      adminId: req.admin._id,
+      adminRole: req.admin.adminType || 'City Admin',
+      verifiedAt: new Date(),
+      notes: 'Approved by City Admin'
+    };
+    trainer.statusHistory.push({
+      status: 'approved',
+      changedBy: req.admin._id,
+      changedByRole: req.admin.adminType || 'City Admin',
+      reason: 'Approved by City Admin',
+      changedAt: new Date()
+    });
+
     await trainer.save();
 
     await ActivityLog.create({
@@ -556,7 +619,7 @@ exports.getAllGymOwners = async (req, res) => {
         { phone: searchRegex }
       ];
     }
-    const owners = await GymOwner.find(query).sort({ createdAt: -1 });
+    const owners = await GymOwner.find(query).populate('gyms').sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: owners });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

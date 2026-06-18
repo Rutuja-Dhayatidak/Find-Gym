@@ -72,6 +72,11 @@ export const getAllTrainers = async (params) => {
   return response.data;
 };
 
+export const getTrainerDetails = async (trainerId) => {
+  const response = await api.get(`/trainers/${trainerId}`);
+  return response.data;
+};
+
 export const approveTrainer = async (trainerId) => {
   const response = await api.patch(`/trainers/${trainerId}/approve`);
   return response.data;
@@ -132,6 +137,7 @@ export default {
   approveGymOwner,
   rejectGymOwner,
   getAllTrainers,
+  getTrainerDetails,
   approveTrainer,
   rejectTrainer,
   blockTrainer,

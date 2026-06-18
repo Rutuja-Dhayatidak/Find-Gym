@@ -47,48 +47,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex justify-center flex-1 px-8">
-            <div className="relative w-full max-w-xl">
-              <input
-                type="text"
-                placeholder="Search gyms, trainers..."
-                className="
-                  w-full
-                  pl-11
-                  pr-4
-                  py-3
-                  rounded-full
-                  border
-                  border-white/20
-                  bg-white/10
-                  backdrop-blur-md
-                  text-white
-                  placeholder-gray-300
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-blue-500
-                  focus:bg-white/15
-                  transition-all
-                "
-              />
 
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute left-4 top-3.5 h-5 w-5 text-gray-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.5 5.5a7.5 7.5 0 0011.15 11.15z"
-                />
-              </svg>
-            </div>
-          </div>
 
           {/* Right Area (Desktop + Mobile handles) */}
           <div className="flex items-center gap-2 md:gap-4 justify-end">
@@ -152,6 +111,20 @@ const Navbar = () => {
                 "
               >
                 Owner Portal
+              </Link>
+
+              <Link
+                to="/trainer/register"
+                className="
+                  text-zinc-300
+                  hover:text-[#a3ff12]
+                  font-semibold
+                  text-sm
+                  transition-all
+                  mr-2
+                "
+              >
+                Register as Trainer
               </Link>
 
               <Link

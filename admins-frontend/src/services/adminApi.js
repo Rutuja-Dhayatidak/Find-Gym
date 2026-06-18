@@ -107,23 +107,28 @@ export const getAllTrainers = async (params) => {
   return response.data;
 };
 
+export const getTrainerStats = async () => {
+  const response = await api.get('/trainers/stats');
+  return response.data;
+};
+
 export const getTrainerDetails = async (trainerId) => {
   const response = await api.get(`/trainers/${trainerId}`);
   return response.data;
 };
 
-export const approveTrainer = async (trainerId) => {
-  const response = await api.patch(`/trainers/${trainerId}/approve`);
+export const approveTrainer = async (trainerId, notes = '') => {
+  const response = await api.patch(`/trainers/${trainerId}/approve`, { notes });
   return response.data;
 };
 
-export const rejectTrainer = async (trainerId, reason) => {
-  const response = await api.patch(`/trainers/${trainerId}/reject`, { reason });
+export const rejectTrainer = async (trainerId, rejectionReason) => {
+  const response = await api.patch(`/trainers/${trainerId}/reject`, { rejectionReason });
   return response.data;
 };
 
-export const blockTrainer = async (trainerId) => {
-  const response = await api.patch(`/trainers/${trainerId}/block`);
+export const blockTrainer = async (trainerId, blockedReason) => {
+  const response = await api.patch(`/trainers/${trainerId}/block`, { blockedReason });
   return response.data;
 };
 
@@ -197,6 +202,22 @@ export const updateGymCategory = async (categoryId, data) => {
 
 export const deleteGymCategory = async (categoryId) => {
   const response = await api.delete(`/cms/gym-categories/${categoryId}`);
+  return response.data;
+};
+
+// Gym Owners
+export const getAllGymOwners = async (params) => {
+  const response = await api.get('/gym-owners', { params });
+  return response.data;
+};
+
+export const approveGymOwner = async (ownerId) => {
+  const response = await api.patch(`/gym-owners/${ownerId}/approve`);
+  return response.data;
+};
+
+export const rejectGymOwner = async (ownerId, reason) => {
+  const response = await api.patch(`/gym-owners/${ownerId}/reject`, { reason });
   return response.data;
 };
 

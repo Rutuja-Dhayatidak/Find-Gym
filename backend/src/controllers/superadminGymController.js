@@ -2,7 +2,7 @@ const Gym = require('../models/Gym');
 
 exports.getGyms = async (req, res) => {
   try {
-    const gyms = await Gym.find();
+    const gyms = await Gym.find().populate('ownerId');
     res.json({ gyms });
   } catch (error) {
     res.status(500).json({ error: error.message });

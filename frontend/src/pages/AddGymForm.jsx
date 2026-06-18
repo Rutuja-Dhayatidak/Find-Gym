@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
 import ErrorAlert from '../components/ErrorAlert';
-import api from '../utils/api';
+import api from '../userServices/api';
+import LocationButton from '../components/LocationButton';
 import { Dumbbell, MapPin, Clock, ShieldCheck, ChevronRight } from 'lucide-react';
 
 const AddGymForm = () => {
@@ -21,6 +22,8 @@ const AddGymForm = () => {
     city: '',
     state: '',
     zipCode: '',
+    latitude: '',
+    longitude: '',
     
     capacity: 20,
     amenities: [],
@@ -160,7 +163,9 @@ const AddGymForm = () => {
           address: formData.address,
           city: formData.city,
           state: formData.state,
-          zipCode: formData.zipCode
+          zipCode: formData.zipCode,
+          latitude: parseFloat(formData.latitude) || null,
+          longitude: parseFloat(formData.longitude) || null
         },
         capacity: Number(formData.capacity),
         amenities: formData.amenities,
@@ -309,6 +314,49 @@ const AddGymForm = () => {
                     className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                   />
+                </div>
+              </div>
+
+              {/* Coordinates Section */}
+              <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-4 mt-4">
+                <div className="flex justify-between items-center flex-wrap gap-2 border-b border-zinc-900 pb-2">
+                  <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Map Coordinates</span>
+                  <LocationButton
+                    onLocationDetected={({ lat, lng }) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        latitude: lat,
+                        longitude: lng
+                      }));
+                    }}
+                    buttonClassName="px-3 py-1.5 bg-orange-650 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Latitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      name="latitude"
+                      value={formData.latitude}
+                      onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
+                      placeholder="e.g. 18.520"
+                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Longitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      name="longitude"
+                      value={formData.longitude}
+                      onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
+                      placeholder="e.g. 73.850"
+                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

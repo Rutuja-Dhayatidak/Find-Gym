@@ -80,10 +80,55 @@ const gymSchema = new mongoose.Schema({
     count: { type: Number, default: 0 }
   },
   
-  trainers: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Trainer'
-  }],
+  trainers: [
+    {
+      name: { type: String },
+      photo: { type: String },
+      experience: { type: String },
+      specialization: { type: String }
+    }
+  ],
+  about: { type: String },
+  heroImage: { type: String },
+  galleryImages: { type: [String], default: [] },
+  facilities: { type: [String], default: [] },
+  membershipPlans: [
+    {
+      title: { type: String },
+      price: { type: Number },
+      duration: { type: String },
+      validity: { type: String },
+      saving: { type: Number },
+      isPopular: { type: Boolean, default: false }
+    }
+  ],
+  offers: [
+    {
+      title: { type: String },
+      description: { type: String },
+      image: { type: String },
+      expiryDate: { type: String },
+      offerType: { type: String }
+    }
+  ],
+  freeTrial: {
+    available: { type: Boolean, default: false },
+    days: { type: Number, default: 0 },
+    description: { type: String }
+  },
+  reviews: [
+    {
+      userName: { type: String },
+      rating: { type: Number },
+      comment: { type: String },
+      date: { type: Date, default: Date.now }
+    }
+  ],
+  openingTime: { type: String },
+  closingTime: { type: String },
+  latitude: { type: Number },
+  longitude: { type: Number },
+  setupCompleted: { type: Boolean, default: false },
   classes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Class'
@@ -95,7 +140,30 @@ const gymSchema = new mongoose.Schema({
   monthlyRevenue: {
     type: Number,
     default: 0
+  },
+  locationPoint: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number] // [longitude, latitude]
+    }
   }
 }, { timestamps: true });
+
+// Pre-save hook to synchronize coordinates from location.latitude & location.longitude
+gymSchema.pre('save', function () {
+  if (this.location && this.location.latitude !== undefined && this.location.longitude !== undefined) {
+    this.locationPoint = {
+      type: 'Point',
+      coordinates: [parseFloat(this.location.longitude), parseFloat(this.location.latitude)]
+    };
+  }
+});
+
+// CRITICAL: 2dsphere index for spatial nearby queries
+gymSchema.index({ locationPoint: '2dsphere' });
 
 module.exports = mongoose.model('Gym', gymSchema);

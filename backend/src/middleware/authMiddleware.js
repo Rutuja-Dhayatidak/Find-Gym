@@ -61,6 +61,56 @@ const protectOwner = async (req, res, next) => {
   }
 };
 
+const protectUser = async (req, res, next) => {
+  try {
+    let token;
+    
+    // 1. Get from Cookie
+    const cookies = parseCookies(req.headers.cookie);
+    if (cookies.token) {
+      token = cookies.token;
+    }
+    
+    // 2. Get from Header
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized, token missing',
+        statusCode: 401
+      });
+    }
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    
+    // Find User
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found or invalid token',
+        statusCode: 401
+      });
+    }
+    
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('User auth error:', error);
+    return res.status(401).json({
+      success: false,
+      message: 'Token expired. Please login again',
+      error: error.message,
+      statusCode: 401
+    });
+  }
+};
+
 module.exports = {
-  protectOwner
+  protectOwner,
+  protectUser
 };
