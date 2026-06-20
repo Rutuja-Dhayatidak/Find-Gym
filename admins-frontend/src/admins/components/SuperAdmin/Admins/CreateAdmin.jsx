@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../../common/Modal';
 import Button from '../../common/Button';
 import FormInput from '../../common/FormInput';
+import { apiPath } from '../../../../services/config';
 
 const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -49,7 +50,6 @@ const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
       const token = localStorage.getItem('superAdminToken');
 
       const payload = {
@@ -61,7 +61,7 @@ const CreateAdmin = ({ isOpen, onClose, onSuccess }) => {
         city: formData.adminType === 'city_admin' ? formData.city.trim() : undefined,
       };
 
-      const response = await fetch(`${baseUrl}/api/admins/create`, {
+      const response = await fetch(apiPath('/admins/create'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

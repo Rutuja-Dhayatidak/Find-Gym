@@ -4,6 +4,7 @@ import Button from '../../common/Button';
 import Badge from '../../common/Badge';
 import { uploadBanner, getAllBanners } from '../../../../services/superApi';
 import axiosInstance from '../../../../services/axiosInstance';
+import { resolveMediaUrl } from '../../../../services/config';
 
 const CMSManagement = () => {
   const [activeTab, setActiveTab] = useState('banners');
@@ -138,8 +139,7 @@ const CMSManagement = () => {
                 )}
                 {banners.map(banner => {
                   const isVideo = banner.mediaType?.startsWith('video/');
-                  const baseUrl = import.meta.env.VITE_BASE_URL || '';
-                  const fullUrl = `${baseUrl}${banner.mediaUrl}`;
+                  const fullUrl = resolveMediaUrl(banner.mediaUrl);
 
                   return (
                     <div key={banner._id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow bg-white flex flex-col">

@@ -2,6 +2,7 @@ const Booking = require('../models/Booking');
 const Trainer = require('../models/Trainer');
 const User = require('../models/User');
 const { getTransporter } = require('./email');
+const { getFrontendUrl } = require('./urls');
 
 const runScheduler = () => {
   // Check slots every 5 minutes
@@ -72,7 +73,7 @@ const runScheduler = () => {
               from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
               to: customer.email,
               subject: `Rate your session with ${trainer.name}`,
-              text: `Hello ${customer.name},\n\nHow was your training session with ${trainer.name}?\n\nPlease leave a review on LifeCell.Fitness: http://localhost:5173/trainers`
+              text: `Hello ${customer.name},\n\nHow was your training session with ${trainer.name}?\n\nPlease leave a review on LifeCell.Fitness: ${getFrontendUrl('/trainers')}`
             });
           }
         }

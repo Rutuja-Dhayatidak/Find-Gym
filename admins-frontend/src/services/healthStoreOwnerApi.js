@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { apiPath } from './config';
 
-const BASE_URL = 'http://localhost:5000/api/health-store-owner';
-const AUTH_URL = 'http://localhost:5000/api/health-store';
+const BASE_URL = apiPath('/health-store-owner');
+const AUTH_URL = apiPath('/health-store');
 
 const getToken = () => localStorage.getItem('hsOwnerToken');
 

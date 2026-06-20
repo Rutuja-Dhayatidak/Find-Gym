@@ -7,6 +7,7 @@ import defaultHeroBg from '../assets/home background img2.png';
 import ctaBgImg from '../assets/hone baner img2.png';
 import giftBoxImg from '../assets/3d_gift_box.png';
 import { getActiveBanners } from '../userServices/homeApi';
+import { resolveMediaUrl } from '../userServices/config';
 import FeaturedGyms from './FeaturedGyms';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -74,8 +75,7 @@ const Home = () => {
           // Find the first active banner
           const activeBanner = banners.find(b => b.status === 'Active');
           if (activeBanner) {
-            const baseUrl = import.meta.env.VITE_BASE_URL || '';
-            setHeroBg(`${baseUrl}${activeBanner.mediaUrl}`);
+            setHeroBg(resolveMediaUrl(activeBanner.mediaUrl));
             setMediaType(activeBanner.mediaType || 'image/jpeg');
           }
         }

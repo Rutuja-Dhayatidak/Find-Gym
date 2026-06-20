@@ -11,6 +11,7 @@ const {
   sendProductApprovedEmail,
   sendProductRejectedEmail,
 } = require('../utils/email');
+const { getFrontendUrl, getAdminFrontendUrl } = require('../utils/urls');
 
 // ─── INVITE HEALTH STORE ─────────────────────────────────────────────────────
 exports.inviteHealthStore = async (req, res) => {
@@ -72,8 +73,7 @@ exports.inviteHealthStore = async (req, res) => {
     });
 
     // Send invite email
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const inviteLink = `${frontendUrl}/health-store/register/${inviteToken}`;
+    const inviteLink = getFrontendUrl(`/health-store/register/${inviteToken}`);
     await sendHealthStoreInviteEmail(ownerEmail, ownerName, storeName, inviteLink);
 
     res.status(201).json({
@@ -169,8 +169,7 @@ exports.approveHealthStore = async (req, res) => {
     await store.save();
 
     // Send approval + set password email
-    const adminFrontendUrl = 'http://localhost:5174';
-    const setPasswordLink = `${adminFrontendUrl}/health-store/set-password/${passwordSetupToken}`;
+    const setPasswordLink = getAdminFrontendUrl(`/health-store/set-password/${passwordSetupToken}`);
     await sendHealthStoreApprovedEmail(store.ownerEmail, store.ownerName, store.storeName, setPasswordLink);
 
     res.json({ success: true, message: 'Health Store approved. Password setup email sent.', data: store });

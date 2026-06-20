@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { getFrontendUrl, getAdminFrontendUrl } = require('./urls');
 
 const getTransporter = () => {
   return nodemailer.createTransport({
@@ -36,7 +37,7 @@ const sendGymAddedEmail = async (email, gymName) => {
       from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Gym Added Successfully',
-      text: `Great! Your gym ${gymName} has been added successfully.\n\nStatus: Pending Verification\nOur team will verify your gym details within 24 hours. Once verified, it will appear in the LifeCell.Fitness app.\n\nMeanwhile, you can:\n✓ Add classes\n✓ Add trainers\n✓ Create membership plans\n✓ Set pricing and policies\n\nDashboard: https://lifecell.fitness/gym-owner-dashboard`
+      text: `Great! Your gym ${gymName} has been added successfully.\n\nStatus: Pending Verification\nOur team will verify your gym details within 24 hours. Once verified, it will appear in the LifeCell.Fitness app.\n\nMeanwhile, you can:\n✓ Add classes\n✓ Add trainers\n✓ Create membership plans\n✓ Set pricing and policies\n\nDashboard: ${getFrontendUrl('/gym-owner-dashboard')}`
     };
     await transporter.sendMail(mailOptions);
     return true;
@@ -54,7 +55,7 @@ const sendAdminNotification = async (name, email, phone, pan) => {
       from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: adminEmail,
       subject: 'New Gym Owner Registration - Pending Approval',
-      text: `New Gym Owner Registration:\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nPAN: ${pan}\n\nReview at: https://admin.lifecell.fitness/pending-gym-owners`
+      text: `New Gym Owner Registration:\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nPAN: ${pan}\n\nReview at: ${getAdminFrontendUrl('/pending-gym-owners')}`
     };
     await transporter.sendMail(mailOptions);
     return true;
@@ -89,7 +90,7 @@ const sendTrainerApprovalEmail = async (email, name) => {
       from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Application Approved! - LifeCell.Fitness',
-      text: `Dear ${name},\n\nCongratulations! Your trainer application has been approved. Login to your dashboard and complete your profile setup to go live on LifeCell.Fitness.\n\nLogin: http://localhost:5173/trainer-login`
+      text: `Dear ${name},\n\nCongratulations! Your trainer application has been approved. Login to your dashboard and complete your profile setup to go live on LifeCell.Fitness.\n\nLogin: ${getFrontendUrl('/trainer-login')}`
     };
     await transporter.sendMail(mailOptions);
     return true;
@@ -128,7 +129,7 @@ const sendTrainerActiveEmail = async (email, name, city) => {
       from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: email,
       subject: "You're Live on LifeCell.Fitness!",
-      text: `Dear ${name},\n\nYour profile is now live. Customers in ${city} can find and book you. Check your dashboard to manage bookings.\n\nDashboard: http://localhost:5173/trainer/dashboard`
+      text: `Dear ${name},\n\nYour profile is now live. Customers in ${city} can find and book you. Check your dashboard to manage bookings.\n\nDashboard: ${getFrontendUrl('/trainer/dashboard')}`
     };
     await transporter.sendMail(mailOptions);
     return true;
@@ -162,7 +163,7 @@ const sendTrainerAdminNotification = async (name, city, adminEmail) => {
       from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: adminEmail || process.env.ADMIN_EMAIL || 'admin@lifecell.fitness',
       subject: 'New Trainer Application - Pending Review',
-      text: `A new trainer application from ${name} in ${city} is pending review.\n\nReview at: http://localhost:5174/admin/trainers/pending`
+      text: `A new trainer application from ${name} in ${city} is pending review.\n\nReview at: ${getAdminFrontendUrl('/admin/trainers/pending')}`
     };
     await transporter.sendMail(mailOptions);
     return true;
@@ -412,6 +413,7 @@ const sendProductRejectedEmail = async (email, ownerName, productName, reason) =
 };
 
 module.exports = {
+  getTransporter,
   sendRegistrationEmail,
   sendGymAddedEmail,
   sendAdminNotification,

@@ -5,6 +5,7 @@ import Badge from '../../common/Badge';
 import Button from '../../common/Button';
 import CreateAdmin from './CreateAdmin';
 import ConfirmationModal from '../../common/ConfirmationModal';
+import { apiPath } from '../../../../services/config';
 
 const AdminsList = () => {
   const [showCreate, setShowCreate] = useState(false);
@@ -17,9 +18,8 @@ const AdminsList = () => {
   const fetchAdmins = async () => {
     try {
       setLoading(true);
-      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
       const token = localStorage.getItem('superAdminToken');
-      const response = await fetch(`${baseUrl}/api/admins/all`, {
+      const response = await fetch(apiPath('/admins/all'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -50,9 +50,8 @@ const AdminsList = () => {
     if (!adminToDelete) return;
     
     try {
-      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
       const token = localStorage.getItem('superAdminToken');
-      const response = await fetch(`${baseUrl}/api/admins/${adminToDelete._id}`, {
+      const response = await fetch(apiPath(`/admins/${adminToDelete._id}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -125,9 +124,8 @@ const AdminsList = () => {
           const newStatus = row.status === 'Active' ? 'Suspended' : 'Active';
           if (!window.confirm(`Are you sure you want to ${newStatus === 'Active' ? 'activate' : 'suspend'} this admin?`)) return;
           try {
-            const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
             const token = localStorage.getItem('superAdminToken');
-            const response = await fetch(`${baseUrl}/api/admins/${row._id}`, {
+            const response = await fetch(apiPath(`/admins/${row._id}`), {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',

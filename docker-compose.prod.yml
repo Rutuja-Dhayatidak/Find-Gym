@@ -1,0 +1,92 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - livesale
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      CLIENT_ORIGINS: ${CLIENT_ORIGINS:-https://livesale.fitness,https://www.livesale.fitness,https://admin.livesale.fitness}
+      FRONTEND_URL: ${FRONTEND_URL:-https://livesale.fitness}
+      ADMIN_FRONTEND_URL: ${ADMIN_FRONTEND_URL:-https://admin.livesale.fitness}
+      API_URL: ${API_URL:-https://api.livesale.fitness}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5000/health >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - livesale
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://api.livesale.fitness/api}
+        VITE_BASE_URL: ${VITE_BASE_URL:-https://api.livesale.fitness}
+    restart: unless-stopped
+    networks:
+      - livesale
+
+  admin:
+    build:
+      context: ./admins-frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://api.livesale.fitness/api}
+        VITE_API_URL: ${VITE_API_URL:-https://api.livesale.fitness/api}
+        VITE_BASE_URL: ${VITE_BASE_URL:-https://api.livesale.fitness}
+    restart: unless-stopped
+    networks:
+      - livesale
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+      admin:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot
+    command: /bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'
+    networks:
+      - livesale
+
+networks:
+  livesale:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  backend_uploads:
+  certbot_www:

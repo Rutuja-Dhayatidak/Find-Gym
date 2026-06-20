@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { apiPath } from '../../services/config';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,8 +16,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
-      const response = await axios.post(`${baseUrl}/api/admins/login`, {
+      const response = await axios.post(apiPath('/admins/login'), {
         email,
         password
       });

@@ -1,10 +1,8 @@
-import axios from 'react';
 import axiosLib from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from './config';
 
 const axiosInstance = axiosLib.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

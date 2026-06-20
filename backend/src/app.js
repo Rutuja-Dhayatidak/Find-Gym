@@ -30,13 +30,36 @@ const healthStorePaymentRoutes = require('./routes/healthStorePaymentRoutes');
 
 const app = express();
 
+const defaultClientOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://livesale.fitness',
+  'https://www.livesale.fitness',
+  'https://admin.livesale.fitness'
+];
+
+const clientOrigins = [
+  ...defaultClientOrigins,
+  ...(process.env.CLIENT_ORIGINS || process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+].filter((origin, index, origins) => origins.indexOf(origin) === index);
+
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(helmet({
   crossOriginResourcePolicy: false // Allows loading images/resources from external sources
 }));
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: (origin, callback) => {
+    if (!origin || clientOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true
 }));
 
@@ -57,7 +80,15 @@ const path = require('path');
 app.use('/cms', express.static(path.join(__dirname, '../uploads')));
 
 app.get("/", (req, res) => {
-  res.send("LifeCell.Fitness API Running...");
+  res.send("LiveSale.Fitness API Running...");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "livesale-api",
+    uptime: process.uptime()
+  });
 });
 
 // Super Admin Routes

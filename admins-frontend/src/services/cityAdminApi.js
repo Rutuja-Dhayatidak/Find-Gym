@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiPath } from './config';
 
-const API_URL = 'http://localhost:5000/api/city-admin';
+const API_URL = apiPath('/city-admin');
 
 const api = axios.create({
   baseURL: API_URL,

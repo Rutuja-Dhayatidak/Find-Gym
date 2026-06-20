@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { getAdminFrontendUrl } = require('./urls');
 
 const sendSetupEmail = async (email, fullName, token) => {
   try {
@@ -12,8 +13,7 @@ const sendSetupEmail = async (email, fullName, token) => {
       }
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5174';
-    const setupLink = `${frontendUrl}/admin/setup-password?token=${token}`;
+    const setupLink = getAdminFrontendUrl(`/admin/setup-password?token=${token}`);
 
     const mailOptions = {
       from: `LifeCell.Fitness <${process.env.SMTP_USER}>`,

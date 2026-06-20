@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiPath } from './config';
 
-const BASE_URL = 'http://localhost:5000/api/city-admin/health-stores';
+const BASE_URL = apiPath('/city-admin/health-stores');
 
 const getToken = () => localStorage.getItem('adminToken') || localStorage.getItem('cityAdminToken');
 

@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiPath } from './config';
 
-const API_URL = 'http://localhost:5000/api/admins'; // Adjust according to your environment
+const API_URL = apiPath('/admins');
 
 // Setup an axios instance
 const api = axios.create({

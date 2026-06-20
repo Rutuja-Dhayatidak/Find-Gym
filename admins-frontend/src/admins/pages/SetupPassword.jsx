@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { apiPath } from '../../services/config';
 
 const SetupPassword = () => {
   const [searchParams] = useSearchParams();
@@ -64,8 +65,7 @@ const SetupPassword = () => {
 
     setLoading(true);
     try {
-      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:5000';
-      const response = await fetch(`${baseUrl}/api/admins/setup-password`, {
+      const response = await fetch(apiPath('/admins/setup-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
