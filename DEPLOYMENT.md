@@ -50,9 +50,28 @@ Add these repository secrets:
 - `DEPLOY_HOST`
 - `DEPLOY_USER`
 - `DEPLOY_KEY`
+- `DEPLOY_KEY_PASSPHRASE` optional, only if the private key has a passphrase
+- `DEPLOY_PASSWORD` optional, only if you deploy with password auth instead of a key
 - `DEPLOY_PORT` optional, defaults to `22`
 - `DEPLOY_PATH`, for example `/opt/livesale-fitness`
 - `ENV_PRODUCTION`, the full contents of your server `.env.production`
+
+For SSH key deploys, add the public key that matches `DEPLOY_KEY` to the VPS user's `~/.ssh/authorized_keys` file:
+
+```bash
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+nano ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+
+`DEPLOY_KEY` must contain the private key, including the first and last lines:
+
+```text
+-----BEGIN OPENSSH PRIVATE KEY-----
+...
+-----END OPENSSH PRIVATE KEY-----
+```
 
 The workflow builds both frontends, then SSHes into the VPS, pulls `main`, writes `.env.production`, and runs:
 
