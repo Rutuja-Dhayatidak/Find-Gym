@@ -244,6 +244,6 @@ const UserLogin = () => {
       </div>
     </div>
   );
-};5
+};
 
 export default UserLogin;

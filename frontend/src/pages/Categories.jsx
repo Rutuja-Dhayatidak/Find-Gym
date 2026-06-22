@@ -1517,77 +1517,141 @@ const Categories = () => {
               </div>
 
               {/* Key Benefits Grid */}
+              {/* Key Benefits Grid */}
               <div className="border border-zinc-900 rounded-[1.8rem] p-6 bg-zinc-900/10 space-y-4">
                 <h4 className="text-xs font-black tracking-widest text-zinc-400 uppercase">Key Benefits</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-500 text-lg">💪</span>
-                    <div>
-                      <p className="text-xs font-extrabold text-white">24g Premium Protein</p>
-                      <p className="text-[10px] text-zinc-500">Per Serving</p>
+                {isDiet ? (
+                  <div className="flex flex-col gap-2.5">
+                    {selectedProduct.benefits && selectedProduct.benefits.length > 0 ? (
+                      selectedProduct.benefits.map((b, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs font-bold text-white">
+                          <span className="text-green-500">✓</span> {b}
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 text-xs font-bold text-white">
+                          <span className="text-green-500">✓</span> Calorie Controlled & Macro Balanced
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-bold text-white">
+                          <span className="text-green-500">✓</span> Clean, Premium Ingredients
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-red-500 text-lg">💪</span>
+                      <div>
+                        <p className="text-xs font-extrabold text-white">24g Premium Protein</p>
+                        <p className="text-[10px] text-zinc-500">Per Serving</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-red-500 text-lg">⚡</span>
+                      <div>
+                        <p className="text-xs font-extrabold text-white">Supports Recovery</p>
+                        <p className="text-[10px] text-zinc-500">Post-Workout Support</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-red-500 text-lg">🏋️</span>
+                      <div>
+                        <p className="text-xs font-extrabold text-white">Builds Lean Muscle</p>
+                        <p className="text-[10px] text-zinc-500">Helps in Muscle Growth</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-red-500 text-lg">🍃</span>
+                      <div>
+                        <p className="text-xs font-extrabold text-white">5.5g BCAAs</p>
+                        <p className="text-[10px] text-zinc-500">Supports Strength</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-500 text-lg">⚡</span>
-                    <div>
-                      <p className="text-xs font-extrabold text-white">Supports Recovery</p>
-                      <p className="text-[10px] text-zinc-500">Post-Workout Support</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-500 text-lg">🏋️</span>
-                    <div>
-                      <p className="text-xs font-extrabold text-white">Builds Lean Muscle</p>
-                      <p className="text-[10px] text-zinc-500">Helps in Muscle Growth</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-red-500 text-lg">🍃</span>
-                    <div>
-                      <p className="text-xs font-extrabold text-white">5.5g BCAAs</p>
-                      <p className="text-[10px] text-zinc-500">Supports Strength</p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Product Description */}
               <div className="space-y-3">
                 <h4 className="text-xs font-black tracking-widest text-zinc-400 uppercase">Product Description</h4>
                 <p className="text-sm text-zinc-400 leading-relaxed font-normal">
-                  {selectedProduct.description || selectedProduct.shortDescription || "Optimum Nutrition Gold Standard 100% Whey is a premium whey protein supplement suitable for gym users, athletes and fitness beginners."}
+                  {selectedProduct.description || selectedProduct.shortDescription || (isDiet ? "A healthy meal customized for fitness goals, made with fresh vegetables and nutrient-dense items." : "Optimum Nutrition Gold Standard 100% Whey is a premium whey protein supplement suitable for gym users, athletes and fitness beginners.")}
                 </p>
               </div>
 
-              {/* How to Use Section */}
+              {/* How to Use / Customization Section */}
               <div className="space-y-4">
-                <h4 className="text-xs font-black tracking-widest text-zinc-400 uppercase">How To Use</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
-                    <span className="text-red-500 text-xs font-black">01</span>
-                    <p className="text-[11px] text-zinc-400 mt-1">Take 1 Scoop (30.4g)</p>
+                <h4 className="text-xs font-black tracking-widest text-zinc-400 uppercase">
+                  {isDiet ? "Customization Options" : "How To Use"}
+                </h4>
+                {isDiet ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40 text-left">
+                      <span className="text-green-500 text-xs font-black">Protein</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">{selectedProduct.customizationOptions?.protein || 'None'}</p>
+                    </div>
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40 text-left">
+                      <span className="text-green-500 text-xs font-black">Carbs</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">{selectedProduct.customizationOptions?.carb || 'No Carb'}</p>
+                    </div>
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40 text-left">
+                      <span className="text-green-500 text-xs font-black">Spice Level</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">{selectedProduct.customizationOptions?.spiceLevel || 'Medium'}</p>
+                    </div>
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40 text-left">
+                      <span className="text-green-500 text-xs font-black">Prep Style</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">{selectedProduct.customizationOptions?.oilPreference || 'Normal'} {selectedProduct.customizationOptions?.sugarFree ? '· Sugar Free' : ''}</p>
+                    </div>
                   </div>
-                  <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
-                    <span className="text-red-500 text-xs font-black">02</span>
-                    <p className="text-[11px] text-zinc-400 mt-1">Add to 180-240ml cold water/milk</p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
+                      <span className="text-red-500 text-xs font-black">01</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">Take 1 Scoop (30.4g)</p>
+                    </div>
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
+                      <span className="text-red-500 text-xs font-black">02</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">Add to 180-240ml cold water/milk</p>
+                    </div>
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
+                      <span className="text-red-500 text-xs font-black">03</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">Shake or blend for 20-30s</p>
+                    </div>
+                    <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
+                      <span className="text-red-500 text-xs font-black">04</span>
+                      <p className="text-[11px] text-zinc-400 mt-1">Enjoy post workout or daily</p>
+                    </div>
                   </div>
-                  <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
-                    <span className="text-red-500 text-xs font-black">03</span>
-                    <p className="text-[11px] text-zinc-400 mt-1">Shake or blend for 20-30s</p>
-                  </div>
-                  <div className="p-3 border border-zinc-900 rounded-xl bg-zinc-950/40">
-                    <span className="text-red-500 text-xs font-black">04</span>
-                    <p className="text-[11px] text-zinc-400 mt-1">Enjoy post workout or daily</p>
-                  </div>
-                </div>
+                )}
               </div>
 
-              {/* Ingredients */}
+              {/* Ingredients & Allergies */}
               <div className="space-y-3">
-                <h4 className="text-xs font-black tracking-widest text-zinc-400 uppercase">Ingredients</h4>
-                <p className="text-xs text-zinc-550 leading-relaxed">
-                  {selectedProduct.ingredients || "Protein Blend (Whey Protein Isolate, Whey Protein Concentrate, Whey Peptides), Cocoa Powder, Lecithin, Natural and Artificial Flavors, Acesulfame Potassium, Lactase."}
-                </p>
+                <h4 className="text-xs font-black tracking-widest text-zinc-400 uppercase">Ingredients & Allergens</h4>
+                {isDiet ? (
+                  <div className="space-y-2 text-xs">
+                    <p className="text-zinc-400">
+                      <strong className="text-zinc-300">Ingredients: </strong> 
+                      {selectedProduct.ingredientsAllergyInfo?.ingredients || selectedProduct.ingredients || "Fresh vegetables, grilled paneer, olive oil, signature dressing."}
+                    </p>
+                    {selectedProduct.ingredientsAllergyInfo?.allergyWarning && (
+                      <p className="text-amber-500/90">
+                        ⚠️ <strong>Allergy Warning: </strong> {selectedProduct.ingredientsAllergyInfo.allergyWarning}
+                      </p>
+                    )}
+                    {selectedProduct.ingredientsAllergyInfo?.contains?.length > 0 && (
+                      <p className="text-zinc-500">
+                        <strong>Contains: </strong> {selectedProduct.ingredientsAllergyInfo.contains.join(', ')}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-zinc-550 leading-relaxed">
+                    {selectedProduct.ingredients || "Protein Blend (Whey Protein Isolate, Whey Protein Concentrate, Whey Peptides), Cocoa Powder, Lecithin, Natural and Artificial Flavors, Acesulfame Potassium, Lactase."}
+                  </p>
+                )}
               </div>
 
             </div>
@@ -1701,33 +1765,97 @@ const Categories = () => {
 
               {/* Specs Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-zinc-950/40 p-4 border border-zinc-900/70 rounded-2xl">
-                <div className="text-left">
-                  <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Quantity / Size</p>
-                  <p className="text-xs font-extrabold text-white mt-1">
-                    {activeVariant ? activeVariant.size : (selectedProduct.quantity || '1.7 kg')}
-                  </p>
-                </div>
-                <div className="text-left border-l border-zinc-900/70 pl-3">
-                  <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Flavor</p>
-                  <p className="text-xs font-extrabold text-white mt-1 truncate max-w-[100px]">
-                    {activeVariant ? activeVariant.flavor : (selectedProduct.flavor || 'Double Chocolate')}
-                  </p>
-                </div>
-                <div className="text-left border-l border-zinc-900/70 pl-3">
-                  <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Servings</p>
-                  <p className="text-xs font-extrabold text-white mt-1">54 Servings</p>
-                </div>
-                <div className="text-left border-l border-zinc-900/70 pl-3">
-                  <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Scoop Size</p>
-                  <p className="text-xs font-extrabold text-white mt-1">30.4g (1 Scoop)</p>
-                </div>
+                {isDiet ? (
+                  <>
+                    <div className="text-left">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Portion Size</p>
+                      <p className="text-xs font-extrabold text-white mt-1">
+                        {selectedProduct.portionSize || '250g'}
+                      </p>
+                    </div>
+                    <div className="text-left border-l border-zinc-900/70 pl-3">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Order Type</p>
+                      <p className="text-xs font-extrabold text-white mt-1 truncate max-w-[100px]">
+                        {selectedProduct.orderType || 'Single Meal'}
+                      </p>
+                    </div>
+                    <div className="text-left border-l border-zinc-900/70 pl-3">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Meal Time</p>
+                      <p className="text-xs font-extrabold text-white mt-1">
+                        {selectedProduct.mealTime || 'Lunch'}
+                      </p>
+                    </div>
+                    <div className="text-left border-l border-zinc-900/70 pl-3">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Servings</p>
+                      <p className="text-xs font-extrabold text-white mt-1">
+                        {selectedProduct.servingSize || '1 Person'}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-left">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Quantity / Size</p>
+                      <p className="text-xs font-extrabold text-white mt-1">
+                        {activeVariant ? activeVariant.size : (selectedProduct.quantity || '1.7 kg')}
+                      </p>
+                    </div>
+                    <div className="text-left border-l border-zinc-900/70 pl-3">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Flavor</p>
+                      <p className="text-xs font-extrabold text-white mt-1 truncate max-w-[100px]">
+                        {activeVariant ? activeVariant.flavor : (selectedProduct.flavor || 'Double Chocolate')}
+                      </p>
+                    </div>
+                    <div className="text-left border-l border-zinc-900/70 pl-3">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Servings</p>
+                      <p className="text-xs font-extrabold text-white mt-1">54 Servings</p>
+                    </div>
+                    <div className="text-left border-l border-zinc-900/70 pl-3">
+                      <p className="text-[9px] font-bold text-zinc-550 uppercase tracking-wider">Scoop Size</p>
+                      <p className="text-xs font-extrabold text-white mt-1">30.4g (1 Scoop)</p>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Pricing & Availability Card */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-zinc-950/40 p-5 border border-zinc-900/70 rounded-2xl">
                 <div>
-                  <p className="text-[10px] font-bold text-zinc-550 uppercase tracking-widest mb-1.5">Pricing Details</p>
-                  {selectedProduct.purchaseMode === 'Subscription' ? (
+                  <p className="text-[10px] font-bold text-zinc-550 uppercase tracking-widest mb-1.5 font-sans">Pricing Details</p>
+                  {isDiet ? (
+                    <div>
+                      {selectedProduct.pricing?.subscriptionAvailable ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setPurchaseType('One Time')}
+                            className={`px-3 py-1.5 rounded-lg border text-xs font-extrabold transition-all cursor-pointer ${purchaseType === 'One Time' ? 'bg-white text-black border-zinc-900' : 'border-zinc-900 bg-zinc-900/60 text-gray-400 hover:text-white'}`}
+                          >
+                            Single Meal (₹{selectedProduct.pricing?.discountSellingPrice || selectedProduct.pricing?.singleMealPrice || selectedProduct.sellingPrice})
+                          </button>
+                          <button
+                            onClick={() => setPurchaseType('Monthly')}
+                            className={`px-3 py-1.5 rounded-lg border text-xs font-extrabold transition-all cursor-pointer ${purchaseType === 'Monthly' ? 'bg-green-500 text-white border-green-500' : 'border-zinc-900 bg-zinc-900/60 text-gray-400 hover:text-white'}`}
+                          >
+                            Monthly (₹{selectedProduct.pricing?.monthlyPlanPrice})
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-baseline gap-2">
+                            {selectedProduct.pricing?.singleMealPrice > (selectedProduct.pricing?.discountSellingPrice || selectedProduct.sellingPrice) && (
+                              <span className="text-zinc-500 line-through text-xs font-bold">₹{selectedProduct.pricing?.singleMealPrice}</span>
+                            )}
+                            <span className="text-2xl font-black text-white">₹{selectedProduct.pricing?.discountSellingPrice || selectedProduct.sellingPrice || selectedProduct.oneTimePrice}</span>
+                          </div>
+                          {selectedProduct.pricing?.singleMealPrice > (selectedProduct.pricing?.discountSellingPrice || selectedProduct.sellingPrice) && (
+                            <p className="text-[10.5px] text-green-400 font-extrabold mt-0.5">
+                              Save ₹{selectedProduct.pricing.singleMealPrice - (selectedProduct.pricing.discountSellingPrice || selectedProduct.sellingPrice)} ({Math.round(((selectedProduct.pricing.singleMealPrice - (selectedProduct.pricing.discountSellingPrice || selectedProduct.sellingPrice)) / selectedProduct.pricing.singleMealPrice) * 100)}% OFF)
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : selectedProduct.purchaseMode === 'Subscription' ? (
                     <div className="flex gap-2">
                       <button
                         onClick={() => setPurchaseType('One Time')}
@@ -1738,7 +1866,7 @@ const Categories = () => {
                       </button>
                       <button
                         onClick={() => setPurchaseType('Monthly')}
-                        className={`px-3 py-1.5 rounded-lg border text-xs font-extrabold transition-all cursor-pointer ${purchaseType === 'Monthly' ? (isDiet ? 'bg-green-500 text-white border-green-500' : 'bg-red-500 text-white border-red-500') : 'border-zinc-900 bg-zinc-900/60 text-gray-400 hover:text-white'
+                        className={`px-3 py-1.5 rounded-lg border text-xs font-extrabold transition-all cursor-pointer ${purchaseType === 'Monthly' ? 'bg-red-500 text-white border-red-500' : 'border-zinc-900 bg-zinc-900/60 text-gray-400 hover:text-white'
                           }`}
                       >
                         Monthly (₹{selectedProduct.monthlyPrice})
@@ -1767,7 +1895,31 @@ const Categories = () => {
 
                 <div className="flex flex-col justify-center items-start md:items-end">
                   <p className="text-[10px] font-bold text-zinc-550 uppercase tracking-widest mb-1.5">Availability</p>
-                  {activeVariant ? (
+                  {isDiet ? (
+                    selectedProduct.availabilityDelivery?.stockStatus === 'Available' ? (
+                      <div className="flex flex-col items-start md:items-end gap-1.5">
+                        <span className="bg-[#0e2c1e] text-[#4ade80] border border-[#165a38] text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
+                          <span>Available</span>
+                        </span>
+                        {selectedProduct.availabilityDelivery?.availableTimeStart && (
+                          <span className="text-[9.5px] text-zinc-400">
+                            🕒 {selectedProduct.availabilityDelivery.availableTimeStart} - {selectedProduct.availabilityDelivery.availableTimeEnd || ''}
+                          </span>
+                        )}
+                        {selectedProduct.availabilityDelivery?.availableDays && (
+                          <span className="text-[9px] text-zinc-500 text-right max-w-[180px] line-clamp-1">
+                            Days: {selectedProduct.availabilityDelivery.availableDays.join(', ')}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="bg-[#2d0f0f] text-[#f87171] border border-[#5c1c1c] text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f87171]" />
+                        <span>Out of Stock</span>
+                      </span>
+                    )
+                  ) : activeVariant ? (
                     activeVariant.stock > 0 ? (
                       <span className="bg-[#0e2c1e] text-[#4ade80] border border-[#165a38] text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
@@ -1792,7 +1944,7 @@ const Categories = () => {
                       </span>
                     )
                   )}
-                  {activeVariant && activeVariant.stock <= (activeVariant.lowStockAlert || 5) && activeVariant.stock > 0 && (
+                  {!isDiet && activeVariant && activeVariant.stock <= (activeVariant.lowStockAlert || 5) && activeVariant.stock > 0 && (
                     <span className="text-[9.5px] text-yellow-500 font-bold mt-1.5">⚠️ Low Stock Alert (limit is {activeVariant.lowStockAlert || 5})</span>
                   )}
                 </div>
@@ -1921,10 +2073,16 @@ const Categories = () => {
                         <span>Carbs</span>
                         <span className="font-bold text-white">{selectedProduct.nutritionInfo?.carbs || '3g'}</span>
                       </div>
-                      <div className="flex justify-between pb-1">
+                      <div className="flex justify-between border-b border-zinc-900 pb-1">
                         <span>Fat</span>
                         <span className="font-bold text-white">{selectedProduct.nutritionInfo?.fat || '1g'}</span>
                       </div>
+                      {selectedProduct.nutritionInfo?.fiber && (
+                        <div className="flex justify-between pb-1">
+                          <span>Fiber</span>
+                          <span className="font-bold text-white">{selectedProduct.nutritionInfo?.fiber}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1941,10 +2099,21 @@ const Categories = () => {
                   </button>
                   {activeAccordion === 'info' && (
                     <div className="px-5 pb-5 text-xs text-zinc-400 space-y-2 border-t border-zinc-900 pt-3">
-                      <p><strong>Brand:</strong> {selectedProduct.brand || 'Optimum Nutrition'}</p>
-                      <p><strong>Category:</strong> {selectedProduct.category || 'Whey Protein'}</p>
-                      <p><strong>Returns:</strong> {selectedProduct.isReturnable ? 'Easy returns available within 7 days' : 'Non-returnable product'}</p>
-                      <p><strong>Delivery:</strong> Available in current city location</p>
+                      {isDiet ? (
+                        <>
+                          <p><strong>Goal Category:</strong> {selectedProduct.category || 'Balanced Diet'}</p>
+                          <p><strong>Food Preference:</strong> {selectedProduct.foodPreference || 'Veg'}</p>
+                          <p><strong>Returns:</strong> Fresh meals are non-returnable.</p>
+                          <p><strong>Delivery:</strong> Available within restaurant delivery radius</p>
+                        </>
+                      ) : (
+                        <>
+                          <p><strong>Brand:</strong> {selectedProduct.brand || 'Optimum Nutrition'}</p>
+                          <p><strong>Category:</strong> {selectedProduct.category || 'Whey Protein'}</p>
+                          <p><strong>Returns:</strong> {selectedProduct.isReturnable ? 'Easy returns available within 7 days' : 'Non-returnable product'}</p>
+                          <p><strong>Delivery:</strong> Available in current city location</p>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

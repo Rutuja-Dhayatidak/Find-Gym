@@ -6,6 +6,7 @@ const nutritionInfoSchema = new mongoose.Schema(
     protein: { type: String },
     carbs: { type: String },
     fat: { type: String },
+    fiber: { type: String },
   },
   { _id: false }
 );
@@ -64,7 +65,7 @@ const healthStoreProductSchema = new mongoose.Schema(
     }, // Diet/Food
     foodPreference: {
       type: String,
-      enum: ['Veg', 'Non-Veg', 'Both', 'N/A'],
+      enum: ['Veg', 'Non-Veg', 'Both', 'N/A', 'Egg', 'Vegan'],
       default: 'N/A',
     }, // Diet/Food
     quantity: { type: String, trim: true }, // Supplement e.g. "1kg", "60 tablets"
@@ -100,6 +101,47 @@ const healthStoreProductSchema = new mongoose.Schema(
     // Reviews
     rating: { type: Number, default: 0, min: 0, max: 5 },
     totalReviews: { type: Number, default: 0 },
+
+    // New Food/Meal Listing Fields
+    orderType: { type: String, trim: true },
+    mealTime: { type: String, trim: true },
+    servingSize: { type: String, trim: true },
+    portionSize: { type: String, trim: true },
+    preparationTime: { type: String, trim: true },
+
+    customizationOptions: {
+      protein: { type: String, default: 'None' },
+      carb: { type: String, default: 'No Carb' },
+      spiceLevel: { type: String, default: 'Medium' },
+      oilPreference: { type: String, default: 'Normal' },
+      sugarFree: { type: Boolean, default: false }
+    },
+
+    ingredientsAllergyInfo: {
+      ingredients: { type: String },
+      allergyWarning: { type: String },
+      contains: [{ type: String }] // Dairy, Nuts, Gluten, Egg, Soy
+    },
+
+    pricing: {
+      singleMealPrice: { type: Number },
+      weeklyPlanPrice: { type: Number },
+      monthlyPlanPrice: { type: Number },
+      discountSellingPrice: { type: Number },
+      subscriptionAvailable: { type: Boolean, default: false }
+    },
+
+    availabilityDelivery: {
+      availableDays: [{ type: String }], // Monday to Sunday
+      availableTimeStart: { type: String },
+      availableTimeEnd: { type: String },
+      deliveryAvailable: { type: Boolean, default: true },
+      deliveryRadius: { type: String },
+      deliveryCharges: { type: Number, default: 0 },
+      freeDeliveryAbove: { type: Number },
+      maxOrdersPerDay: { type: Number },
+      stockStatus: { type: String, enum: ['Available', 'Out of Stock'], default: 'Available' }
+    }
   },
   { timestamps: true }
 );

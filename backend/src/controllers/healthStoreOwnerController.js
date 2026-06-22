@@ -152,6 +152,39 @@ exports.addProduct = async (req, res) => {
       ? (Array.isArray(files.images) ? files.images : [files.images])
       : [];
 
+    // Parse nested objects if sent as strings (common with FormData/multipart requests)
+    let parsedCustomization = {};
+    if (req.body.customizationOptions) {
+      parsedCustomization = typeof req.body.customizationOptions === 'string'
+        ? JSON.parse(req.body.customizationOptions)
+        : req.body.customizationOptions;
+    }
+
+    let parsedIngredientsAllergy = {};
+    if (req.body.ingredientsAllergyInfo) {
+      parsedIngredientsAllergy = typeof req.body.ingredientsAllergyInfo === 'string'
+        ? JSON.parse(req.body.ingredientsAllergyInfo)
+        : req.body.ingredientsAllergyInfo;
+    }
+
+    let parsedPricing = {};
+    if (req.body.pricing) {
+      parsedPricing = typeof req.body.pricing === 'string'
+        ? JSON.parse(req.body.pricing)
+        : req.body.pricing;
+    }
+
+    let parsedAvailability = {};
+    if (req.body.availabilityDelivery) {
+      parsedAvailability = typeof req.body.availabilityDelivery === 'string'
+        ? JSON.parse(req.body.availabilityDelivery)
+        : req.body.availabilityDelivery;
+    }
+
+    const {
+      orderType, mealTime, servingSize, portionSize, preparationTime, fiber
+    } = req.body;
+
     const product = await HealthStoreProduct.create({
       healthStore: req.healthStore._id,
       owner: req.storeOwner._id,
@@ -175,7 +208,7 @@ exports.addProduct = async (req, res) => {
       monthlyPrice: monthlyPrice ? parseFloat(monthlyPrice) : 0,
       stock: finalStock,
       lowStockAlert: finalLowStockAlert,
-      nutritionInfo: { calories: calories ? parseInt(calories) : 0, protein, carbs, fat },
+      nutritionInfo: { calories: calories ? parseInt(calories) : 0, protein, carbs, fat, fiber },
       flavor: finalFlavor,
       isReturnable: isReturnable === 'true' || isReturnable === true,
       deliveryAvailable: deliveryAvailable !== 'false' && deliveryAvailable !== false,
@@ -185,6 +218,17 @@ exports.addProduct = async (req, res) => {
       expiryDate: expiryDate || undefined,
       approvalStatus: (submitForApproval === 'true' || submitForApproval === true) ? 'Pending Approval' : 'Draft',
       variants,
+
+      // New fields
+      orderType,
+      mealTime,
+      servingSize,
+      portionSize,
+      preparationTime,
+      customizationOptions: parsedCustomization,
+      ingredientsAllergyInfo: parsedIngredientsAllergy,
+      pricing: parsedPricing,
+      availabilityDelivery: parsedAvailability
     });
 
     res.status(201).json({ success: true, message: 'Product created', data: product });
@@ -281,6 +325,49 @@ exports.updateProduct = async (req, res) => {
       updateFields.sellingPrice = first.sellingPrice !== undefined && first.sellingPrice !== '' ? parseFloat(first.sellingPrice) : (updateFields.sellingPrice !== undefined ? parseFloat(updateFields.sellingPrice) : product.sellingPrice);
       updateFields.stock = first.stock !== undefined && first.stock !== '' ? parseInt(first.stock) : (updateFields.stock !== undefined ? parseInt(updateFields.stock) : product.stock);
       updateFields.lowStockAlert = first.lowStockAlert !== undefined && first.lowStockAlert !== '' ? parseInt(first.lowStockAlert) : (updateFields.lowStockAlert !== undefined ? parseInt(updateFields.lowStockAlert) : product.lowStockAlert);
+    }
+
+    // Parse nested objects if sent as strings (common with FormData/multipart requests)
+    if (updateFields.customizationOptions) {
+      try {
+        updateFields.customizationOptions = typeof updateFields.customizationOptions === 'string'
+          ? JSON.parse(updateFields.customizationOptions)
+          : updateFields.customizationOptions;
+      } catch(e) {}
+    }
+
+    if (updateFields.ingredientsAllergyInfo) {
+      try {
+        updateFields.ingredientsAllergyInfo = typeof updateFields.ingredientsAllergyInfo === 'string'
+          ? JSON.parse(updateFields.ingredientsAllergyInfo)
+          : updateFields.ingredientsAllergyInfo;
+      } catch(e) {}
+    }
+
+    if (updateFields.pricing) {
+      try {
+        updateFields.pricing = typeof updateFields.pricing === 'string'
+          ? JSON.parse(updateFields.pricing)
+          : updateFields.pricing;
+      } catch(e) {}
+    }
+
+    if (updateFields.availabilityDelivery) {
+      try {
+        updateFields.availabilityDelivery = typeof updateFields.availabilityDelivery === 'string'
+          ? JSON.parse(updateFields.availabilityDelivery)
+          : updateFields.availabilityDelivery;
+      } catch(e) {}
+    }
+
+    if (updateFields.calories || updateFields.protein || updateFields.carbs || updateFields.fat || updateFields.fiber) {
+      updateFields.nutritionInfo = {
+        calories: updateFields.calories ? parseInt(updateFields.calories) : (product.nutritionInfo?.calories || 0),
+        protein: updateFields.protein !== undefined ? updateFields.protein : product.nutritionInfo?.protein,
+        carbs: updateFields.carbs !== undefined ? updateFields.carbs : product.nutritionInfo?.carbs,
+        fat: updateFields.fat !== undefined ? updateFields.fat : product.nutritionInfo?.fat,
+        fiber: updateFields.fiber !== undefined ? updateFields.fiber : product.nutritionInfo?.fiber,
+      };
     }
 
     Object.assign(product, updateFields);
