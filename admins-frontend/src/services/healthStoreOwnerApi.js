@@ -42,6 +42,7 @@ export const updateProduct = (id, data) => api.put(`/products/${id}`, data, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
 export const deleteProduct = (id) => api.delete(`/products/${id}`);
+export const toggleActiveProduct = (id) => api.patch(`/products/${id}/toggle-active`);
 export const submitForApproval = (id) => api.put(`/products/${id}/submit`);
 
 // Orders management

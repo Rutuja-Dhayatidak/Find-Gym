@@ -69,9 +69,9 @@ const UserLogin = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
             </svg>
           </div>
-          <span className="text-white font-black text-xl tracking-tight">
-            LifeCell<span className="text-orange-400">.Fitness</span>
-          </span>
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-2">
+            livesale<span className="text-orange-400">.Fitness</span>
+          </h2>
         </div>
 
         {/* Hero text */}
@@ -117,7 +117,7 @@ const UserLogin = () => {
               </svg>
             </div>
             <span className="text-white font-black text-lg">
-              LifeCell<span className="text-orange-400">.Fitness</span>
+              livesale<span className="text-orange-400">.Fitness</span>
             </span>
           </div>
 
@@ -238,12 +238,12 @@ const UserLogin = () => {
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to LifeCell.Fitness
+            Back to livesale.Fitness
           </Link>
         </div>
       </div>
     </div>
   );
-};
+};5
 
 export default UserLogin;

@@ -24,6 +24,7 @@ import RegisterGymPage from './pages/RegisterGymPage';
 import GymDetails from './pages/GymDetails';
 import GymSetup from './pages/GymSetup';
 import Categories from './pages/Categories';
+import MyOrders from './pages/MyOrders';
 import HealthStoreRegister from './pages/HealthStoreRegister';
 
 // Conditional Navbar wrapper
@@ -157,6 +158,7 @@ function App() {
             <Route path="/gym-details" element={<GymDetails />} />
             <Route path="/gym-setup/:gymId" element={<GymSetup />} />
             <Route path="/categories" element={<Categories />} />
+            <Route path="/orders" element={<MyOrders />} />
             <Route path="/health-store/register/:token" element={<HealthStoreRegister />} />
            </Routes>
         </div>

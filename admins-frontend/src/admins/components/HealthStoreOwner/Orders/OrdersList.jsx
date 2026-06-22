@@ -42,6 +42,24 @@ const OrdersList = () => {
     fetchOrders();
   }, [activeTab]);
 
+  useEffect(() => {
+    if (orders && orders.length > 0) {
+      const currentViewed = JSON.parse(localStorage.getItem('viewedOrderIds') || '[]');
+      const newViewed = [...currentViewed];
+      let updated = false;
+      orders.forEach(order => {
+        if (!newViewed.includes(order._id)) {
+          newViewed.push(order._id);
+          updated = true;
+        }
+      });
+      if (updated) {
+        localStorage.setItem('viewedOrderIds', JSON.stringify(newViewed));
+        window.dispatchEvent(new Event('orders-viewed'));
+      }
+    }
+  }, [orders]);
+
   const handleStatusChange = async (id, newStatus) => {
     setUpdatingId(id);
     try {

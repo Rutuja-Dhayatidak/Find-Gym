@@ -23,7 +23,7 @@ router.put(
 router.post(
   '/products',
   upload.fields([
-    { name: 'images', maxCount: 5 },
+    { name: 'images', maxCount: 10 },
     { name: 'pdfFile', maxCount: 1 },
   ]),
   uploadToCloudinaryMiddleware('health-store/products'),
@@ -34,13 +34,14 @@ router.get('/products/:id', ctrl.getProductById);
 router.put(
   '/products/:id',
   upload.fields([
-    { name: 'images', maxCount: 5 },
+    { name: 'images', maxCount: 10 },
     { name: 'pdfFile', maxCount: 1 },
   ]),
   uploadToCloudinaryMiddleware('health-store/products'),
   ctrl.updateProduct
 );
 router.delete('/products/:id', ctrl.deleteProduct);
+router.patch('/products/:id/toggle-active', ctrl.toggleActiveProduct);
 router.put('/products/:id/submit', ctrl.submitForApproval);
 
 // Orders

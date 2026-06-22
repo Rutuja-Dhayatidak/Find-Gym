@@ -78,6 +78,17 @@ const UserProfile = () => {
     fetchProfile();
   }, [navigate]);
 
+  useEffect(() => {
+    if (!loading && window.location.hash === '#orders') {
+      setTimeout(() => {
+        const element = document.getElementById('orders-section');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 200);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#070708] flex items-center justify-center text-white">
@@ -476,105 +487,20 @@ const UserProfile = () => {
             </div>
           )}
 
-          {/* Orders Tracking Section */}
-          <div className="bg-[#111112] border border-white/5 rounded-3xl p-5 md:p-6 shadow-xl space-y-6">
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
+          {/* Orders Link Info / Button */}
+          <div className="bg-[#111112] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
               <h3 className="font-black text-sm text-white flex items-center gap-2">📦 My Orders & Tracking</h3>
-              <span className="text-[10px] bg-[#FF7A00]/10 border border-[#FF7A00]/25 text-[#FF7A00] px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                {orders.filter(o => o.paymentStatus === 'Paid').length} Orders
-              </span>
+              <p className="text-xs text-gray-400 mt-1">Manage and track your supplements and diet plans orders.</p>
             </div>
-
-            {orders.filter(o => o.paymentStatus === 'Paid').length > 0 ? (
-              <div className="space-y-6">
-                {orders.filter(o => o.paymentStatus === 'Paid').map((order) => (
-                  <div key={order._id} className="p-4 md:p-5 bg-black/40 border border-white/5 rounded-2xl space-y-4">
-                    {/* Order Meta Header */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/5 pb-3">
-                      <div>
-                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Order Number</p>
-                        <p className="text-xs font-black text-white mt-0.5">{order.orderNumber}</p>
-                      </div>
-                      <div>
-                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Date Placed</p>
-                        <p className="text-[10px] font-semibold text-gray-300 mt-0.5">
-                          {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <span className={`px-2.5 py-1 rounded-md text-[8px] font-extrabold uppercase tracking-wider ${
-                          order.paymentStatus === 'Paid' 
-                            ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' 
-                            : 'bg-yellow-500/10 border border-yellow-500/20 text-yellow-400'
-                        }`}>
-                          {order.paymentStatus}
-                        </span>
-                        <span className={`px-2.5 py-1 rounded-md text-[8px] font-extrabold uppercase tracking-wider ${
-                          ['Delivered', 'Confirmed'].includes(order.orderStatus)
-                            ? 'bg-green-500/10 border border-green-500/20 text-green-400'
-                            : order.orderStatus === 'Cancelled'
-                            ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-                            : 'bg-[#FF7A00]/10 border border-[#FF7A00]/25 text-[#FF7A00]'
-                        }`}>
-                          {order.orderStatus}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Order Items */}
-                    <div className="space-y-3">
-                      {order.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center gap-4 bg-[#111112]/40 p-3 rounded-xl border border-white/[0.02]">
-                          <div className="flex items-center gap-3">
-                            {item.image ? (
-                              <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-lg border border-white/5" />
-                            ) : (
-                              <div className="w-12 h-12 bg-black flex items-center justify-center rounded-lg text-lg border border-white/5">
-                                {item.productType === 'Diet' ? '🥗' : '💊'}
-                              </div>
-                            )}
-                            <div>
-                              <h4 className="font-bold text-xs text-white leading-tight">{item.name}</h4>
-                              <p className="text-[10px] text-gray-500 mt-1">
-                                Qty: <span className="font-semibold text-gray-300">{item.quantity}</span>
-                                {item.purchaseType === 'Monthly' && <span className="ml-2 text-[#FF7A00] font-bold">Monthly Plan</span>}
-                              </p>
-                            </div>
-                          </div>
-                          <span className="font-extrabold text-xs text-white">₹{item.price * item.quantity}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Tracking Timeline */}
-                    {renderTrackingTimeline(order.orderStatus)}
-
-                    {/* Delivery & Pricing Details */}
-                    <div className="text-[10px] text-gray-400 border-t border-white/5 pt-3 flex flex-col sm:flex-row justify-between gap-2">
-                      <p className="leading-relaxed">
-                        📍 <span className="font-bold text-gray-300">Deliver to:</span> {order.address?.address || order.address}
-                      </p>
-                      <p className="font-bold text-white shrink-0">
-                        Paid Total: <span className="text-[#FF7A00] text-xs">₹{order.total}</span>
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-10 text-center text-zinc-500 text-xs gap-3">
-                <span className="text-3xl">🛒</span>
-                <p>No orders placed yet.</p>
-                <Link to="/categories" className="px-4 py-2 bg-[#FF7A00] hover:bg-orange-600 text-white font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider">
-                  Browse Health Store &rarr;
-                </Link>
-              </div>
-            )}
+            <Link to="/orders" className="px-5 py-2.5 bg-[#FF7A00] hover:bg-orange-650 text-white font-bold text-xs rounded-xl transition-all tracking-wider shrink-0 cursor-pointer">
+              View Order History &rarr;
+            </Link>
           </div>
 
           {/* Bottom Grid: Recent Bookings & Saved Gyms */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+            LifeCell.Fitness
             {/* Recent Bookings Pane */}
             <div className="bg-[#111112] border border-white/5 rounded-3xl p-5 shadow-xl">
               <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-3">

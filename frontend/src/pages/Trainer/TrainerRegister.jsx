@@ -416,7 +416,7 @@ const TrainerRegister = () => {
       {/* Back to home */}
       <div className="max-w-3xl mx-auto mb-6">
         <Link to="/" className="text-white/50 hover:text-white text-sm flex items-center gap-2 transition-all">
-          ← Back to LifeCell.Fitness
+          ← Back to livesale.Fitness
         </Link>
       </div>
 
@@ -426,7 +426,7 @@ const TrainerRegister = () => {
           <h1 className="text-4xl font-black mb-2">
             Become a <span className="text-[#a3ff12]">Trainer</span>
           </h1>
-          <p className="text-white/50 text-sm">Join LifeCell.Fitness's trainer network and grow your fitness career</p>
+          <p className="text-white/50 text-sm">Join livesale.Fitness's trainer network and grow your fitness career</p>
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-sm">

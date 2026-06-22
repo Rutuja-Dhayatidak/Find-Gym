@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getProducts, deleteProduct, submitForApproval } from '../../../../services/healthStoreOwnerApi';
+import { getProducts, deleteProduct, submitForApproval, toggleActiveProduct } from '../../../../services/healthStoreOwnerApi';
 
 const STATUS_TABS = ['All', 'Draft', 'Pending Approval', 'Live', 'Rejected'];
 
@@ -52,6 +52,18 @@ const SupplementList = () => {
       fetchItems();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Delete failed');
+    }
+  };
+
+  const handleToggleActive = async (id, name, isActive) => {
+    const action = isActive ? 'make unavailable' : 'make available';
+    if (!window.confirm(`Are you sure you want to ${action} "${name}"?`)) return;
+    try {
+      const res = await toggleActiveProduct(id);
+      toast.success(res.data.message || 'Availability status updated');
+      fetchItems();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update availability');
     }
   };
 
@@ -109,66 +121,99 @@ const SupplementList = () => {
           <p className="text-gray-500 font-medium">No supplement listings found. Add one today!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {products.map(item => (
-            <div key={item._id} className="bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-              <div>
-                <div className="flex gap-4">
-                  {item.images?.[0] ? (
-                    <img src={item.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover border" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-xl bg-red-50 flex items-center justify-center text-red-500 text-2xl font-bold border border-red-100">
-                      💊
+        <div className="overflow-x-auto bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                <th className="py-4 px-5">Product Info</th>
+                <th className="py-4 px-5">Brand & Category</th>
+                <th className="py-4 px-5">Price</th>
+                <th className="py-4 px-5">Stock Info</th>
+                <th className="py-4 px-5">Status</th>
+                <th className="py-4 px-5">Availability</th>
+                <th className="py-4 px-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-150 text-sm">
+              {products.map(item => (
+                <tr key={item._id} className={`hover:bg-gray-50 transition-colors ${!item.isActive ? 'bg-gray-50 opacity-75' : ''}`}>
+                  <td className="py-4 px-5">
+                    <div className="flex items-center gap-3">
+                      {item.images?.[0] ? (
+                        <img src={item.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover border" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center text-red-500 text-xl font-bold border border-red-100">
+                          💊
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-800 truncate max-w-xs">{item.name}</p>
+                        {item.shortDescription && (
+                          <p className="text-xs text-gray-455 truncate max-w-xs">{item.shortDescription}</p>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border ${STATUS_COLORS[item.approvalStatus] || 'bg-gray-100'}`}>
-                        {item.approvalStatus}
-                      </span>
-                      <span className="text-[10px] text-gray-400">{item.brand} • {item.category}</span>
+                  </td>
+                  <td className="py-4 px-5">
+                    <div className="text-xs font-semibold text-gray-600">{item.brand || 'N/A'}</div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">{item.category}</div>
+                  </td>
+                  <td className="py-4 px-5 font-semibold text-gray-700">
+                    ₹{item.sellingPrice || item.oneTimePrice}
+                  </td>
+                  <td className="py-4 px-5">
+                    <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded ${item.stock <= item.lowStockAlert ? 'bg-red-50 text-red-650' : 'bg-gray-100 text-gray-700'}`}>
+                      {item.stock} in stock
+                    </span>
+                    {item.stock <= item.lowStockAlert && (
+                      <span className="block text-[10px] text-red-500 font-semibold mt-0.5">Low Stock Alert</span>
+                    )}
+                  </td>
+                  <td className="py-4 px-5">
+                    <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border ${STATUS_COLORS[item.approvalStatus] || 'bg-gray-100'}`}>
+                      {item.approvalStatus}
+                    </span>
+                    {item.approvalStatus === 'Rejected' && item.rejectionReason && (
+                      <p className="text-[10px] text-red-650 italic mt-1 max-w-[150px] truncate" title={item.rejectionReason}>
+                        Reason: {item.rejectionReason}
+                      </p>
+                    )}
+                  </td>
+                  <td className="py-4 px-5">
+                    <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border ${item.isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
+                      {item.isActive ? 'Available' : 'Unavailable'}
+                    </span>
+                  </td>
+                  <td className="py-4 px-5 text-right">
+                    <div className="flex gap-1.5 justify-end items-center">
+                      {['Draft', 'Rejected'].includes(item.approvalStatus) && (
+                        <button onClick={() => handleSubmitApproval(item._id, item.name)}
+                          className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg transition-colors shadow-sm"
+                          title="Submit Live">
+                          🚀 Submit
+                        </button>
+                      )}
+                      <button onClick={() => navigate(`/health-store-owner/supplements/edit/${item._id}`)}
+                        className="bg-white hover:bg-slate-50 text-slate-800 border font-bold text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                        title="Edit Supplement">
+                        ✍️ Edit
+                      </button>
+                      <button onClick={() => handleToggleActive(item._id, item.name, item.isActive)}
+                        className={`border font-bold text-xs px-2.5 py-1.5 rounded-lg transition-colors ${item.isActive ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-250' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-250'}`}
+                        title={item.isActive ? 'Pause listing' : 'Resume listing'}>
+                        {item.isActive ? '⏸️ Pause' : '▶️ Resume'}
+                      </button>
+                      <button onClick={() => handleDelete(item._id, item.name)}
+                        className="text-red-650 hover:bg-red-50 border border-red-200 text-red-600 font-semibold text-xs p-1.5 rounded-lg transition-colors"
+                        title="Delete">
+                        🗑️
+                      </button>
                     </div>
-                    <h3 className="font-bold text-gray-800 text-base mt-1 truncate">{item.name}</h3>
-                    <div className="flex justify-between items-center mt-1">
-                      <p className="text-xs text-gray-500 font-semibold">Price: ₹{item.sellingPrice || item.oneTimePrice}</p>
-                      <p className="text-xs text-gray-400">Stock: <span className={`font-bold ${item.stock <= item.lowStockAlert ? 'text-red-500' : 'text-gray-600'}`}>{item.stock}</span></p>
-                    </div>
-                  </div>
-                </div>
-
-                {item.shortDescription && (
-                  <p className="text-xs text-gray-500 mt-3 line-clamp-2">{item.shortDescription}</p>
-                )}
-
-                {item.approvalStatus === 'Rejected' && item.rejectionReason && (
-                  <div className="mt-3 p-2 bg-red-50 text-red-700 text-xs rounded-lg border border-red-150">
-                    <span className="font-bold">Reason:</span> {item.rejectionReason}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-2 border-t pt-4 mt-4">
-                {['Draft', 'Rejected'].includes(item.approvalStatus) ? (
-                  <>
-                    <button onClick={() => handleSubmitApproval(item._id, item.name)}
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2 rounded-lg transition-colors shadow-sm">
-                      🚀 Submit Live
-                    </button>
-                    <button onClick={() => navigate(`/health-store-owner/supplements/edit/${item._id}`)}
-                      className="flex-1 bg-white hover:bg-slate-50 text-slate-800 border font-bold text-xs py-2 rounded-lg transition-colors">
-                      ✍️ Edit
-                    </button>
-                    <button onClick={() => handleDelete(item._id, item.name)}
-                      className="text-red-650 hover:bg-red-50 border border-red-200 text-red-600 font-semibold text-xs px-3 py-2 rounded-lg transition-colors">
-                      🗑️
-                    </button>
-                  </>
-                ) : (
-                  <p className="text-[11px] text-gray-400 italic">Listing cannot be modified while pending or live.</p>
-                )}
-              </div>
-            </div>
-          ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

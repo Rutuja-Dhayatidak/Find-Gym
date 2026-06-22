@@ -9,6 +9,9 @@ const orderItemSchema = new mongoose.Schema(
     quantity: { type: Number, default: 1 },
     purchaseType: { type: String, enum: ['One Time', 'Monthly'], default: 'One Time' },
     price: { type: Number, required: true },
+    flavor: { type: String },
+    size: { type: String },
+    sku: { type: String },
   },
   { _id: false }
 );

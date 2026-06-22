@@ -35,11 +35,27 @@ exports.createRazorpayOrder = async (req, res) => {
       }
 
       // Check stock for supplements
-      if (product.productType === 'Supplement' && product.stock < item.quantity) {
-        return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}` });
+      let price = item.purchaseType === 'Monthly' ? product.monthlyPrice : (product.sellingPrice || product.oneTimePrice);
+      let variantSku = '';
+
+      if (product.productType === 'Supplement') {
+        if (product.variants && product.variants.length > 0 && item.flavor && item.size) {
+          const variant = product.variants.find(v => v.flavor === item.flavor && v.size === item.size);
+          if (!variant) {
+            return res.status(400).json({ success: false, message: `Variant (Flavor: ${item.flavor}, Size: ${item.size}) not found for ${product.name}` });
+          }
+          if (variant.stock < item.quantity) {
+            return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name} (${item.flavor} - ${item.size})` });
+          }
+          price = variant.sellingPrice;
+          variantSku = variant.sku;
+        } else {
+          if (product.stock < item.quantity) {
+            return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}` });
+          }
+        }
       }
 
-      const price = item.purchaseType === 'Monthly' ? product.monthlyPrice : (product.sellingPrice || product.oneTimePrice);
       subtotal += price * item.quantity;
 
       orderItems.push({
@@ -50,6 +66,9 @@ exports.createRazorpayOrder = async (req, res) => {
         quantity: item.quantity,
         purchaseType: item.purchaseType || 'One Time',
         price,
+        flavor: item.flavor || '',
+        size: item.size || '',
+        sku: variantSku || '',
       });
     }
 
@@ -135,9 +154,22 @@ exports.verifyPayment = async (req, res) => {
     // Reduce stock for supplement items
     for (const item of order.items) {
       if (item.productType === 'Supplement') {
-        await HealthStoreProduct.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity },
-        });
+        const product = await HealthStoreProduct.findById(item.product);
+        if (product) {
+          if (product.variants && product.variants.length > 0 && item.flavor && item.size) {
+            const vIndex = product.variants.findIndex(v => v.flavor === item.flavor && v.size === item.size);
+            if (vIndex !== -1) {
+              product.variants[vIndex].stock = Math.max(0, product.variants[vIndex].stock - item.quantity);
+              if (vIndex === 0) {
+                product.stock = product.variants[0].stock;
+              }
+              product.markModified('variants');
+            }
+          } else {
+            product.stock = Math.max(0, product.stock - item.quantity);
+          }
+          await product.save();
+        }
       }
     }
 

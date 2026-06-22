@@ -10,8 +10,22 @@ const nutritionInfoSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const variantSchema = new mongoose.Schema(
+  {
+    flavor: { type: String },
+    size: { type: String },
+    mrp: { type: Number },
+    sellingPrice: { type: Number },
+    stock: { type: Number, default: 0 },
+    lowStockAlert: { type: Number, default: 5 },
+    sku: { type: String },
+  },
+  { _id: false }
+);
+
 const healthStoreProductSchema = new mongoose.Schema(
   {
+    variants: [variantSchema],
     healthStore: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'HealthStore',

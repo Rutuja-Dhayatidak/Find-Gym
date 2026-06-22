@@ -120,6 +120,33 @@ exports.addProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: 'productType, name, and category are required' });
     }
 
+    let variants = [];
+    if (req.body.variants) {
+      try {
+        variants = typeof req.body.variants === 'string' ? JSON.parse(req.body.variants) : req.body.variants;
+      } catch (e) {
+        console.error("Failed to parse variants:", e);
+      }
+    }
+
+    // Default legacy fields using the first variant's details for supplements
+    let finalOriginalPrice = originalPrice ? parseFloat(originalPrice) : 0;
+    let finalSellingPrice = sellingPrice ? parseFloat(sellingPrice) : 0;
+    let finalStock = stock ? parseInt(stock) : 0;
+    let finalLowStockAlert = lowStockAlert ? parseInt(lowStockAlert) : 10;
+    let finalFlavor = flavor;
+    let finalQuantity = quantity;
+
+    if (productType === 'Supplement' && variants.length > 0) {
+      const first = variants[0];
+      finalFlavor = first.flavor || flavor;
+      finalQuantity = first.size || quantity;
+      finalOriginalPrice = first.mrp !== undefined && first.mrp !== '' ? parseFloat(first.mrp) : finalOriginalPrice;
+      finalSellingPrice = first.sellingPrice !== undefined && first.sellingPrice !== '' ? parseFloat(first.sellingPrice) : finalSellingPrice;
+      finalStock = first.stock !== undefined && first.stock !== '' ? parseInt(first.stock) : finalStock;
+      finalLowStockAlert = first.lowStockAlert !== undefined && first.lowStockAlert !== '' ? parseInt(first.lowStockAlert) : finalLowStockAlert;
+    }
+
     const files = req.uploadedFiles || {};
     const images = files.images
       ? (Array.isArray(files.images) ? files.images : [files.images])
@@ -141,15 +168,15 @@ exports.addProduct = async (req, res) => {
       howToUse,
       duration: duration || 'N/A',
       foodPreference: foodPreference || 'N/A',
-      quantity,
-      originalPrice: originalPrice ? parseFloat(originalPrice) : 0,
-      sellingPrice: sellingPrice ? parseFloat(sellingPrice) : 0,
-      oneTimePrice: oneTimePrice ? parseFloat(oneTimePrice) : 0,
+      quantity: finalQuantity,
+      originalPrice: finalOriginalPrice,
+      sellingPrice: finalSellingPrice,
+      oneTimePrice: oneTimePrice ? parseFloat(oneTimePrice) : finalSellingPrice,
       monthlyPrice: monthlyPrice ? parseFloat(monthlyPrice) : 0,
-      stock: stock ? parseInt(stock) : 0,
-      lowStockAlert: lowStockAlert ? parseInt(lowStockAlert) : 10,
+      stock: finalStock,
+      lowStockAlert: finalLowStockAlert,
       nutritionInfo: { calories: calories ? parseInt(calories) : 0, protein, carbs, fat },
-      flavor,
+      flavor: finalFlavor,
       isReturnable: isReturnable === 'true' || isReturnable === true,
       deliveryAvailable: deliveryAvailable !== 'false' && deliveryAvailable !== false,
       images,
@@ -157,6 +184,7 @@ exports.addProduct = async (req, res) => {
       pdfFile: files.pdfFile || undefined,
       expiryDate: expiryDate || undefined,
       approvalStatus: (submitForApproval === 'true' || submitForApproval === true) ? 'Pending Approval' : 'Draft',
+      variants,
     });
 
     res.status(201).json({ success: true, message: 'Product created', data: product });
@@ -215,16 +243,45 @@ exports.updateProduct = async (req, res) => {
     });
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
-    if (!['Draft', 'Rejected'].includes(product.approvalStatus)) {
-      return res.status(400).json({ success: false, message: 'Only Draft or Rejected products can be edited.' });
-    }
-
     const files = req.uploadedFiles || {};
     const updateFields = { ...req.body };
-    if (files.images) {
-      updateFields.images = Array.isArray(files.images) ? files.images : [files.images];
+
+    let existing = [];
+    if (updateFields.existingImages) {
+      try {
+        existing = typeof updateFields.existingImages === 'string' ? JSON.parse(updateFields.existingImages) : updateFields.existingImages;
+      } catch (e) {
+        existing = Array.isArray(updateFields.existingImages) ? updateFields.existingImages : [updateFields.existingImages];
+      }
     }
+
+    if (files.images) {
+      const newImages = Array.isArray(files.images) ? files.images : [files.images];
+      updateFields.images = [...existing, ...newImages];
+    } else if (updateFields.existingImages) {
+      updateFields.images = existing;
+    }
+
     if (files.pdfFile) updateFields.pdfFile = files.pdfFile;
+
+    if (updateFields.variants) {
+      try {
+        updateFields.variants = typeof updateFields.variants === 'string' ? JSON.parse(updateFields.variants) : updateFields.variants;
+      } catch (e) {
+        console.error("Failed to parse variants:", e);
+      }
+    }
+
+    // Default legacy fields using the first variant's details for supplements
+    if (product.productType === 'Supplement' && updateFields.variants && updateFields.variants.length > 0) {
+      const first = updateFields.variants[0];
+      updateFields.flavor = first.flavor || updateFields.flavor || product.flavor;
+      updateFields.quantity = first.size || updateFields.quantity || product.quantity;
+      updateFields.originalPrice = first.mrp !== undefined && first.mrp !== '' ? parseFloat(first.mrp) : (updateFields.originalPrice !== undefined ? parseFloat(updateFields.originalPrice) : product.originalPrice);
+      updateFields.sellingPrice = first.sellingPrice !== undefined && first.sellingPrice !== '' ? parseFloat(first.sellingPrice) : (updateFields.sellingPrice !== undefined ? parseFloat(updateFields.sellingPrice) : product.sellingPrice);
+      updateFields.stock = first.stock !== undefined && first.stock !== '' ? parseInt(first.stock) : (updateFields.stock !== undefined ? parseInt(updateFields.stock) : product.stock);
+      updateFields.lowStockAlert = first.lowStockAlert !== undefined && first.lowStockAlert !== '' ? parseInt(first.lowStockAlert) : (updateFields.lowStockAlert !== undefined ? parseInt(updateFields.lowStockAlert) : product.lowStockAlert);
+    }
 
     Object.assign(product, updateFields);
     await product.save();
@@ -243,10 +300,6 @@ exports.deleteProduct = async (req, res) => {
       healthStore: req.healthStore._id,
     });
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-    if (product.approvalStatus !== 'Draft') {
-      return res.status(400).json({ success: false, message: 'Only Draft products can be deleted.' });
-    }
 
     await product.deleteOne();
     res.json({ success: true, message: 'Product deleted' });
@@ -324,6 +377,24 @@ exports.updateOrderStatus = async (req, res) => {
     await order.save();
 
     res.json({ success: true, message: `Order status updated to ${status}`, data: order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+};
+
+// ─── TOGGLE PRODUCT ACTIVE STATUS ─────────────────────────────────────────────
+exports.toggleActiveProduct = async (req, res) => {
+  try {
+    const product = await HealthStoreProduct.findOne({
+      _id: req.params.id,
+      healthStore: req.healthStore._id,
+    });
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+
+    product.isActive = !product.isActive;
+    await product.save();
+
+    res.json({ success: true, message: `Product availability updated to ${product.isActive ? 'Available' : 'Unavailable'}`, data: product });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }

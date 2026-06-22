@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { getOrders } from '../../../../services/healthStoreOwnerApi';
 
 const Sidebar = () => {
   const location = useLocation();
+  const [pendingCount, setPendingCount] = useState(0);
 
   const navItems = [
     { name: 'Dashboard', path: '/health-store-owner/dashboard', icon: '📊' },
@@ -11,6 +13,32 @@ const Sidebar = () => {
     { name: 'Supplements', path: '/health-store-owner/supplements', icon: '💊' },
     { name: 'Orders List', path: '/health-store-owner/orders', icon: '📦' },
   ];
+
+  useEffect(() => {
+    const fetchPendingOrders = async () => {
+      try {
+        const res = await getOrders({ status: 'Pending', limit: 100 });
+        if (res.data && res.data.data) {
+          const viewedIds = JSON.parse(localStorage.getItem('viewedOrderIds') || '[]');
+          const unviewed = res.data.data.filter(order => !viewedIds.includes(order._id));
+          setPendingCount(unviewed.length);
+        }
+      } catch (err) {
+        console.error('Failed to fetch pending orders count', err);
+      }
+    };
+    fetchPendingOrders();
+
+    // Listen to orders-viewed event to update immediately
+    window.addEventListener('orders-viewed', fetchPendingOrders);
+
+    // Poll every 30 seconds for new orders
+    const interval = setInterval(fetchPendingOrders, 30000);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('orders-viewed', fetchPendingOrders);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('hsOwnerToken');
@@ -35,14 +63,23 @@ const Sidebar = () => {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+              className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group ${
                 isActive 
                   ? 'bg-red-600 text-white shadow-md' 
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               }`}
             >
-              <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
-              <span className="font-medium text-sm">{item.name}</span>
+              <div className="flex items-center space-x-3">
+                <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
+                <span className="font-medium text-sm">{item.name}</span>
+              </div>
+              {item.name === 'Orders List' && pendingCount > 0 && (
+                <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full min-w-[20px] text-center shadow-sm ${
+                  isActive ? 'bg-white text-red-600 animate-pulse' : 'bg-red-600 text-white animate-pulse'
+                }`}>
+                  {pendingCount}
+                </span>
+              )}
             </Link>
           );
         })}

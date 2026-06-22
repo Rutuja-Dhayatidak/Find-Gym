@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
             <h1 className="text-2xl font-bold text-white tracking-wide">
-              LifeCell<span className="text-[#FF7A00]">.Fitness</span>
+              livesale<span className="text-[#FF7A00]">.Fitness</span>
             </h1>
             <p className="text-gray-400 text-base">
               Making fitness accessible by connecting you with the perfect gym and trainers in your area.
@@ -47,7 +47,7 @@ const Footer = () => {
         </div>
         <div className="mt-12 border-t border-gray-800 pt-8">
           <p className="text-base text-gray-500 xl:text-center">
-            &copy; {new Date().getFullYear()} LifeCell.Fitness. All rights reserved.
+            &copy; {new Date().getFullYear()} livesale.Fitness. All rights reserved.
           </p>
         </div>
       </div>

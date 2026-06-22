@@ -39,7 +39,7 @@ const TrainerLogin = () => {
         {/* Back to home */}
         <div className="mb-6">
           <Link to="/" className="text-white/50 hover:text-white text-sm flex items-center gap-2 transition-all">
-            ← Back to LifeCell.Fitness
+            ← Back to livesale.Fitness
           </Link>
         </div>
 

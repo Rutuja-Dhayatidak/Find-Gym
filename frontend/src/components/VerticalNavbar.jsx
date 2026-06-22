@@ -44,6 +44,15 @@ export const VerticalNavbar = () => {
         </svg>
       ),
     },
+    {
+      name: "Orders",
+      path: "/orders",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      ),
+    },
   ];
 
   const [isOpen, setIsOpen] = React.useState(false);
@@ -109,7 +118,7 @@ export const VerticalNavbar = () => {
         {/* Menu items */}
         <div className="flex-grow flex flex-col justify-center gap-2 lg:gap-5 w-full px-2 mt-4">
           {menuItems.map((item) => {
-            const isActive = currentPath === item.path;
+            const isActive = currentPath === item.path.split('#')[0];
             return (
               <Link
                 key={item.name}
@@ -195,12 +204,21 @@ export const MobileBottomNav = () => {
         </svg>
       ),
     },
+    {
+      name: "Orders",
+      path: "/orders",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      ),
+    },
   ];
 
   return (
     <div className="flex lg:hidden fixed bottom-0 left-0 w-full h-[70px] z-50 bg-black/90 backdrop-blur-xl border-t border-white/10 justify-around items-center px-4 shadow-[0_-5px_25px_rgba(0,0,0,0.8)]">
       {menuItems.map((item) => {
-        const isActive = currentPath === item.path;
+        const isActive = currentPath === item.path.split('#')[0];
         return (
           <Link
             key={item.name}

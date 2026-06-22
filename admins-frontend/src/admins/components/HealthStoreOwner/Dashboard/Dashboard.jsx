@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isPaymentInfoOpen, setIsPaymentInfoOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,6 +182,19 @@ const Dashboard = () => {
             .sweet-modal-content {
               animation: sweet-zoom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             }
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 5px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #cbd5e1;
+              border-radius: 9999px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: #94a3b8;
+            }
           `}</style>
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col text-slate-800 sweet-modal-content">
             {/* Header */}
@@ -203,7 +217,7 @@ const Dashboard = () => {
             </div>
 
             {/* Modal Body */}
-            <div className="overflow-y-auto pr-1 space-y-6 text-sm flex-grow">
+            <div className="overflow-y-auto pr-1 space-y-6 text-sm flex-grow custom-scrollbar">
               {/* Customer & Shipping Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-5 rounded-2xl border border-slate-100">
                 <div>
@@ -253,78 +267,92 @@ const Dashboard = () => {
               </div>
 
               {/* Premium Payment Details Section */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-150 space-y-3.5 text-xs">
-                <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-wider">💳 Detailed Transaction & Payment Info</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3.5">
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Order / Payment ID</span>
-                    <span className="font-bold text-slate-800 text-[13px]">{selectedOrder.orderNumber}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Payment Status</span>
-                    <span className={`inline-block font-extrabold mt-1 px-3 py-1 rounded-lg ${
-                      selectedOrder.paymentStatus === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {selectedOrder.paymentStatus}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Date & Time</span>
-                    <span className="font-bold text-slate-800">
-                      {new Date(selectedOrder.createdAt).toLocaleDateString('en-IN')} at {new Date(selectedOrder.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Payment Mode</span>
-                    <span className="font-bold text-slate-800">
-                      {selectedOrder.razorpayPaymentId ? 'Online Payment (Razorpay)' : 'Cash on Delivery (COD)'}
-                    </span>
-                  </div>
-                  {selectedOrder.razorpayPaymentId && (
-                    <>
+              <div className="bg-slate-50 rounded-2xl border border-slate-150 overflow-hidden transition-all duration-355 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => setIsPaymentInfoOpen(!isPaymentInfoOpen)}
+                  className="w-full flex justify-between items-center p-5 text-left font-extrabold text-xs text-slate-550 uppercase tracking-wider hover:bg-slate-100/60 transition-colors focus:outline-none"
+                >
+                  <span className="flex items-center gap-2">💳 Detailed Transaction & Payment Info</span>
+                  <span className={`text-[10px] text-slate-400 transition-transform duration-300 ${isPaymentInfoOpen ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                
+                {isPaymentInfoOpen && (
+                  <div className="px-5 pb-5 pt-1 space-y-3.5 text-xs border-t border-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3.5">
                       <div>
-                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Razorpay Payment ID</span>
-                        <span className="font-mono font-bold text-slate-700">{selectedOrder.razorpayPaymentId}</span>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Order / Payment ID</span>
+                        <span className="font-bold text-slate-800 text-[13px]">{selectedOrder.orderNumber}</span>
                       </div>
                       <div>
-                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Paid From Account</span>
-                        <span className="font-bold text-slate-800">
-                          {selectedOrder.address?.fullName || selectedOrder.customer?.name || 'Customer'}'s Account (Ending in **{selectedOrder.razorpayPaymentId.slice(-4)})
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Payment Status</span>
+                        <span className={`inline-block font-extrabold mt-1 px-3 py-1 rounded-lg ${
+                          selectedOrder.paymentStatus === 'Paid' ? 'bg-green-100 text-green-700 font-black' : 'bg-yellow-100 text-yellow-800 font-black'
+                        }`}>
+                          {selectedOrder.paymentStatus}
                         </span>
                       </div>
-                    </>
-                  )}
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Customer Mobile</span>
-                    <span className="font-bold text-slate-800">{selectedOrder.address?.mobile || selectedOrder.customer?.phone || 'N/A'}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Customer Name</span>
-                    <span className="font-bold text-slate-800">{selectedOrder.address?.fullName || selectedOrder.customer?.name || 'Walk-in'}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400 font-bold uppercase tracking-wider block">Order Dispatch Status</span>
-                    <span className={`inline-block font-extrabold mt-1 px-3 py-1 rounded-lg ${
-                      selectedOrder.orderStatus === 'Delivered' ? 'bg-green-100 text-green-700' :
-                      selectedOrder.orderStatus === 'Cancelled' ? 'bg-red-100 text-red-700' :
-                      'bg-orange-100 text-orange-700'
-                    }`}>
-                      {selectedOrder.orderStatus}
-                    </span>
-                  </div>
-                </div>
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Date & Time</span>
+                        <span className="font-bold text-slate-800">
+                          {new Date(selectedOrder.createdAt).toLocaleDateString('en-IN')} at {new Date(selectedOrder.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Payment Mode</span>
+                        <span className="font-bold text-slate-800">
+                          {selectedOrder.razorpayPaymentId ? 'Online Payment (Razorpay)' : 'Cash on Delivery (COD)'}
+                        </span>
+                      </div>
+                      {selectedOrder.razorpayPaymentId && (
+                        <>
+                          <div>
+                            <span className="text-gray-400 font-bold uppercase tracking-wider block">Razorpay Payment ID</span>
+                            <span className="font-mono font-bold text-slate-700">{selectedOrder.razorpayPaymentId}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400 font-bold uppercase tracking-wider block">Paid From Account</span>
+                            <span className="font-bold text-slate-800">
+                              {selectedOrder.address?.fullName || selectedOrder.customer?.name || 'Customer'}'s Account (Ending in **{selectedOrder.razorpayPaymentId.slice(-4)})
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Customer Mobile</span>
+                        <span className="font-bold text-slate-800">{selectedOrder.address?.mobile || selectedOrder.customer?.phone || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Customer Name</span>
+                        <span className="font-bold text-slate-800">{selectedOrder.address?.fullName || selectedOrder.customer?.name || 'Walk-in'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider block">Order Dispatch Status</span>
+                        <span className={`inline-block font-extrabold mt-1 px-3 py-1 rounded-lg ${
+                          selectedOrder.orderStatus === 'Delivered' ? 'bg-green-100 text-green-700' :
+                          selectedOrder.orderStatus === 'Cancelled' ? 'bg-red-100 text-red-700' :
+                          'bg-orange-100 text-orange-700'
+                        }`}>
+                          {selectedOrder.orderStatus}
+                        </span>
+                      </div>
+                    </div>
 
-                {/* Items and Quantities summary in Payment Box */}
-                <div className="border-t pt-3 mt-1.5 text-[11px] text-slate-500">
-                  <span className="font-semibold block mb-1">Purchased Products Summary:</span>
-                  <ul className="list-disc pl-4 space-y-0.5 font-medium">
-                    {selectedOrder.items?.map((item, idx) => (
-                      <li key={idx}>
-                        {item.name} - Qty: <strong className="text-slate-700 font-bold">{item.quantity}</strong>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                    {/* Items and Quantities summary in Payment Box */}
+                    <div className="border-t pt-3 mt-1.5 text-[11px] text-slate-500">
+                      <span className="font-semibold block mb-1">Purchased Products Summary:</span>
+                      <ul className="list-disc pl-4 space-y-0.5 font-medium">
+                        {selectedOrder.items?.map((item, idx) => (
+                          <li key={idx}>
+                            {item.name} - Qty: <strong className="text-slate-700 font-bold">{item.quantity}</strong>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Pricing breakdown */}
