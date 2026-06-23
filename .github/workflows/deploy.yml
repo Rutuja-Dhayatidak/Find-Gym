@@ -88,5 +88,6 @@ jobs:
             printf '%s\n' "$ENV_PRODUCTION" > .env.production
             docker compose --env-file .env.production -f docker-compose.prod.yml build --no-cache
             docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose --env-file .env.production -f docker-compose.prod.yml restart nginx
             docker compose --env-file .env.production -f docker-compose.prod.yml ps
             docker image prune -f
