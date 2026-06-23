@@ -180,7 +180,7 @@ const Navbar = () => {
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "LifeCell.Fitness Health Store",
+        name: "livesale.Fitness Health Store",
         description: `Order from ${orderData.storeName || "Health Store"}`,
         image: cartItems[0]?.image || "",
         order_id: orderData.razorpayOrderId,
@@ -278,7 +278,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-      className="
+        className="
         fixed
         top-0
         left-0
@@ -291,27 +291,27 @@ const Navbar = () => {
         border-white/10
         shadow-lg
       "
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
 
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link to="/">
-              <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-                livesale<span className="text-[#FF7A00]">.Fitness</span>
-              </h1>
-            </Link>
-          </div>
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Link to="/">
+                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
+                  livesale<span className="text-[#FF7A00]">.Fitness</span>
+                </h1>
+              </Link>
+            </div>
 
 
 
-          {/* Right Area (Desktop + Mobile handles) */}
-          <div className="flex items-center gap-2 md:gap-4 justify-end">
+            {/* Right Area (Desktop + Mobile handles) */}
+            <div className="flex items-center gap-2 md:gap-4 justify-end">
 
-            {/* Mobile Location button */}
-            <button
-              className="
+              {/* Mobile Location button */}
+              <button
+                className="
                 flex
                 md:hidden
                 items-center
@@ -327,15 +327,15 @@ const Navbar = () => {
                 text-xs
                 font-bold
               "
-            >
-              <span>PUNE</span>
-              📍
-            </button>
+              >
+                <span>PUNE</span>
+                📍
+              </button>
 
-            {/* Desktop Right (Hidden on mobile) */}
-            <div className="hidden md:flex items-center gap-4">
-              <button
-                className="
+              {/* Desktop Right (Hidden on mobile) */}
+              <div className="hidden md:flex items-center gap-4">
+                <button
+                  className="
                   flex
                   items-center
                   gap-2
@@ -350,16 +350,16 @@ const Navbar = () => {
                   hover:bg-white/20
                   transition-all
                 "
-              >
-                <span className="font-semibold text-sm">PUNE</span>
-                📍
-              </button>
+                >
+                  <span className="font-semibold text-sm">PUNE</span>
+                  📍
+                </button>
 
 
-              <div className="relative register-dropdown-container">
-                <button
-                  onClick={() => setRegisterDropdownOpen(!registerDropdownOpen)}
-                  className="
+                <div className="relative register-dropdown-container">
+                  <button
+                    onClick={() => setRegisterDropdownOpen(!registerDropdownOpen)}
+                    className="
                     px-6
                     py-2.5
                     rounded-full
@@ -375,53 +375,53 @@ const Navbar = () => {
                     items-center
                     gap-1.5
                   "
-                >
-                  <span>Register</span>
-                  <svg
-                    className={`w-4 h-4 transition-transform duration-200 ${registerDropdownOpen ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                    <span>Register</span>
+                    <svg
+                      className={`w-4 h-4 transition-transform duration-200 ${registerDropdownOpen ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
 
-                {registerDropdownOpen && (
-                  <div className="absolute right-0 mt-2.5 w-60 rounded-2xl bg-black/95 border border-zinc-800/80 backdrop-blur-xl shadow-2xl p-2.5 z-50 flex flex-col gap-1.5 animate-fadeIn">
-                    <Link
-                      to="/gym-owner/login"
-                      onClick={() => setRegisterDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#FF7A00] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left"
-                    >
-                      <span className="text-base">🏋️</span>
-                      <span>Owner Login / Register</span>
-                    </Link>
-                    <Link
-                      to="/trainer/register"
-                      onClick={() => setRegisterDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#a3ff12] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left"
-                    >
-                      <span className="text-base">👥</span>
-                      <span>Register as Trainer</span>
-                    </Link>
-                    <Link
-                      to="/register"
-                      onClick={() => setRegisterDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#FF7A00] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left border-t border-zinc-800/60"
-                    >
-                      <span className="text-base">👤</span>
-                      <span>Normal Register</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
+                  {registerDropdownOpen && (
+                    <div className="absolute right-0 mt-2.5 w-60 rounded-2xl bg-black/95 border border-zinc-800/80 backdrop-blur-xl shadow-2xl p-2.5 z-50 flex flex-col gap-1.5 animate-fadeIn">
+                      <Link
+                        to="/gym-owner/login"
+                        onClick={() => setRegisterDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#FF7A00] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left"
+                      >
+                        <span className="text-base">🏋️</span>
+                        <span>Owner Login / Register</span>
+                      </Link>
+                      <Link
+                        to="/trainer/register"
+                        onClick={() => setRegisterDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#a3ff12] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left"
+                      >
+                        <span className="text-base">👥</span>
+                        <span>Register as Trainer</span>
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setRegisterDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#FF7A00] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left border-t border-zinc-800/60"
+                      >
+                        <span className="text-base">👤</span>
+                        <span>Normal Register</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
-              {/* Cart Icon & Dropdown */}
-              <div className="relative cart-dropdown-container">
-                <button
-                  onClick={() => setCartDropdownOpen(!cartDropdownOpen)}
-                  className="
+                {/* Cart Icon & Dropdown */}
+                <div className="relative cart-dropdown-container">
+                  <button
+                    onClick={() => setCartDropdownOpen(!cartDropdownOpen)}
+                    className="
                     p-2.5
                     rounded-full
                     bg-white/10
@@ -438,433 +438,433 @@ const Navbar = () => {
                     justify-center
                     relative
                   "
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  {cartItems.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-[#FF7A00] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-black animate-pulse">
-                      {cartItems.reduce((acc, i) => acc + (i.qty || 1), 0)}
-                    </span>
-                  )}
-                </button>
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    {cartItems.length > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-[#FF7A00] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-black animate-pulse">
+                        {cartItems.reduce((acc, i) => acc + (i.qty || 1), 0)}
+                      </span>
+                    )}
+                  </button>
 
-                {cartDropdownOpen && (
-                  <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-black/95 border border-zinc-800/80 backdrop-blur-xl shadow-2xl p-4 z-50 flex flex-col gap-3 animate-fadeIn text-left">
-                    <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base">🛒</span>
-                        <h4 className="font-extrabold text-sm text-white">Your Cart</h4>
-                        <span className="bg-[#FF7A00]/10 text-[#FF7A00] text-[10px] font-black px-2 py-0.5 rounded-full">
-                          {cartItems.reduce((acc, i) => acc + (i.qty || 1), 0)} items
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => {
-                            setIsCartFullscreen(true);
-                            setCartDropdownOpen(false);
-                          }}
-                          className="p-1 rounded hover:bg-white/5 text-zinc-500 hover:text-white transition-colors cursor-pointer"
-                          title="Fullscreen Cart"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h6m0 0v6m0-6L14 10M9 21H3m0 0v-6m0 6l7-7" />
-                          </svg>
-                        </button>
-                        {cartItems.length > 0 && (
-                          <button
-                            onClick={clearCart}
-                            className="text-xs text-zinc-550 hover:text-red-400 font-bold transition-colors cursor-pointer"
-                          >
-                            Clear All
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {cartItems.length === 0 ? (
-                      <div className="py-8 text-center flex flex-col items-center justify-center">
-                        <span className="text-3xl mb-2">🛍️</span>
-                        <p className="text-zinc-400 text-xs font-semibold">Your cart is empty</p>
-                        <p className="text-zinc-600 text-[10px] mt-1">Add items from the store to get started</p>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="max-h-60 overflow-y-auto flex flex-col gap-2 pr-1 custom-scrollbar">
-                          {cartItems.map((item) => (
-                            <div key={item._id} className="flex items-center gap-3 p-2 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all justify-between">
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
-                                  {item.image ? (
-                                    <img src={item.image} alt="" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <span className="text-lg">💊</span>
-                                  )}
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="text-xs font-bold text-white truncate w-36" title={item.name}>
-                                    {item.name.split(" - ")[0]}
-                                  </p>
-                                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider truncate">
-                                    {item.brand || "Supplement"}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-black text-white">
-                                  ₹{item.price} <span className="text-zinc-650 font-normal text-[10px]">x{item.qty || 1}</span>
-                                </span>
-                                <button
-                                  onClick={() => removeFromCart(item._id)}
-                                  className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-all flex items-center justify-center"
-                                >
-                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-                          ))}
+                  {cartDropdownOpen && (
+                    <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-black/95 border border-zinc-800/80 backdrop-blur-xl shadow-2xl p-4 z-50 flex flex-col gap-3 animate-fadeIn text-left">
+                      <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">🛒</span>
+                          <h4 className="font-extrabold text-sm text-white">Your Cart</h4>
+                          <span className="bg-[#FF7A00]/10 text-[#FF7A00] text-[10px] font-black px-2 py-0.5 rounded-full">
+                            {cartItems.reduce((acc, i) => acc + (i.qty || 1), 0)} items
+                          </span>
                         </div>
-
-                        <div className="border-t border-zinc-800 pt-3 flex flex-col gap-3">
-                          <div className="flex items-center justify-between text-xs font-bold">
-                            <span className="text-zinc-400">Total Amount:</span>
-                            <span className="text-sm font-black text-white">
-                              ₹{cartItems.reduce((acc, i) => acc + (i.qty || 1) * i.price, 0)}
-                            </span>
-                          </div>
+                        <div className="flex items-center gap-3">
                           <button
                             onClick={() => {
-                              const token = localStorage.getItem("userToken");
-                              if (!token) {
-                                toast.error("Please login first to checkout.");
-                                navigate("/login");
-                                return;
-                              }
-                              setCheckoutModalOpen(true);
+                              setIsCartFullscreen(true);
+                              setCartDropdownOpen(false);
                             }}
-                            className="w-full py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#E66E00] text-white font-extrabold text-xs text-center transition-all uppercase tracking-widest shadow-lg"
+                            className="p-1 rounded hover:bg-white/5 text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                            title="Fullscreen Cart"
                           >
-                            Proceed to Checkout
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h6m0 0v6m0-6L14 10M9 21H3m0 0v-6m0 6l7-7" />
+                            </svg>
                           </button>
+                          {cartItems.length > 0 && (
+                            <button
+                              onClick={clearCart}
+                              className="text-xs text-zinc-550 hover:text-red-400 font-bold transition-colors cursor-pointer"
+                            >
+                              Clear All
+                            </button>
+                          )}
                         </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
+                      </div>
 
-            {/* Mobile Menu Hamburger Button */}
+                      {cartItems.length === 0 ? (
+                        <div className="py-8 text-center flex flex-col items-center justify-center">
+                          <span className="text-3xl mb-2">🛍️</span>
+                          <p className="text-zinc-400 text-xs font-semibold">Your cart is empty</p>
+                          <p className="text-zinc-600 text-[10px] mt-1">Add items from the store to get started</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="max-h-60 overflow-y-auto flex flex-col gap-2 pr-1 custom-scrollbar">
+                            {cartItems.map((item) => (
+                              <div key={item._id} className="flex items-center gap-3 p-2 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all justify-between">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                    {item.image ? (
+                                      <img src={item.image} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                      <span className="text-lg">💊</span>
+                                    )}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="text-xs font-bold text-white truncate w-36" title={item.name}>
+                                      {item.name.split(" - ")[0]}
+                                    </p>
+                                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider truncate">
+                                      {item.brand || "Supplement"}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-black text-white">
+                                    ₹{item.price} <span className="text-zinc-650 font-normal text-[10px]">x{item.qty || 1}</span>
+                                  </span>
+                                  <button
+                                    onClick={() => removeFromCart(item._id)}
+                                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-all flex items-center justify-center"
+                                  >
+                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="border-t border-zinc-800 pt-3 flex flex-col gap-3">
+                            <div className="flex items-center justify-between text-xs font-bold">
+                              <span className="text-zinc-400">Total Amount:</span>
+                              <span className="text-sm font-black text-white">
+                                ₹{cartItems.reduce((acc, i) => acc + (i.qty || 1) * i.price, 0)}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const token = localStorage.getItem("userToken");
+                                if (!token) {
+                                  toast.error("Please login first to checkout.");
+                                  navigate("/login");
+                                  return;
+                                }
+                                setCheckoutModalOpen(true);
+                              }}
+                              className="w-full py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#E66E00] text-white font-extrabold text-xs text-center transition-all uppercase tracking-widest shadow-lg"
+                            >
+                              Proceed to Checkout
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Mobile Menu Hamburger Button */}
+              <button
+                className="md:hidden text-white p-1"
+                onClick={handleHamburgerClick}
+              >
+                {isOpen ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-7 w-7"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-7 w-7"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                )}
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Fullscreen Cart Modal */}
+      {isCartFullscreen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6 animate-fadeIn">
+          <div className="w-full max-w-2xl bg-[#0a0b0d] border border-zinc-900 rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative flex flex-col gap-6 text-left">
+
+            {/* Close Button */}
             <button
-              className="md:hidden text-white p-1"
-              onClick={handleHamburgerClick}
+              onClick={() => setIsCartFullscreen(false)}
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+              title="Close Fullscreen"
             >
-              {isOpen ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
 
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    {/* Fullscreen Cart Modal */}
-    {isCartFullscreen && (
-      <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6 animate-fadeIn">
-        <div className="w-full max-w-2xl bg-[#0a0b0d] border border-zinc-900 rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative flex flex-col gap-6 text-left">
-          
-          {/* Close Button */}
-          <button
-            onClick={() => setIsCartFullscreen(false)}
-            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
-            title="Close Fullscreen"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          {/* Header */}
-          <div className="border-b border-zinc-850 pb-5">
-            <h2 className="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
-              <span>🛒</span> Your Shopping Cart
-            </h2>
-            <p className="text-zinc-500 text-xs md:text-sm mt-1">
-              You have {cartItems.reduce((acc, i) => acc + (i.qty || 1), 0)} items in your cart
-            </p>
-          </div>
-
-          {/* Items List */}
-          {cartItems.length === 0 ? (
-            <div className="py-20 text-center flex flex-col items-center justify-center">
-              <span className="text-5xl mb-4">🛍️</span>
-              <p className="text-zinc-400 text-lg font-bold">Your cart is empty</p>
-              <p className="text-zinc-500 text-xs mt-1">Add items from the store to get started</p>
+            {/* Header */}
+            <div className="border-b border-zinc-850 pb-5">
+              <h2 className="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
+                <span>🛒</span> Your Shopping Cart
+              </h2>
+              <p className="text-zinc-500 text-xs md:text-sm mt-1">
+                You have {cartItems.reduce((acc, i) => acc + (i.qty || 1), 0)} items in your cart
+              </p>
             </div>
-          ) : (
-            <>
-              <div className="flex-grow max-h-[350px] overflow-y-auto flex flex-col gap-3 pr-2 custom-scrollbar">
-                {cartItems.map((item) => (
-                  <div key={item._id} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-zinc-900 hover:border-zinc-800 transition-all gap-4">
-                    
-                    {/* Left: Product Info */}
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="w-16 h-16 rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-2xl">💊</span>
-                        )}
+
+            {/* Items List */}
+            {cartItems.length === 0 ? (
+              <div className="py-20 text-center flex flex-col items-center justify-center">
+                <span className="text-5xl mb-4">🛍️</span>
+                <p className="text-zinc-400 text-lg font-bold">Your cart is empty</p>
+                <p className="text-zinc-500 text-xs mt-1">Add items from the store to get started</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex-grow max-h-[350px] overflow-y-auto flex flex-col gap-3 pr-2 custom-scrollbar">
+                  {cartItems.map((item) => (
+                    <div key={item._id} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-zinc-900 hover:border-zinc-800 transition-all gap-4">
+
+                      {/* Left: Product Info */}
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-16 h-16 rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-2xl">💊</span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="text-sm md:text-base font-extrabold text-white truncate max-w-[240px] md:max-w-[320px]">
+                            {item.name}
+                          </h4>
+                          <span className="inline-block bg-[#FF7A00]/10 border border-[#FF7A00]/25 text-[#FF7A00] text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md mt-1">
+                            {item.brand || "Supplement"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm md:text-base font-extrabold text-white truncate max-w-[240px] md:max-w-[320px]">
-                          {item.name}
-                        </h4>
-                        <span className="inline-block bg-[#FF7A00]/10 border border-[#FF7A00]/25 text-[#FF7A00] text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md mt-1">
-                          {item.brand || "Supplement"}
-                        </span>
+
+                      {/* Right: Quantity, Price & Delete */}
+                      <div className="flex items-center gap-4 flex-shrink-0">
+                        <div className="text-right">
+                          <p className="text-sm md:text-base font-black text-white">
+                            ₹{item.price * (item.qty || 1)}
+                          </p>
+                          <p className="text-[10px] text-zinc-500 font-semibold mt-0.5">
+                            ₹{item.price} each • Qty: {item.qty || 1}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => removeFromCart(item._id)}
+                          className="w-10 h-10 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 border border-zinc-900 hover:border-red-500/15 transition-all flex items-center justify-center cursor-pointer"
+                          title="Remove item"
+                        >
+                          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
                       </div>
+
                     </div>
+                  ))}
+                </div>
 
-                    {/* Right: Quantity, Price & Delete */}
-                    <div className="flex items-center gap-4 flex-shrink-0">
-                      <div className="text-right">
-                        <p className="text-sm md:text-base font-black text-white">
-                          ₹{item.price * (item.qty || 1)}
-                        </p>
-                        <p className="text-[10px] text-zinc-500 font-semibold mt-0.5">
-                          ₹{item.price} each • Qty: {item.qty || 1}
-                        </p>
-                      </div>
-
-                      <button
-                        onClick={() => removeFromCart(item._id)}
-                        className="w-10 h-10 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 border border-zinc-900 hover:border-red-500/15 transition-all flex items-center justify-center cursor-pointer"
-                        title="Remove item"
-                      >
-                        <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-
+                {/* Summary & Checkout */}
+                <div className="border-t border-zinc-850 pt-5 mt-auto flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400 font-bold text-sm md:text-base">Grand Total:</span>
+                    <span className="text-xl md:text-2xl font-black text-white">
+                      ₹{cartItems.reduce((acc, i) => acc + (i.qty || 1) * i.price, 0)}
+                    </span>
                   </div>
-                ))}
-              </div>
 
-              {/* Summary & Checkout */}
-              <div className="border-t border-zinc-850 pt-5 mt-auto flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 font-bold text-sm md:text-base">Grand Total:</span>
-                  <span className="text-xl md:text-2xl font-black text-white">
-                    ₹{cartItems.reduce((acc, i) => acc + (i.qty || 1) * i.price, 0)}
-                  </span>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={clearCart}
+                      className="flex-1 py-4 border border-zinc-800 hover:border-red-500/20 bg-transparent hover:bg-red-500/5 text-zinc-400 hover:text-red-400 font-bold rounded-2xl transition-all uppercase tracking-wider text-xs cursor-pointer"
+                    >
+                      Clear Entire Cart
+                    </button>
+                    <button
+                      onClick={() => {
+                        const token = localStorage.getItem("userToken");
+                        if (!token) {
+                          toast.error("Please login first to checkout.");
+                          navigate("/login");
+                          return;
+                        }
+                        setCheckoutModalOpen(true);
+                      }}
+                      className="flex-[2] py-4 bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white font-black rounded-2xl transition-all uppercase tracking-widest text-xs shadow-[0_6px_20px_rgba(255,122,0,0.3)] cursor-pointer"
+                    >
+                      Proceed to Checkout ➔
+                    </button>
+                  </div>
                 </div>
+              </>
+            )}
 
-                <div className="flex gap-4">
-                  <button
-                    onClick={clearCart}
-                    className="flex-1 py-4 border border-zinc-800 hover:border-red-500/20 bg-transparent hover:bg-red-500/5 text-zinc-400 hover:text-red-400 font-bold rounded-2xl transition-all uppercase tracking-wider text-xs cursor-pointer"
-                  >
-                    Clear Entire Cart
-                  </button>
-                  <button
-                    onClick={() => {
-                      const token = localStorage.getItem("userToken");
-                      if (!token) {
-                        toast.error("Please login first to checkout.");
-                        navigate("/login");
-                        return;
-                      }
-                      setCheckoutModalOpen(true);
-                    }}
-                    className="flex-[2] py-4 bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white font-black rounded-2xl transition-all uppercase tracking-widest text-xs shadow-[0_6px_20px_rgba(255,122,0,0.3)] cursor-pointer"
-                  >
-                    Proceed to Checkout ➔
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-        </div>
-      </div>
-    )}
-
-    {/* Address Checkout Modal */}
-    {checkoutModalOpen && (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[10000] flex items-center justify-center p-4 md:p-6 animate-fadeIn">
-        <div className="w-full max-w-xl bg-black/95 border border-zinc-800 rounded-[2rem] p-6 md:p-8 shadow-2xl relative flex flex-col gap-5 text-left">
-          
-          {/* Close Button */}
-          <button
-            onClick={() => setCheckoutModalOpen(false)}
-            className="absolute top-6 right-6 w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer hover:scale-105"
-            title="Close"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          {/* Header */}
-          <div className="border-b border-zinc-805 pb-3">
-            <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
-              <span>📍</span> Shipping Address
-            </h2>
-            <p className="text-zinc-500 text-xs mt-1">
-              Please enter your delivery details to proceed with payment
-            </p>
           </div>
+        </div>
+      )}
 
-          <form onSubmit={handleProceedToPay} className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Address Checkout Modal */}
+      {checkoutModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[10000] flex items-center justify-center p-4 md:p-6 animate-fadeIn">
+          <div className="w-full max-w-xl bg-black/95 border border-zinc-800 rounded-[2rem] p-6 md:p-8 shadow-2xl relative flex flex-col gap-5 text-left">
+
+            {/* Close Button */}
+            <button
+              onClick={() => setCheckoutModalOpen(false)}
+              className="absolute top-6 right-6 w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer hover:scale-105"
+              title="Close"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Header */}
+            <div className="border-b border-zinc-805 pb-3">
+              <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                <span>📍</span> Shipping Address
+              </h2>
+              <p className="text-zinc-500 text-xs mt-1">
+                Please enter your delivery details to proceed with payment
+              </p>
+            </div>
+
+            <form onSubmit={handleProceedToPay} className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={checkoutForm.fullName}
+                    onChange={e => setCheckoutForm({ ...checkoutForm, fullName: e.target.value })}
+                    placeholder="Enter full name"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Mobile Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    value={checkoutForm.mobile}
+                    onChange={e => setCheckoutForm({ ...checkoutForm, mobile: e.target.value })}
+                    placeholder="10-digit mobile number"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Full Name *</label>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400">Street Address *</label>
+                  <button
+                    type="button"
+                    onClick={handleLocateUser}
+                    className="text-[9px] font-black text-[#FF7A00] hover:underline flex items-center gap-1 uppercase tracking-wider bg-transparent border-0 cursor-pointer"
+                  >
+                    📍 Locate Me
+                  </button>
+                </div>
+                <textarea
+                  required
+                  value={checkoutForm.address}
+                  onChange={e => setCheckoutForm({ ...checkoutForm, address: e.target.value })}
+                  placeholder="House no., street name, apartment..."
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all min-h-[60px] resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">City *</label>
+                  <input
+                    type="text"
+                    required
+                    value={checkoutForm.city}
+                    onChange={e => setCheckoutForm({ ...checkoutForm, city: e.target.value })}
+                    placeholder="City"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">State *</label>
+                  <input
+                    type="text"
+                    required
+                    value={checkoutForm.state}
+                    onChange={e => setCheckoutForm({ ...checkoutForm, state: e.target.value })}
+                    placeholder="State"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Pincode *</label>
+                  <input
+                    type="text"
+                    required
+                    value={checkoutForm.pincode}
+                    onChange={e => setCheckoutForm({ ...checkoutForm, pincode: e.target.value })}
+                    placeholder="6-digit ZIP code"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Landmark (Optional)</label>
                 <input
                   type="text"
-                  required
-                  value={checkoutForm.fullName}
-                  onChange={e => setCheckoutForm({ ...checkoutForm, fullName: e.target.value })}
-                  placeholder="Enter full name"
+                  value={checkoutForm.landmark}
+                  onChange={e => setCheckoutForm({ ...checkoutForm, landmark: e.target.value })}
+                  placeholder="Nearby famous place"
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Mobile Number *</label>
-                <input
-                  type="tel"
-                  required
-                  value={checkoutForm.mobile}
-                  onChange={e => setCheckoutForm({ ...checkoutForm, mobile: e.target.value })}
-                  placeholder="10-digit mobile number"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
-                />
-              </div>
-            </div>
 
-            <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400">Street Address *</label>
+              <div className="flex gap-4 mt-2">
                 <button
                   type="button"
-                  onClick={handleLocateUser}
-                  className="text-[9px] font-black text-[#FF7A00] hover:underline flex items-center gap-1 uppercase tracking-wider bg-transparent border-0 cursor-pointer"
+                  onClick={() => setCheckoutModalOpen(false)}
+                  className="flex-1 py-3 border border-zinc-800 hover:border-zinc-700 bg-transparent text-zinc-400 hover:text-white font-bold rounded-xl transition-all uppercase tracking-wider text-[10px] cursor-pointer"
                 >
-                  📍 Locate Me
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={checkoutLoading}
+                  className="flex-[2] py-3 bg-[#FF7A00] hover:bg-[#E66E00] text-white font-black rounded-xl transition-all uppercase tracking-widest text-[10px] shadow-lg flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {checkoutLoading ? "Initiating..." : `Pay ₹${cartItems.reduce((acc, i) => acc + (i.qty || 1) * i.price, 0)}`}
                 </button>
               </div>
-              <textarea
-                required
-                value={checkoutForm.address}
-                onChange={e => setCheckoutForm({ ...checkoutForm, address: e.target.value })}
-                placeholder="House no., street name, apartment..."
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all min-h-[60px] resize-none"
-              />
-            </div>
+            </form>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">City *</label>
-                <input
-                  type="text"
-                  required
-                  value={checkoutForm.city}
-                  onChange={e => setCheckoutForm({ ...checkoutForm, city: e.target.value })}
-                  placeholder="City"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">State *</label>
-                <input
-                  type="text"
-                  required
-                  value={checkoutForm.state}
-                  onChange={e => setCheckoutForm({ ...checkoutForm, state: e.target.value })}
-                  placeholder="State"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Pincode *</label>
-                <input
-                  type="text"
-                  required
-                  value={checkoutForm.pincode}
-                  onChange={e => setCheckoutForm({ ...checkoutForm, pincode: e.target.value })}
-                  placeholder="6-digit ZIP code"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-1.5">Landmark (Optional)</label>
-              <input
-                type="text"
-                value={checkoutForm.landmark}
-                onChange={e => setCheckoutForm({ ...checkoutForm, landmark: e.target.value })}
-                placeholder="Nearby famous place"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF7A00] transition-all"
-              />
-            </div>
-
-            <div className="flex gap-4 mt-2">
-              <button
-                type="button"
-                onClick={() => setCheckoutModalOpen(false)}
-                className="flex-1 py-3 border border-zinc-800 hover:border-zinc-700 bg-transparent text-zinc-400 hover:text-white font-bold rounded-xl transition-all uppercase tracking-wider text-[10px] cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={checkoutLoading}
-                className="flex-[2] py-3 bg-[#FF7A00] hover:bg-[#E66E00] text-white font-black rounded-xl transition-all uppercase tracking-widest text-[10px] shadow-lg flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {checkoutLoading ? "Initiating..." : `Pay ₹${cartItems.reduce((acc, i) => acc + (i.qty || 1) * i.price, 0)}`}
-              </button>
-            </div>
-          </form>
-
+          </div>
         </div>
-      </div>
-    )}
-  </>
-);
+      )}
+    </>
+  );
 };
 
 export default Navbar;

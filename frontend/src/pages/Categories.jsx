@@ -283,7 +283,7 @@ const Categories = () => {
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'LifeCell.Fitness Health Store',
+        name: 'livesale.Fitness Health Store',
         description: `Order for ${product.name}`,
         image: product.images?.[0] || 'https://lh3.googleusercontent.com/d/1w8lK1Hw1h...',
         order_id: orderData.razorpayOrderId,
@@ -504,7 +504,7 @@ const Categories = () => {
           {/* Timeline Section */}
           <div className="bg-[#111319]/80 border border-zinc-900 rounded-[1.8rem] p-6 mt-6 text-left">
             <h3 className="text-xs font-black text-white uppercase tracking-wider mb-6">What's Next?</h3>
-            
+
             <div className="grid grid-cols-5 gap-2 relative">
               {/* Connector line */}
               <div className="absolute left-[10%] right-[10%] top-4 h-[2px] bg-zinc-800/80 z-0">
@@ -588,7 +588,7 @@ const Categories = () => {
             </div>
             <div className="flex gap-6 items-center flex-wrap justify-center">
               <span>📞 +1 (555) 123-4567</span>
-              <span>✉️ support@lifecell.fitness</span>
+              <span>✉️ support@livesale.fitness</span>
               <span>⏰ 24/7 Support Available</span>
             </div>
           </div>
@@ -667,7 +667,7 @@ const Categories = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
             {/* Left Column (lg:col-span-8) */}
             <div className="lg:col-span-8 space-y-6">
-              
+
               {/* Delivery Address Section */}
               <div className="bg-[#111319]/80 border border-zinc-900 rounded-[1.8rem] p-6 space-y-4">
                 <div className="flex justify-between items-center">
@@ -809,7 +809,7 @@ const Categories = () => {
                   </div>
                   <div className="flex-grow text-left">
                     <h4 className="text-sm font-bold text-white leading-tight line-clamp-2">{checkoutProduct.name}</h4>
-                    
+
                     {/* Flavor chip */}
                     <div className="mt-1.5">
                       <span className="inline-block bg-white/[0.03] border border-zinc-800/80 rounded-lg px-2.5 py-1 text-[10px] text-zinc-400 font-black uppercase tracking-wider">
@@ -1090,8 +1090,8 @@ const Categories = () => {
                       }
                     }}
                     className={`rounded-full transition-all duration-300 ${idx === activeDietSlide
-                        ? 'w-7 h-2.5 bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.7)]'
-                        : 'w-2.5 h-2.5 bg-zinc-700 hover:bg-zinc-500'
+                      ? 'w-7 h-2.5 bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.7)]'
+                      : 'w-2.5 h-2.5 bg-zinc-700 hover:bg-zinc-500'
                       }`}
                   />
                 ))}
@@ -1234,7 +1234,7 @@ const Categories = () => {
                       <div>
                         {/* Live Badge Group */}
                         <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#0d1c12] border border-[#142d1a] text-[#22c55e] text-[9.5px] font-black uppercase tracking-wider mb-2.5">
-                          {item.brand || 'LIFECELL.FITNESS LIVE'}
+                          {item.brand || 'livesale.FITNESS LIVE'}
                         </div>
 
                         {/* Title */}
@@ -1638,7 +1638,7 @@ const Categories = () => {
                 {isDiet ? (
                   <div className="space-y-2 text-xs">
                     <p className="text-zinc-400">
-                      <strong className="text-zinc-300">Ingredients: </strong> 
+                      <strong className="text-zinc-300">Ingredients: </strong>
                       {selectedProduct.ingredientsAllergyInfo?.ingredients || selectedProduct.ingredients || "Fresh vegetables, grilled paneer, olive oil, signature dressing."}
                     </p>
                     {selectedProduct.ingredientsAllergyInfo?.allergyWarning && (

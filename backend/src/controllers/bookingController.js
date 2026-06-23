@@ -21,23 +21,23 @@ const timeToMinutes = (timeStr) => {
 const sendBookingConfirmationEmails = async (customer, trainer, booking) => {
   try {
     const transporter = getTransporter();
-    
+
     const addressDetails = booking.address ? `\nTraining Location: ${booking.address}` : '';
     const contactPhone = booking.phone || customer.phone || 'N/A';
 
     // Customer Email
     await transporter.sendMail({
-      from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
+      from: `livesale.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: customer.email,
-      subject: 'Booking Confirmed! - LifeCell.Fitness',
-      text: `Hello ${customer.name},\n\nYour session with trainer ${trainer.name} has been successfully booked!\n\nDetails:\nDate: ${booking.date}\nTime Slot: ${booking.slot}\nFormat: ${booking.trainingType || 'N/A'}${addressDetails}\nPrice Paid: ₹${booking.price}\n\nTrainer Contact: ${trainer.phone}\n\nThank you for choosing LifeCell.Fitness!`
+      subject: 'Booking Confirmed! - livesale.Fitness',
+      text: `Hello ${customer.name},\n\nYour session with trainer ${trainer.name} has been successfully booked!\n\nDetails:\nDate: ${booking.date}\nTime Slot: ${booking.slot}\nFormat: ${booking.trainingType || 'N/A'}${addressDetails}\nPrice Paid: ₹${booking.price}\n\nTrainer Contact: ${trainer.phone}\n\nThank you for choosing livesale.Fitness!`
     });
 
     // Trainer Email
     await transporter.sendMail({
-      from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
+      from: `livesale.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
       to: trainer.email,
-      subject: 'New Booking Confirmed! - LifeCell.Fitness',
+      subject: 'New Booking Confirmed! - livesale.Fitness',
       text: `Hello ${trainer.name},\n\nYou have a new confirmed booking!\n\nDetails:\nClient Name: ${customer.name}\nDate: ${booking.date}\nTime Slot: ${booking.slot}\nFormat: ${booking.trainingType || 'N/A'}${addressDetails}\nPrice: ₹${booking.price}\n\nClient Contact: ${contactPhone}\n\nCheck your dashboard to manage sessions.`
     });
   } catch (err) {
@@ -53,7 +53,7 @@ const getMonthlyDates = (startDateStr, dayName) => {
 
   const dates = [];
   const start = new Date(startDateStr);
-  
+
   // Find all dates matching target day in next 28 days (4 weeks)
   for (let i = 0; i < 28; i++) {
     const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
@@ -269,12 +269,12 @@ exports.cancelBooking = async (req, res) => {
     // Notify cancellation via Email
     const transporter = getTransporter();
     const mailText = `Your booking on ${booking.date} at ${booking.slot} has been cancelled. Refund of ₹${refundAmount} (${refundPercent}%) initiated successfully.`;
-    
+
     if (customer) {
       await transporter.sendMail({
-        from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
+        from: `livesale.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
         to: customer.email,
-        subject: 'Booking Cancelled - LifeCell.Fitness',
+        subject: 'Booking Cancelled - livesale.Fitness',
         text: mailText
       });
     }

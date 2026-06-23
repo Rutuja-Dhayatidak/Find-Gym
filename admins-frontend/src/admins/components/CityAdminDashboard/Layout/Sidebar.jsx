@@ -28,14 +28,14 @@ const Sidebar = () => {
     <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col shadow-lg transition-all duration-300">
       <div className="p-6 border-b border-slate-700 flex items-center justify-center">
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
-          LifeCell.Fitness Admin
+          livesale.Fitness Admin
         </h1>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-2">
         {navItems.map((item) => {
           let isActive = false;
           if (item.path === '/city-admin/health-stores') {
-            isActive = location.pathname === '/city-admin/health-stores' || 
+            isActive = location.pathname === '/city-admin/health-stores' ||
               (location.pathname.startsWith('/city-admin/health-stores/') && !location.pathname.includes('/approvals'));
           } else {
             isActive = location.pathname.startsWith(item.path);
@@ -44,11 +44,10 @@ const Sidebar = () => {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
-                isActive 
-                  ? 'bg-orange-500 text-white shadow-md' 
+              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group ${isActive
+                  ? 'bg-orange-500 text-white shadow-md'
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
+                }`}
             >
               <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
               <span className="font-medium text-sm">{item.name}</span>

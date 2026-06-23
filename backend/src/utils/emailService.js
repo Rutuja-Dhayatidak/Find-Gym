@@ -16,12 +16,12 @@ const sendSetupEmail = async (email, fullName, token) => {
     const setupLink = getAdminFrontendUrl(`/admin/setup-password?token=${token}`);
 
     const mailOptions = {
-      from: `LifeCell.Fitness <${process.env.SMTP_USER}>`,
+      from: `livesale.Fitness <${process.env.SMTP_USER}>`,
       to: email,
-      subject: 'LifeCell.Fitness - Complete Your Account Setup',
+      subject: 'livesale.Fitness - Complete Your Account Setup',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-          <h2 style="color: #1f2937; text-align: center;">Welcome to LifeCell.Fitness, ${fullName}!</h2>
+          <h2 style="color: #1f2937; text-align: center;">Welcome to livesale.Fitness, ${fullName}!</h2>
           <p style="color: #4b5563; font-size: 16px;">Your admin account has been created successfully.</p>
           <p style="color: #4b5563; font-size: 16px;">Please click the button below to set up your secure password. This link will expire in 24 hours.</p>
           
@@ -32,7 +32,7 @@ const sendSetupEmail = async (email, fullName, token) => {
           <p style="color: #6b7280; font-size: 14px; text-align: center;">If you have any questions, please contact your Super Admin.</p>
           
           <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
-          <p style="color: #9ca3af; font-size: 12px; text-align: center;">&copy; ${new Date().getFullYear()} LifeCell.Fitness. All rights reserved.</p>
+          <p style="color: #9ca3af; font-size: 12px; text-align: center;">&copy; ${new Date().getFullYear()} livesale.Fitness. All rights reserved.</p>
         </div>
       `
     };

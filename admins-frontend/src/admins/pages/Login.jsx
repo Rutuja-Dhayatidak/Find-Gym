@@ -24,7 +24,7 @@ const Login = () => {
       if (response.data.success) {
         // Based on role, redirect to appropriate dashboard
         const { admin, token } = response.data;
-        
+
         // Save tokens depending on role (we have superAdminToken and adminToken in axios logic)
         localStorage.setItem('admin', JSON.stringify(admin));
         if (admin.adminType === 'Super Admin') {
@@ -54,7 +54,7 @@ const Login = () => {
       {/* Decorative Glow Spheres */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-[#FF7A00]/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-orange-600/5 blur-[100px] pointer-events-none" />
-      
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="text-center">
           {/* Gym Weight Icon with glow */}
@@ -64,7 +64,7 @@ const Login = () => {
             </svg>
           </div>
           <h2 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
-            LifeCell.Fitness <span className="text-[#FF7A00]">Admin Portal</span>
+            livesale.Fitness <span className="text-[#FF7A00]">Admin Portal</span>
           </h2>
           <p className="mt-2 text-sm text-gray-400">
             Sign in to manage the platform
@@ -74,7 +74,7 @@ const Login = () => {
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           {/* Glassmorphic Container */}
           <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 py-8 px-6 sm:px-10 shadow-2xl rounded-2xl relative">
-            
+
             {error && (
               <div className="mb-6 bg-red-950/40 border border-red-500/50 p-4 rounded-xl">
                 <div className="flex">
@@ -105,7 +105,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-11 appearance-none block w-full px-3 py-3 border border-white/10 rounded-xl bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/20 focus:border-[#FF7A00] sm:text-sm transition-all"
-                    placeholder="admin@lifecell.fitness"
+                    placeholder="admin@livesale.fitness"
                   />
                 </div>
               </div>

@@ -37,7 +37,7 @@ const Footer = () => {
               <div>
                 <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">Contact Information</h3>
                 <ul className="mt-4 space-y-4">
-                  <li className="text-base text-gray-400">contact@lifecell.fitness</li>
+                  <li className="text-base text-gray-400">contact@livesale.fitness</li>
                   <li className="text-base text-gray-400">+1 (555) 123-4567</li>
                   <li className="text-base text-gray-400">123 Fitness Ave, Health City, CA 90210</li>
                 </ul>

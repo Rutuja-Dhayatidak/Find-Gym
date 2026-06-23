@@ -19,7 +19,7 @@ const TrainerDashboard = () => {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Reapply state
   const [reapplyFiles, setReapplyFiles] = useState({ aadharCard: null, certificates: [] });
   const [reapplyNames, setReapplyNames] = useState({ aadharCard: '' });
@@ -69,22 +69,22 @@ const TrainerDashboard = () => {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
- 
+
   const fetchTrainerData = async () => {
     try {
       setLoading(true);
       setError('');
-      
+
       const statusRes = await getTrainerStatus();
       setStatus(statusRes.status);
- 
+
       const profileRes = await getTrainerProfile();
       if (profileRes.success) {
         const tr = profileRes.trainer;
         setProfile(tr);
         setAvailDays(tr.availability?.days || []);
         setAvailSlots(tr.availability?.timeSlots || []);
-        
+
         // Populate edit form
         setEditForm({
           name: tr.name || '',
@@ -112,7 +112,7 @@ const TrainerDashboard = () => {
           clients: tr.clients || ''
         });
       }
- 
+
       try {
         const bookingsRes = await getTrainerBookings();
         if (bookingsRes.success) {
@@ -121,7 +121,7 @@ const TrainerDashboard = () => {
       } catch (err) {
         console.error("Failed to fetch bookings:", err);
       }
- 
+
       try {
         const earningsRes = await getTrainerEarnings();
         if (earningsRes.success) {
@@ -138,12 +138,12 @@ const TrainerDashboard = () => {
       setLoading(false);
     }
   };
- 
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setUpdatingProfile(true);
     setProfileMsg('');
- 
+
     try {
       const fd = new FormData();
       fd.append('name', editForm.name);
@@ -165,11 +165,11 @@ const TrainerDashboard = () => {
       fd.append('review', editForm.review);
       fd.append('rating', editForm.rating);
       fd.append('clients', editForm.clients);
-      
+
       const specs = editForm.specializations.split(',').map(s => s.trim()).filter(Boolean);
       const certs = editForm.certifications.split(',').map(c => c.trim()).filter(Boolean);
       const langs = editForm.languages.split(',').map(l => l.trim()).filter(Boolean);
-      
+
       fd.append('specializations', JSON.stringify(specs));
       fd.append('certifications', JSON.stringify(certs));
       fd.append('languages', JSON.stringify(langs));
@@ -264,8 +264,8 @@ const TrainerDashboard = () => {
           <div className="text-6xl mb-4 animate-pulse">⏳</div>
           <h1 className="text-3xl font-bold text-slate-800 mb-4">Application Under Review</h1>
           <p className="text-slate-600 mb-6 leading-relaxed">
-            Thank you for registering, <span className="text-orange-500 font-semibold">{profile?.name}</span>! 
-            Our admin team is currently reviewing your certificates, experience, and details. 
+            Thank you for registering, <span className="text-orange-500 font-semibold">{profile?.name}</span>!
+            Our admin team is currently reviewing your certificates, experience, and details.
             You will receive an email notification as soon as your account is approved.
           </p>
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left text-sm space-y-2 mb-6">
@@ -350,7 +350,7 @@ const TrainerDashboard = () => {
           <div className="text-6xl mb-4">🚫</div>
           <h1 className="text-3xl font-bold text-red-600 mb-2">Account Blocked</h1>
           <p className="text-slate-600 mb-6 leading-relaxed">
-            Your trainer account has been suspended or blocked by the administrator. 
+            Your trainer account has been suspended or blocked by the administrator.
             Please contact customer support at <span className="text-orange-500">trainers@findgym.com</span> for details.
           </p>
           {profile?.blockedReason && (
@@ -367,29 +367,28 @@ const TrainerDashboard = () => {
   }
 
   // Calculate profile initials
-  const initials = profile?.name 
-    ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
+  const initials = profile?.name
+    ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : 'TR';
 
   // ─────────────── APPROVED & ACTIVE DASHBOARD (MATCHING THE SCREENSHOT THEME) ───────────────
   return (
     <div className="h-screen bg-[#f8fafc] flex text-slate-800 overflow-hidden">
-      
+
       {/* 1. Left Sidebar (Platform Admin Style) */}
       <aside className="w-64 h-full bg-slate-900 text-white flex flex-col shadow-lg shrink-0">
         <div className="p-6 border-b border-slate-750 flex items-center justify-center">
           <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
-            LifeCell.Fitness Trainer
+            livesale.Fitness Trainer
           </h1>
         </div>
         <nav className="flex-1 px-4 py-6 space-y-2">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${
-              activeTab === 'overview'
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${activeTab === 'overview'
                 ? 'bg-orange-500 text-white shadow-md'
                 : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-            }`}
+              }`}
           >
             <span className="text-xl group-hover:scale-110 transition-transform">📊</span>
             <span className="font-medium">Dashboard Overview</span>
@@ -397,11 +396,10 @@ const TrainerDashboard = () => {
 
           <button
             onClick={() => setActiveTab('availability')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${
-              activeTab === 'availability'
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${activeTab === 'availability'
                 ? 'bg-orange-500 text-white shadow-md'
                 : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-            }`}
+              }`}
           >
             <span className="text-xl group-hover:scale-110 transition-transform">🕒</span>
             <span className="font-medium">Availability Settings</span>
@@ -409,11 +407,10 @@ const TrainerDashboard = () => {
 
           <button
             onClick={() => setActiveTab('earnings')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${
-              activeTab === 'earnings'
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${activeTab === 'earnings'
                 ? 'bg-orange-500 text-white shadow-md'
                 : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-            }`}
+              }`}
           >
             <span className="text-xl group-hover:scale-110 transition-transform">💰</span>
             <span className="font-medium">Earnings & Bookings</span>
@@ -421,17 +418,16 @@ const TrainerDashboard = () => {
 
           <button
             onClick={() => setActiveTab('edit-profile')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${
-              activeTab === 'edit-profile'
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-205 group ${activeTab === 'edit-profile'
                 ? 'bg-orange-500 text-white shadow-md'
                 : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-            }`}
+              }`}
           >
             <span className="text-xl group-hover:scale-110 transition-transform">👤</span>
             <span className="font-medium">Edit Profile</span>
           </button>
         </nav>
-        
+
         <div className="p-4 border-t border-slate-750">
           <button
             onClick={handleLogout}
@@ -445,7 +441,7 @@ const TrainerDashboard = () => {
 
       {/* 2. Main Content Wrapper */}
       <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
-        
+
         {/* Top Header (Platform Admin Style) */}
         <header className="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between shadow-sm">
           <div>
@@ -456,12 +452,12 @@ const TrainerDashboard = () => {
               {activeTab === 'edit-profile' && 'Edit Profile Details'}
             </h2>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <span className="bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
               {status}
             </span>
-            
+
             {/* User Profile Info Dropdown Area */}
             <div className="flex items-center gap-3 border-l border-slate-200 pl-4">
               <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold shadow-sm border border-orange-200 shrink-0">
@@ -478,7 +474,7 @@ const TrainerDashboard = () => {
         {/* Main Body */}
         <main className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-4xl mx-auto">
-            
+
             {activeTab === 'overview' && (
               <div className="space-y-8 animate-in fade-in duration-200">
                 <div>
@@ -504,8 +500,8 @@ const TrainerDashboard = () => {
                 <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 text-left">
                   <div className="flex justify-between items-center border-b border-slate-100 pb-2">
                     <h3 className="font-bold text-slate-800 text-lg">My Active Profile Details</h3>
-                    <button 
-                      onClick={() => setActiveTab('edit-profile')} 
+                    <button
+                      onClick={() => setActiveTab('edit-profile')}
                       className="text-xs text-orange-500 font-extrabold hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       ✏️ Edit Profile
@@ -513,23 +509,23 @@ const TrainerDashboard = () => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
                     <div className="border-b border-slate-100 pb-3">
-                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">City</span> 
+                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">City</span>
                       <span className="text-slate-800 font-semibold text-sm">{profile?.city || 'N/A'}</span>
                     </div>
                     <div className="border-b border-slate-100 pb-3">
-                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Experience</span> 
+                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Experience</span>
                       <span className="text-slate-800 font-semibold text-sm">{profile?.experience || 0} Years</span>
                     </div>
                     <div className="border-b border-slate-100 pb-3 sm:col-span-2">
-                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Training Formats</span> 
+                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Training Formats</span>
                       <span className="text-slate-800 font-semibold text-sm">{profile?.trainingTypes?.join(', ') || 'N/A'}</span>
                     </div>
                     <div className="border-b border-slate-100 pb-3">
-                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Languages</span> 
+                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Languages</span>
                       <span className="text-slate-800 font-semibold text-sm">{profile?.languages?.join(', ') || 'N/A'}</span>
                     </div>
                     <div className="border-b border-slate-100 pb-3">
-                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Clients Trained</span> 
+                      <span className="block text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Clients Trained</span>
                       <span className="text-slate-800 font-semibold text-sm">{profile?.clients || '0'}</span>
                     </div>
                   </div>
@@ -548,8 +544,8 @@ const TrainerDashboard = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Full Name</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
                         value={editForm.name}
                         onChange={(e) => setEditForm(p => ({ ...p, name: e.target.value }))}
@@ -559,8 +555,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Phone Number</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
                         value={editForm.phone}
                         onChange={(e) => setEditForm(p => ({ ...p, phone: e.target.value }))}
@@ -570,8 +566,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">City</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
                         value={editForm.city}
                         onChange={(e) => setEditForm(p => ({ ...p, city: e.target.value }))}
@@ -581,8 +577,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Experience (Years)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         required
                         value={editForm.experience}
                         onChange={(e) => setEditForm(p => ({ ...p, experience: e.target.value }))}
@@ -592,8 +588,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Price Per Session (₹)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         required
                         value={editForm.pricePerSession}
                         onChange={(e) => setEditForm(p => ({ ...p, pricePerSession: e.target.value }))}
@@ -603,8 +599,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Price Per Month (₹)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         value={editForm.pricePerMonth}
                         onChange={(e) => setEditForm(p => ({ ...p, pricePerMonth: e.target.value }))}
                         className="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
@@ -613,7 +609,7 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Gender</label>
-                      <select 
+                      <select
                         value={editForm.gender}
                         onChange={(e) => setEditForm(p => ({ ...p, gender: e.target.value }))}
                         className="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm bg-white"
@@ -627,8 +623,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Date of Birth</label>
-                      <input 
-                        type="date" 
+                      <input
+                        type="date"
                         value={editForm.dateOfBirth}
                         onChange={(e) => setEditForm(p => ({ ...p, dateOfBirth: e.target.value }))}
                         className="w-full px-4 py-2 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
@@ -637,8 +633,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Languages (comma separated)</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="e.g. English, Hindi, Marathi"
                         value={editForm.languages}
                         onChange={(e) => setEditForm(p => ({ ...p, languages: e.target.value }))}
@@ -648,8 +644,8 @@ const TrainerDashboard = () => {
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-slate-700">Trial Price (₹)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         disabled={!editForm.trialSession}
                         value={editForm.trialPrice}
                         onChange={(e) => setEditForm(p => ({ ...p, trialPrice: e.target.value }))}
@@ -660,8 +656,8 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Specializations (comma separated)</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="e.g. Strength Training, Weight Loss, Bodybuilding"
                       value={editForm.specializations}
                       onChange={(e) => setEditForm(p => ({ ...p, specializations: e.target.value }))}
@@ -671,8 +667,8 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Certifications (comma separated)</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="e.g. ACE Certified, Gold Medalist Yoga, CPR First Aid"
                       value={editForm.certifications}
                       onChange={(e) => setEditForm(p => ({ ...p, certifications: e.target.value }))}
@@ -682,7 +678,7 @@ const TrainerDashboard = () => {
 
                   <div className="flex gap-6">
                     <label className="flex items-center gap-2 text-sm text-slate-700 font-semibold cursor-pointer">
-                      <input 
+                      <input
                         type="checkbox"
                         checked={editForm.trialSession}
                         onChange={(e) => setEditForm(p => ({ ...p, trialSession: e.target.checked, trialPrice: e.target.checked ? p.trialPrice : '' }))}
@@ -699,7 +695,7 @@ const TrainerDashboard = () => {
                         const isChecked = editForm.trainingTypes.includes(format);
                         return (
                           <label key={format} className="flex items-center gap-2 text-sm text-slate-700 font-medium cursor-pointer">
-                            <input 
+                            <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={(e) => {
@@ -721,8 +717,8 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Profile Photo</label>
-                    <input 
-                      type="file" 
+                    <input
+                      type="file"
                       accept="image/*"
                       onChange={(e) => setProfilePhoto(e.target.files[0])}
                       className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer"
@@ -731,7 +727,7 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Bio</label>
-                    <textarea 
+                    <textarea
                       rows={4}
                       value={editForm.bio}
                       onChange={(e) => setEditForm(p => ({ ...p, bio: e.target.value }))}
@@ -741,7 +737,7 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Featured Review Quote / Snippet</label>
-                    <textarea 
+                    <textarea
                       rows={2}
                       placeholder="e.g. Best trainer ever! Helped me lose 10 kgs in 3 months."
                       value={editForm.review}
@@ -752,9 +748,9 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Star Rating (1 - 5)</label>
-                    <input 
-                      type="number" 
-                      min="1" 
+                    <input
+                      type="number"
+                      min="1"
                       max="5"
                       step="0.1"
                       placeholder="e.g. 4.8"
@@ -766,8 +762,8 @@ const TrainerDashboard = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700">Clients Trained</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="e.g. 250+ or 100"
                       value={editForm.clients}
                       onChange={(e) => setEditForm(p => ({ ...p, clients: e.target.value }))}
@@ -780,8 +776,8 @@ const TrainerDashboard = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-600">Account Holder Name</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={editForm.bankAccountHolderName}
                           onChange={(e) => setEditForm(p => ({ ...p, bankAccountHolderName: e.target.value }))}
                           className="w-full px-4 py-2 border border-slate-200 bg-white rounded-xl outline-none focus:border-orange-500 text-sm"
@@ -789,8 +785,8 @@ const TrainerDashboard = () => {
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-600">Account Number</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={editForm.bankAccountNumber}
                           onChange={(e) => setEditForm(p => ({ ...p, bankAccountNumber: e.target.value }))}
                           className="w-full px-4 py-2 border border-slate-200 bg-white rounded-xl outline-none focus:border-orange-500 text-sm"
@@ -798,8 +794,8 @@ const TrainerDashboard = () => {
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-600">IFSC Code</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={editForm.bankIfscCode}
                           onChange={(e) => setEditForm(p => ({ ...p, bankIfscCode: e.target.value.toUpperCase() }))}
                           className="w-full px-4 py-2 border border-slate-200 bg-white rounded-xl outline-none focus:border-orange-500 text-sm"
@@ -813,8 +809,8 @@ const TrainerDashboard = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-600">Aadhar Number</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           maxLength="12"
                           value={editForm.aadharNumber}
                           onChange={(e) => setEditForm(p => ({ ...p, aadharNumber: e.target.value.replace(/\D/g, '') }))}
@@ -823,8 +819,8 @@ const TrainerDashboard = () => {
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-600">PAN Number</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           maxLength="10"
                           value={editForm.panNumber}
                           onChange={(e) => setEditForm(p => ({ ...p, panNumber: e.target.value.toUpperCase() }))}
@@ -840,8 +836,8 @@ const TrainerDashboard = () => {
                     </div>
                   )}
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={updatingProfile}
                     className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold transition-all text-sm disabled:opacity-50 shadow-md"
                   >
@@ -867,11 +863,10 @@ const TrainerDashboard = () => {
                         return (
                           <button key={d} type="button"
                             onClick={() => setAvailDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])}
-                            className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                              isSelected 
-                                ? 'bg-orange-500 text-white border-orange-500 shadow-sm' 
+                            className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all ${isSelected
+                                ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
                                 : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                            }`}
+                              }`}
                           >
                             {d}
                           </button>
@@ -888,11 +883,10 @@ const TrainerDashboard = () => {
                         return (
                           <button key={t} type="button"
                             onClick={() => setAvailSlots(p => p.includes(t) ? p.filter(x => x !== t) : [...p, t])}
-                            className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                              isSelected 
-                                ? 'bg-orange-500 text-white border-orange-500 shadow-sm' 
+                            className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all ${isSelected
+                                ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
                                 : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                            }`}
+                              }`}
                           >
                             {t}
                           </button>
@@ -936,7 +930,7 @@ const TrainerDashboard = () => {
                     <h3 className="text-lg font-bold text-slate-800">Client Bookings</h3>
                     <p className="text-slate-500 text-xs">A list of all booking requests and sessions.</p>
                   </div>
-                  
+
                   {bookings.length > 0 ? (
                     <div className="overflow-x-auto border border-slate-100 rounded-xl">
                       <table className="w-full text-left border-collapse text-sm">
@@ -971,10 +965,9 @@ const TrainerDashboard = () => {
                               <td className="p-3.5 text-slate-500">{booking.time}</td>
                               <td className="p-3.5 font-bold text-slate-900">₹{booking.price}</td>
                               <td className="p-3.5 text-right">
-                                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                  booking.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-700' :
-                                  booking.status === 'Completed' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
-                                }`}>
+                                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${booking.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-700' :
+                                    booking.status === 'Completed' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
+                                  }`}>
                                   {booking.status}
                                 </span>
                               </td>
@@ -996,7 +989,7 @@ const TrainerDashboard = () => {
                     <h3 className="text-lg font-bold text-slate-800">Payout Transactions</h3>
                     <p className="text-slate-500 text-xs">History of payouts transferred to your bank account.</p>
                   </div>
-                  
+
                   {earnings?.transactions?.length > 0 ? (
                     <div className="overflow-x-auto border border-slate-100 rounded-xl">
                       <table className="w-full text-left border-collapse text-sm">
@@ -1040,7 +1033,7 @@ const TrainerDashboard = () => {
           </div>
         </main>
       </div>
-      
+
     </div>
   );
 };

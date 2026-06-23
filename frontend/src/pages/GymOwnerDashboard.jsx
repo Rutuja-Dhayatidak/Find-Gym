@@ -123,14 +123,13 @@ const GymOwnerDashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row relative">
       {/* Sidebar - Dark theme matching city admin */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-white flex flex-col transition-transform duration-300 md:translate-x-0 md:static ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-white flex flex-col transition-transform duration-300 md:translate-x-0 md:static ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Dumbbell className="w-6 h-6 text-orange-500" />
             <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
-              LifeCell.Fitness Owner
+              livesale.Fitness Owner
             </span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
@@ -144,11 +143,10 @@ const GymOwnerDashboard = () => {
               setActiveTab('overview');
               setSidebarOpen(false);
             }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${
-              activeTab === 'overview'
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeTab === 'overview'
                 ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
                 : 'text-slate-300 hover:bg-slate-805 hover:text-white'
-            }`}
+              }`}
           >
             <LayoutDashboard className="w-5 h-5" />
             <span>Dashboard</span>
@@ -159,11 +157,10 @@ const GymOwnerDashboard = () => {
               setActiveTab('memberships');
               setSidebarOpen(false);
             }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${
-              activeTab === 'memberships'
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeTab === 'memberships'
                 ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
                 : 'text-slate-300 hover:bg-slate-805 hover:text-white'
-            }`}
+              }`}
           >
             <CreditCard className="w-5 h-5" />
             <span>Memberships</span>
@@ -174,11 +171,10 @@ const GymOwnerDashboard = () => {
               setActiveTab('kyc');
               setSidebarOpen(false);
             }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${
-              activeTab === 'kyc'
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeTab === 'kyc'
                 ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
                 : 'text-slate-300 hover:bg-slate-805 hover:text-white'
-            }`}
+              }`}
           >
             <FileText className="w-5 h-5" />
             <span>KYC Profile</span>
@@ -222,22 +218,21 @@ const GymOwnerDashboard = () => {
 
           <div className="flex items-center space-x-6">
             {owner && (
-              <span className={`px-2.5 py-1 text-xs rounded-full font-semibold border ${
-                owner.status === 'active' 
-                  ? 'bg-green-50 text-green-700 border-green-200' 
+              <span className={`px-2.5 py-1 text-xs rounded-full font-semibold border ${owner.status === 'active'
+                  ? 'bg-green-50 text-green-700 border-green-200'
                   : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-              }`}>
+                }`}>
                 {owner.status === 'active' ? '● Verified' : '● Verification Pending'}
               </span>
             )}
-            
+
             <div className="relative">
               <button className="text-slate-500 hover:text-orange-500 transition-colors relative">
                 <span className="text-xl">🔔</span>
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
               </button>
             </div>
-            
+
             {owner && (
               <div className="flex items-center space-x-3 border-l pl-6 border-slate-200">
                 <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold border border-orange-200 shadow-sm">
@@ -276,7 +271,7 @@ const GymOwnerDashboard = () => {
                   <div>
                     <h4 className="font-bold text-slate-800 text-base">Account Awaiting Approval</h4>
                     <p className="text-sm text-slate-600 mt-1 leading-relaxed">
-                      Your business documents and KYC credentials are being reviewed by the city admins. 
+                      Your business documents and KYC credentials are being reviewed by the city admins.
                       You can register your gyms now, but they will be made live and visible to end-customers only after the profile verification is complete.
                     </p>
                   </div>
@@ -365,20 +360,18 @@ const GymOwnerDashboard = () => {
                               </td>
                               <td className="p-4">{gym.capacity} members</td>
                               <td className="p-4">
-                                <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${
-                                  gym.verified 
-                                    ? 'bg-green-50 text-green-700 border-green-200' 
+                                <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${gym.verified
+                                    ? 'bg-green-50 text-green-700 border-green-200'
                                     : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                                }`}>
+                                  }`}>
                                   {gym.verified ? 'Verified' : 'Pending'}
                                 </span>
                               </td>
                               <td className="p-4">
-                                <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${
-                                  gym.setupCompleted 
-                                    ? 'bg-green-50 text-green-700 border-green-200' 
+                                <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${gym.setupCompleted
+                                    ? 'bg-green-50 text-green-700 border-green-200'
                                     : 'bg-orange-50 text-orange-705 border-orange-200'
-                                }`}>
+                                  }`}>
                                   {gym.setupCompleted ? 'Setup Completed' : 'Setup Incomplete'}
                                 </span>
                               </td>
@@ -477,13 +470,12 @@ const GymOwnerDashboard = () => {
                               <div>To: {membership.endDate ? new Date(membership.endDate).toLocaleDateString() : 'N/A'}</div>
                             </td>
                             <td className="p-4">
-                              <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${
-                                membership.status === 'active'
+                              <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${membership.status === 'active'
                                   ? 'bg-green-50 text-green-700 border-green-200'
                                   : membership.status === 'pending'
-                                  ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                                  : 'bg-red-50 text-red-700 border-red-200'
-                              }`}>
+                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                                    : 'bg-red-50 text-red-700 border-red-200'
+                                }`}>
                                 {membership.status}
                               </span>
                             </td>
@@ -615,15 +607,14 @@ const GymOwnerDashboard = () => {
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div>
                 <h3 className="text-xl font-bold text-slate-900">{selectedGymForModal.name}</h3>
-                <span className={`mt-1.5 inline-block px-2.5 py-0.5 text-xs rounded-full font-semibold border ${
-                  selectedGymForModal.verified 
-                    ? 'bg-green-50 text-green-700 border-green-200' 
+                <span className={`mt-1.5 inline-block px-2.5 py-0.5 text-xs rounded-full font-semibold border ${selectedGymForModal.verified
+                    ? 'bg-green-50 text-green-700 border-green-200'
                     : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                }`}>
+                  }`}>
                   {selectedGymForModal.verified ? 'Verified' : 'Pending Approval'}
                 </span>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedGymForModal(null)}
                 className="p-1.5 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg transition"
               >
@@ -715,7 +706,7 @@ const GymOwnerDashboard = () => {
 
             {/* Modal Footer */}
             <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
-              <button 
+              <button
                 onClick={() => setSelectedGymForModal(null)}
                 className="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition"
               >

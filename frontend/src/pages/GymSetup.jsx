@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getGymById, setupGym, uploadGymImage } from '../userServices/gymApi';
 import toast from 'react-hot-toast';
-import { 
-  Dumbbell, 
-  ArrowLeft, 
-  Save, 
-  Plus, 
-  Trash2, 
-  Image as ImageIcon, 
-  MapPin, 
-  Clock, 
-  Sparkles, 
-  DollarSign, 
-  Users, 
-  Tag, 
+import {
+  Dumbbell,
+  ArrowLeft,
+  Save,
+  Plus,
+  Trash2,
+  Image as ImageIcon,
+  MapPin,
+  Clock,
+  Sparkles,
+  DollarSign,
+  Users,
+  Tag,
   Info,
   Calendar,
   CheckCircle,
@@ -60,7 +60,7 @@ const GymSetup = () => {
 
   // Predefined facilities/amenities options
   const facilityOptions = [
-    'Cardio', 'Strength Training', 'Personal Trainer', 'Locker', 
+    'Cardio', 'Strength Training', 'Personal Trainer', 'Locker',
     'Shower', 'Steam', 'Diet Plan', 'Parking', 'Wi-Fi', 'AC',
     'Sauna', 'Swimming Pool', 'Yoga Studio', 'Crossfit Area'
   ];
@@ -307,8 +307,8 @@ const GymSetup = () => {
       toast.error('Plan Title, Price, Duration and Validity are required');
       return;
     }
-    setMembershipPlans(prev => [...prev, { 
-      ...newPlan, 
+    setMembershipPlans(prev => [...prev, {
+      ...newPlan,
       price: parseFloat(newPlan.price),
       saving: parseFloat(newPlan.saving) || 0
     }]);
@@ -367,13 +367,13 @@ const GymSetup = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row relative">
-      
+
       {/* Sidebar - Matches Dashboard Navigation Menu */}
       <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col md:min-h-screen shrink-0">
         <div className="p-6 border-b border-slate-800 flex items-center gap-2.5">
           <Dumbbell className="w-6 h-6 text-orange-500" />
           <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
-            LifeCell.Fitness Owner
+            livesale.Fitness Owner
           </span>
         </div>
 
@@ -385,7 +385,7 @@ const GymSetup = () => {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Dashboard</span>
           </button>
-          
+
           <div className="pt-4 pb-2 px-4 text-[10.5px] font-bold uppercase tracking-wider text-slate-500 border-t border-slate-805/40 mt-4">
             Setup Console
           </div>
@@ -404,11 +404,10 @@ const GymSetup = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-left ${
-                  isActive 
-                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' 
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-left ${isActive
+                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
                     : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                }`}
+                  }`}
               >
                 <Icon className="w-4.5 h-4.5" />
                 <span>{tab.label}</span>
@@ -420,7 +419,7 @@ const GymSetup = () => {
 
       {/* Main Content Area */}
       <div className="flex-grow flex flex-col min-w-0">
-        
+
         {/* Top Header Bar */}
         <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
@@ -441,7 +440,7 @@ const GymSetup = () => {
 
         {/* Content body */}
         <main className="flex-grow p-6 md:p-8 space-y-6 overflow-y-auto max-w-6xl w-full mx-auto text-left">
-          
+
           {/* Setup Progress Information Banner */}
           <div className="bg-orange-50 border border-orange-200 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-orange-800 shadow-sm">
             <div className="flex items-start gap-3 text-left">
@@ -453,15 +452,14 @@ const GymSetup = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center shrink-0">
               <div className="text-left sm:text-right">
                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Status</p>
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full mt-1 border ${
-                  isPublishReady 
-                    ? 'bg-green-50 text-green-700 border-green-200' 
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full mt-1 border ${isPublishReady
+                    ? 'bg-green-50 text-green-700 border-green-200'
                     : 'bg-amber-50 text-amber-700 border-amber-200'
-                }`}>
+                  }`}>
                   <span className={`w-2 h-2 rounded-full ${isPublishReady ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`}></span>
                   {isPublishReady ? 'Setup Completed' : 'Setup Incomplete'}
                 </span>
@@ -471,7 +469,7 @@ const GymSetup = () => {
 
           {/* Form Wizard Card Container */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
-            
+
             {/* Tab: About & Timings */}
             {activeTab === 'basic' && (
               <div className="space-y-6">
@@ -637,11 +635,10 @@ const GymSetup = () => {
                           <label
                             key={facility}
                             onClick={() => toggleFacility(facility)}
-                            className={`flex items-center px-4 py-3 rounded-xl border cursor-pointer select-none text-xs font-bold transition-all uppercase tracking-wider ${
-                              isSelected
+                            className={`flex items-center px-4 py-3 rounded-xl border cursor-pointer select-none text-xs font-bold transition-all uppercase tracking-wider ${isSelected
                                 ? 'bg-orange-50 border-orange-500 text-orange-700 font-extrabold shadow-sm'
                                 : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'
-                            }`}
+                              }`}
                           >
                             {facility}
                           </label>
@@ -689,7 +686,7 @@ const GymSetup = () => {
 
                     {locationAndFacilities.latitude && locationAndFacilities.longitude && (
                       <div className="rounded-xl overflow-hidden border border-slate-200 h-44 mt-3">
-                        <iframe 
+                        <iframe
                           src={`https://maps.google.com/maps?q=${locationAndFacilities.latitude},${locationAndFacilities.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                           className="w-full h-full border-0 filter brightness-[96%] contrast-[102%]"
                           title="Coordinate Preview"
@@ -1008,8 +1005,8 @@ const GymSetup = () => {
                       <p className="text-slate-450 text-[10px] mt-0.5">Toggle free guest trial sessions for new customer visits</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer select-none">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={freeTrial.available}
                         onChange={(e) => setFreeTrial(prev => ({ ...prev, available: e.target.checked }))}
                         className="sr-only peer"

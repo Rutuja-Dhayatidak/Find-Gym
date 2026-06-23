@@ -220,9 +220,8 @@ const UserRegister = () => {
           {[1, 2, 3, 4, 5, 6].map((idx) => (
             <div
               key={idx}
-              className={`flex-1 rounded-full transition-all duration-300 ${
-                idx <= step ? 'bg-[#FF7A00]' : 'bg-white/10'
-              }`}
+              className={`flex-1 rounded-full transition-all duration-300 ${idx <= step ? 'bg-[#FF7A00]' : 'bg-white/10'
+                }`}
             />
           ))}
         </div>
@@ -269,14 +268,14 @@ const UserRegister = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
             </svg>
           </div>
-          <span className="text-white font-black text-xl tracking-tight">LifeCell<span className="text-orange-400">.Fitness</span></span>
+          <span className="text-white font-black text-xl tracking-tight">livesale<span className="text-orange-400">.Fitness</span></span>
         </div>
 
         {/* Hero text */}
         <div className="mb-10">
           <p className="text-orange-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">Start Your Journey</p>
           <h1 className="text-[3.2rem] font-black text-white leading-[1.08] mb-5">
-            Join <span style={{ color: '#FF7A00', textShadow: '0 0 40px rgba(255,122,0,0.4)' }}>LifeCell.Fitness</span><br />
+            Join <span style={{ color: '#FF7A00', textShadow: '0 0 40px rgba(255,122,0,0.4)' }}>livesale.Fitness</span><br />
             and Transform<br />Your Life
           </h1>
           <p className="text-white/55 text-[1rem] leading-[1.7] max-w-[380px]">
@@ -315,14 +314,14 @@ const UserRegister = () => {
       {/* Right panel - multi-step form */}
       <div className="relative z-20 flex items-center justify-center w-full lg:w-auto lg:min-w-[460px] lg:max-w-[520px] px-6 py-12 lg:px-12 lg:bg-black/40 lg:backdrop-blur-2xl lg:border-l lg:border-white/[0.08] mt-16 lg:mt-0">
         <div className="w-full max-w-[460px] relative">
-          
+
           {/* Subtle Orange Glow Border Effect */}
           <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#FF7A00]/40 to-transparent blur-[1px]" />
-          
+
           <h2 className="mb-2 text-2xl font-extrabold tracking-tight">
             Create <span className="text-[#FF7A00]">Account</span>
           </h2>
-          
+
           {renderProgressBar()}
 
           {successMsg && (
@@ -332,7 +331,7 @@ const UserRegister = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            
+
             {/* Step 1: Email & Phone */}
             {step === 1 && (
               <div className="space-y-4">
@@ -342,10 +341,10 @@ const UserRegister = () => {
                   className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-white/10 rounded-xl shadow-sm bg-white/5 text-sm font-semibold text-white hover:bg-white/10 transition-all cursor-pointer"
                 >
                   <svg className="h-5 w-5" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
                   Sign up with Google
                 </button>
@@ -489,8 +488,8 @@ const UserRegister = () => {
                   {photoPreview ? (
                     <div className="relative">
                       <img src={photoPreview} alt="Preview" className="h-14 w-14 object-cover rounded-full border border-[#FF7A00]" />
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={removePhoto}
                         className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
                       >
@@ -587,13 +586,12 @@ const UserRegister = () => {
                   { id: 'general', title: 'General Fitness', desc: 'Stay healthy & active' },
                   { id: 'flexibility', title: 'Flexibility', desc: 'Yoga & wellness' }
                 ].map((goal) => (
-                  <label 
+                  <label
                     key={goal.id}
-                    className={`block p-3 rounded-xl border cursor-pointer transition-all ${
-                      formData.fitnessGoal === goal.id 
-                        ? 'border-[#FF7A00] bg-[#FF7A00]/5' 
+                    className={`block p-3 rounded-xl border cursor-pointer transition-all ${formData.fitnessGoal === goal.id
+                        ? 'border-[#FF7A00] bg-[#FF7A00]/5'
                         : 'border-white/5 bg-black/40 hover:border-white/10'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center">
                       <input
@@ -676,7 +674,7 @@ const UserRegister = () => {
                   Back
                 </button>
               )}
-              
+
               {step < 6 ? (
                 <button
                   type="button"

@@ -33,7 +33,7 @@ const AddHealthStore = () => {
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Invite Health Store</h2>
-        <p className="text-gray-500 mt-1">Send an invite email to a Health Store owner to register on LifeCell.Fitness.</p>
+        <p className="text-gray-500 mt-1">Send an invite email to a Health Store owner to register on livesale.Fitness.</p>
       </div>
 
       {success && (

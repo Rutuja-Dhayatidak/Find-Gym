@@ -34,9 +34,9 @@ const runScheduler = () => {
           // A. 24-Hour Reminder
           if (diffHours > 23.5 && diffHours <= 24.5 && !booking.reminderSent24h) {
             await transporter.sendMail({
-              from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
+              from: `livesale.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
               to: customer.email,
-              subject: 'Session Reminder (24 Hours Remaining) - LifeCell.Fitness',
+              subject: 'Session Reminder (24 Hours Remaining) - livesale.Fitness',
               text: `Hello ${customer.name},\n\nThis is a friendly reminder that you have a session booked with ${trainer.name} tomorrow at ${booking.slot}.\n\nHave a great session!`
             });
             booking.reminderSent24h = true;
@@ -46,9 +46,9 @@ const runScheduler = () => {
           // B. 1-Hour Reminder
           if (diffHours > 0.5 && diffHours <= 1.5 && !booking.reminderSent1h) {
             await transporter.sendMail({
-              from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
+              from: `livesale.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
               to: customer.email,
-              subject: 'Session Starting in 1 Hour! - LifeCell.Fitness',
+              subject: 'Session Starting in 1 Hour! - livesale.Fitness',
               text: `Hello ${customer.name},\n\nYour session with ${trainer.name} starts in 1 hour (at ${booking.slot}). Get ready!`
             });
             booking.reminderSent1h = true;
@@ -70,10 +70,10 @@ const runScheduler = () => {
           // Trigger review email prompt
           if (customer && trainer && transporter) {
             await transporter.sendMail({
-              from: `LifeCell.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
+              from: `livesale.Fitness <${process.env.SMTP_USER || process.env.EMAIL_USER}>`,
               to: customer.email,
               subject: `Rate your session with ${trainer.name}`,
-              text: `Hello ${customer.name},\n\nHow was your training session with ${trainer.name}?\n\nPlease leave a review on LifeCell.Fitness: ${getFrontendUrl('/trainers')}`
+              text: `Hello ${customer.name},\n\nHow was your training session with ${trainer.name}?\n\nPlease leave a review on livesale.Fitness: ${getFrontendUrl('/trainers')}`
             });
           }
         }

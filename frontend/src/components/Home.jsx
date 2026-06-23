@@ -186,7 +186,7 @@ const Home = () => {
             {/* Spinning glowing loader representing mist/energy */}
             <div className="w-14 h-14 rounded-full border-2 border-t-[#FF7A00] border-r-transparent border-b-[#FF7A00] border-l-transparent animate-spin mb-2 shadow-[0_0_25px_rgba(255,122,0,0.3)]"></div>
             <h2 className="text-3xl font-black tracking-[0.2em] text-white">
-              LIFECELL<span className="text-[#FF7A00]">.FITNESS</span>
+              livesale<span className="text-[#FF7A00]">.FITNESS</span>
             </h2>
             <p className="text-gray-500 text-[10px] tracking-[0.35em] uppercase font-semibold">Experience Fitness</p>
           </div>
@@ -324,7 +324,7 @@ const Home = () => {
           {/* Full screen width marquee at the bottom of Hero */}
           <div className="absolute bottom-0 left-0 w-full bg-black/60 border-t border-white/10 backdrop-blur-md py-3 z-20">
             <marquee direction="left" scrollamount="12" className="text-sm font-semibold text-white tracking-widest uppercase">
-              MUMBAI • DELHI • BANGALORE • HYDERABAD • KOLKATA • AHMEDABAD ⚡ GET UP TO 30% OFF ON MEMBERSHIPS! ⚡ JOIN LIFECELL.FITNESS TODAY FOR FREE TRIALS! ⚡
+              MUMBAI • DELHI • BANGALORE • HYDERABAD • KOLKATA • AHMEDABAD ⚡ GET UP TO 30% OFF ON MEMBERSHIPS! ⚡ JOIN livesale.FITNESS TODAY FOR FREE TRIALS! ⚡
             </marquee>
           </div>
         </div>
@@ -350,7 +350,7 @@ const Home = () => {
                 WHY CHOOSE US
               </div>
               <h2 className="text-[34px] md:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight text-center">
-                Why Choose <br className="block md:hidden" /> <span className="text-[#FF7A00]">LifeCell.Fitness?</span>
+                Why Choose <br className="block md:hidden" /> <span className="text-[#FF7A00]">livesale.Fitness?</span>
               </h2>
               <p className="text-gray-400 text-sm md:text-lg font-light leading-relaxed max-w-xs md:max-w-3xl text-center">
                 We make your fitness journey smarter, easier and more effective<br className="hidden md:block" /> by bringing everything you need in one place.
@@ -474,14 +474,14 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Stats Bar */}
             <div
               className={`bg-[#0a0b0d]/75 border border-zinc-900 rounded-[2rem] p-6 md:p-8 stats-container shadow-2xl transition-all duration-1000 transform ${whyVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
               style={{ transitionDelay: '500ms' }}
             >
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-                
+
                 {/* Stat 1: Gyms Listed */}
                 <div className="bg-[#111215]/80 border border-zinc-900 rounded-2xl py-8 px-4 flex flex-col items-center justify-center text-center group hover:border-[#FF7A00]/40 transition-all duration-300 relative shadow-lg">
                   <div className="w-16 h-16 rounded-full bg-[#16171a] border border-[#FF7A00]/15 flex items-center justify-center text-[#FF7A00] mb-5 shadow-inner relative group-hover:scale-105 transition-transform duration-300">
@@ -638,8 +638,8 @@ const Home = () => {
                     key={tab}
                     onClick={() => setActiveSupplementTab(tab)}
                     className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer transform active:scale-95 ${isActive
-                        ? "bg-[#FF7A00]/15 border border-[#FF7A00] text-[#FF7A00] shadow-[0_0_15px_rgba(255,122,0,0.25)]"
-                        : "bg-white/[0.02] border border-white/5 text-gray-400 hover:text-white hover:border-white/20"
+                      ? "bg-[#FF7A00]/15 border border-[#FF7A00] text-[#FF7A00] shadow-[0_0_15px_rgba(255,122,0,0.25)]"
+                      : "bg-white/[0.02] border border-white/5 text-gray-400 hover:text-white hover:border-white/20"
                       }`}
                   >
                     {tab}
@@ -919,7 +919,7 @@ const Home = () => {
               {/* Left Column: How It Works */}
               <div className="lg:w-[60%] bg-transparent md:bg-[#000000] border-0 md:border border-gray-800 rounded-3xl p-0 md:p-8 lg:p-10 flex flex-col justify-center">
                 <h2 className="text-3xl font-bold text-white mb-8 md:mb-12 text-center md:text-left">
-                  How <span className="text-[#FF7A00] drop-shadow-[0_0_10px_rgba(255,122,0,0.5)]">LifeCell.Fitness</span> Works?
+                  How <span className="text-[#FF7A00] drop-shadow-[0_0_10px_rgba(255,122,0,0.5)]">livesale.Fitness</span> Works?
                 </h2>
 
                 <div className="flex flex-col md:flex-row justify-between items-stretch md:items-start gap-0 md:gap-4 relative">
@@ -1043,7 +1043,7 @@ const Home = () => {
 
               {/* Top/Middle Section */}
               <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-                
+
                 {/* Content Left (60% width) */}
                 <div className="relative z-20 lg:w-[58%] text-left flex flex-col">
                   {/* Pill Label */}
@@ -1117,7 +1117,7 @@ const Home = () => {
                 <div className="relative z-20 lg:w-[40%] w-full flex flex-col justify-center items-center min-h-[380px]">
                   {/* Orbiting Golden Ring Effect */}
                   <div className="absolute w-[320px] h-[320px] md:w-[410px] md:h-[410px] rounded-full border border-dashed border-[#FF7A00]/20 animate-[spin_40s_linear_infinite] pointer-events-none"></div>
-                  
+
                   {/* Glowing Plate Backdrop */}
                   <div className="absolute w-72 h-72 md:w-80 md:h-80 rounded-full bg-gradient-to-tr from-[#FF7A00]/20 to-orange-500/5 blur-2xl pointer-events-none"></div>
 
@@ -1167,7 +1167,7 @@ const Home = () => {
 
               {/* Bottom Row: Arrow Navigation */}
               <div className="relative z-20 mt-8 border-t border-zinc-900/60 pt-6 flex items-center justify-end">
-                
+
                 {/* Arrows and Pagination Dots */}
                 <div className="flex items-center gap-5">
                   {/* Pagination Dots */}
