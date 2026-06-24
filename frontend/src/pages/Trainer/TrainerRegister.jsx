@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerTrainer } from '../../userServices/trainerApi';
+import { sendOtp, verifyOtp } from '../../userServices/Auth';
+import toast from 'react-hot-toast';
 
 // ─── Step indicator ──────────────────────────────────────────────────────────
 const StepIndicator = ({ current, total }) => (
@@ -26,7 +28,7 @@ const StepIndicator = ({ current, total }) => (
 
 // ─── Field helpers ────────────────────────────────────────────────────────────
 const Field = ({ label, error, children }) => (
-  <div className="flex flex-col gap-1.5">
+  <div className="flex flex-col gap-1.5 w-full">
     <label className="text-sm font-medium text-white/70">{label}</label>
     {children}
     {error && <p className="text-red-400 text-xs">{error}</p>}
@@ -79,10 +81,14 @@ const TrainerRegister = () => {
   const [serverError, setServerError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
 
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
+
   const [form, setForm] = useState({
     // Step 1
     name: '', email: '', phone: '', password: '', confirmPassword: '',
-    dateOfBirth: '', gender: '',
+    dateOfBirth: '', gender: '', otp: '',
     // Step 2
     city: '', specializations: [], experience: '', bio: '',
     languages: [], trainingTypes: [], certifications: '',
@@ -100,6 +106,60 @@ const TrainerRegister = () => {
   const toggleArr = (field, val) => {
     const arr = form[field];
     set(field, arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
+  };
+
+  const handleEmailChange = (val) => {
+    set('email', val);
+    if (otpSent || otpVerified) {
+      setOtpSent(false);
+      setOtpVerified(false);
+      set('otp', '');
+    }
+  };
+
+  const handleSendOTP = async () => {
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setFieldErrors(prev => ({ ...prev, email: 'Valid email is required to send OTP' }));
+      return;
+    }
+    setFieldErrors(prev => ({ ...prev, email: '' }));
+    setSendingOtp(true);
+    const toastId = toast.loading("Sending OTP to email...");
+    try {
+      const res = await sendOtp(form.email);
+      if (res.success) {
+        setOtpSent(true);
+        toast.success(res.message || "OTP sent successfully to your email!", { id: toastId });
+      } else {
+        toast.error(res.message || "Failed to send OTP", { id: toastId });
+      }
+    } catch (err) {
+      toast.error(err.message || "Error sending OTP", { id: toastId });
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!form.otp) {
+      setFieldErrors(prev => ({ ...prev, otp: 'OTP is required' }));
+      return;
+    }
+    const toastId = toast.loading("Verifying OTP...");
+    try {
+      const res = await verifyOtp(form.email, form.otp);
+      if (res.success) {
+        toast.success("OTP verified successfully!", { id: toastId });
+        setOtpVerified(true);
+        setFieldErrors(prev => ({ ...prev, otp: '' }));
+      } else {
+        toast.error(res.message || "Invalid OTP", { id: toastId });
+        setFieldErrors(prev => ({ ...prev, otp: res.message || "Invalid OTP" }));
+      }
+    } catch (err) {
+      toast.error(err.message || "Invalid OTP", { id: toastId });
+      setFieldErrors(prev => ({ ...prev, otp: err.message || "Invalid OTP" }));
+    }
   };
 
   const handleFile = (e) => {
@@ -123,6 +183,7 @@ const TrainerRegister = () => {
       if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match';
       if (!form.dateOfBirth) errs.dateOfBirth = 'Date of birth required';
       if (!form.gender) errs.gender = 'Please select gender';
+      if (!otpVerified) errs.email = 'Please verify your email via OTP first';
     }
     if (step === 2) {
       if (!form.city) errs.city = 'City is required';
@@ -209,8 +270,52 @@ const TrainerRegister = () => {
         <Input placeholder="John Smith" value={form.name} onChange={e => set('name', e.target.value)} />
       </Field>
       <Field label="Email Address *" error={fieldErrors.email}>
-        <Input type="email" placeholder="john@example.com" value={form.email} onChange={e => set('email', e.target.value)} />
+        <div className="flex gap-2">
+          <Input 
+            type="email" 
+            placeholder="john@example.com" 
+            value={form.email} 
+            onChange={e => handleEmailChange(e.target.value)} 
+            disabled={otpVerified}
+          />
+          {!otpVerified && (
+            <button 
+              type="button"
+              onClick={handleSendOTP}
+              disabled={sendingOtp || !form.email}
+              className="px-4 py-2 bg-[#a3ff12] text-black text-xs font-bold rounded-xl hover:bg-[#90e610] disabled:opacity-50 transition-all whitespace-nowrap"
+            >
+              {otpSent ? 'Resend OTP' : 'Send OTP'}
+            </button>
+          )}
+        </div>
       </Field>
+      {otpSent && (
+        <Field label="Enter OTP *" error={fieldErrors.otp}>
+          <div className="flex gap-2">
+            <Input 
+              placeholder="6-digit OTP" 
+              value={form.otp} 
+              onChange={e => set('otp', e.target.value)} 
+              disabled={otpVerified}
+            />
+            {otpVerified ? (
+              <span className="px-4 py-2 bg-green-500/20 text-green-400 text-xs font-bold rounded-xl border border-green-500/30 flex items-center justify-center gap-1">
+                ✓ Verified
+              </span>
+            ) : (
+              <button 
+                type="button"
+                onClick={handleVerifyOTP}
+                disabled={!form.otp}
+                className="px-4 py-2 bg-[#a3ff12] text-black text-xs font-bold rounded-xl hover:bg-[#90e610] disabled:opacity-50 transition-all whitespace-nowrap"
+              >
+                Verify
+              </button>
+            )}
+          </div>
+        </Field>
+      )}
       <Field label="Phone Number *" error={fieldErrors.phone}>
         <Input placeholder="10-digit number" value={form.phone} onChange={e => set('phone', e.target.value)} />
       </Field>
