@@ -43,7 +43,7 @@ exports.getDashboard = async (req, res) => {
     const recentOrders = await HealthStoreOrder.find({ healthStore: storeId })
       .sort({ createdAt: -1 })
       .limit(5)
-      .populate('customer', 'name email');
+      .populate('customer', '-password');
 
     res.json({
       success: true,
@@ -421,9 +421,10 @@ exports.submitForApproval = async (req, res) => {
 // ─── GET ORDERS ───────────────────────────────────────────────────────────────
 exports.getOrders = async (req, res) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
+    const { status, source, page = 1, limit = 10 } = req.query;
     const filter = { healthStore: req.healthStore._id };
     if (status) filter.orderStatus = status;
+    if (source) filter.orderSource = source;
 
     const skip = (Number(page) - 1) * Number(limit);
     const [orders, total] = await Promise.all([
@@ -431,7 +432,7 @@ exports.getOrders = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit))
-        .populate('customer', 'name email phone'),
+        .populate('customer', '-password'),
       HealthStoreOrder.countDocuments(filter),
     ]);
 

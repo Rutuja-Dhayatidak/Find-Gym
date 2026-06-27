@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { apiPath } from '../../services/config';
 
@@ -146,6 +146,15 @@ const Login = () => {
                     'Sign In'
                   )}
                 </button>
+              </div>
+
+              <div className="mt-4 text-center">
+                <Link
+                  to="/health-store-owner/login"
+                  className="text-xs font-semibold text-[#FF7A00] hover:text-[#E66E00] hover:underline transition-all"
+                >
+                  Are you a Health Store Owner? Sign In here
+                </Link>
               </div>
             </form>
           </div>

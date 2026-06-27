@@ -17,6 +17,7 @@ const OrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('All');
+  const [selectedSource, setSelectedSource] = useState('all');
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
   const [updatingId, setUpdatingId] = useState(null);
 
@@ -28,6 +29,7 @@ const OrdersList = () => {
         limit: 10
       };
       if (activeTab !== 'All') params.status = activeTab;
+      if (selectedSource !== 'all') params.source = selectedSource;
       const res = await getOrders(params);
       setOrders(res.data.data);
       setPagination(p => ({ ...p, ...res.data.pagination }));
@@ -36,11 +38,11 @@ const OrdersList = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, pagination.page]);
+  }, [activeTab, selectedSource, pagination.page]);
 
   useEffect(() => {
     fetchOrders();
-  }, [activeTab]);
+  }, [activeTab, selectedSource]);
 
   useEffect(() => {
     if (orders && orders.length > 0) {
@@ -81,6 +83,39 @@ const OrdersList = () => {
         <p className="text-gray-500 text-sm mt-1">Track payments, shipping, delivery status, and order dispatch operations.</p>
       </div>
 
+      {/* Order Source */}
+      <div className="bg-white border rounded-2xl p-5 shadow-sm space-y-3">
+        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Order Source</label>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              setSelectedSource(selectedSource === 'mobile_app' ? 'all' : 'mobile_app');
+              setPagination(p => ({ ...p, page: 1 }));
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+              selectedSource === 'mobile_app'
+                ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/10'
+                : 'bg-white text-gray-600 border-gray-300 hover:border-red-400'
+            }`}
+          >
+            <span>📱</span> Mobile App
+          </button>
+          <button
+            onClick={() => {
+              setSelectedSource(selectedSource === 'website' ? 'all' : 'website');
+              setPagination(p => ({ ...p, page: 1 }));
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+              selectedSource === 'website'
+                ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/10'
+                : 'bg-white text-gray-600 border-gray-300 hover:border-red-400'
+            }`}
+          >
+            <span>🌐</span> Website
+          </button>
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-2 flex-wrap pb-2 border-b">
         {STATUS_TABS.map(tab => (
@@ -119,6 +154,13 @@ const OrdersList = () => {
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${order.paymentStatus === 'Paid' ? 'bg-green-105 bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
                     Payment: {order.paymentStatus}
                   </span>
+                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                    (order.orderSource === 'website' || order.sourceLabel === 'Website')
+                      ? 'bg-gray-100 text-gray-700 border-gray-200'
+                      : 'bg-orange-100 text-orange-700 border-orange-200'
+                  }`}>
+                    {order.orderSource === 'website' || order.sourceLabel === 'Website' ? '🌐 Website' : '📱 Mobile App'}
+                  </span>
                 </div>
               </div>
 
@@ -152,6 +194,10 @@ const OrdersList = () => {
                     <p className="text-sm font-semibold text-gray-800">{order.address?.fullName || order.customer?.name || 'Walk-in Customer'}</p>
                     <p className="text-xs text-gray-500 mt-0.5">Phone: {order.address?.mobile || order.customer?.phone || 'N/A'}</p>
                     <p className="text-xs text-gray-400 mt-1">{order.address?.address || order.shippingAddress || 'Store Pick-up'}</p>
+                    <div className="mt-3 space-y-1 text-xs text-gray-600">
+                      <p><span className="font-semibold text-gray-500">Order Source:</span> {order.sourceLabel || (order.orderSource === 'website' ? 'Website' : 'Mobile App')}</p>
+                      <p><span className="font-semibold text-gray-500">Customer Type:</span> {order.customerTypeLabel || (order.customerType === 'website_user' ? 'Website User' : 'Mobile User')}</p>
+                    </div>
                   </div>
 
                   {/* Transaction Payment Box */}

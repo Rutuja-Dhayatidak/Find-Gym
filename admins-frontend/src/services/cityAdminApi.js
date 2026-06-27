@@ -30,6 +30,26 @@ export const getAllUsers = async (params) => {
   return response.data;
 };
 
+export const blockUser = async (userId, reason) => {
+  const response = await api.patch(`/users/${userId}/block`, { reason });
+  return response.data;
+};
+
+export const unblockUser = async (userId) => {
+  const response = await api.patch(`/users/${userId}/unblock`);
+  return response.data;
+};
+
+export const getUserDetails = async (userId) => {
+  const response = await api.get(`/users/${userId}`);
+  return response.data;
+};
+
+export const getUserActivity = async (userId, params) => {
+  const response = await api.get(`/users/${userId}/activity`, { params });
+  return response.data;
+};
+
 // 3. Gyms
 export const getAllGyms = async (params) => {
   const response = await api.get('/gyms', { params });
@@ -130,6 +150,10 @@ export const changePassword = async (oldPassword, newPassword) => {
 export default {
   getDashboardData,
   getAllUsers,
+  blockUser,
+  unblockUser,
+  getUserDetails,
+  getUserActivity,
   getAllGyms,
   approveGym,
   rejectGym,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -43,7 +43,8 @@ const loadRazorpayScript = () => {
 
 const Categories = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('diet');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'diet');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -195,6 +196,23 @@ const Categories = () => {
   useEffect(() => {
     fetchProducts();
   }, [activeTab, search]);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const productId = searchParams.get('productId');
+    if (productId && items.length > 0) {
+      const product = items.find(item => item._id === productId);
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+  }, [searchParams, items]);
 
   const handleLocateUser = () => {
     if (!navigator.geolocation) {

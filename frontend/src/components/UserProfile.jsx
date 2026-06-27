@@ -287,12 +287,20 @@ const UserProfile = () => {
           <p className="text-gray-400 text-xs mt-1">Manage your health stats, goals, and active memberships.</p>
         </div>
         
-        <button 
-          onClick={handleOpenEditModal}
-          className="px-4 py-2 border border-[#FF7A00] text-[#FF7A00] hover:bg-[#FF7A00]/10 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-        >
-          ✏️ Edit Profile
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleOpenEditModal}
+            className="px-4 py-2 border border-[#FF7A00] text-[#FF7A00] hover:bg-[#FF7A00]/10 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            ✏️ Edit Profile
+          </button>
+          <button 
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+          >
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

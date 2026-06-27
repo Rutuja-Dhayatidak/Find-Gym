@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const Admin = require('../models/Admin');
 const User = require('../models/User');
+const WebsiteUser = require('../models/WebsiteUser');
 const Gym = require('../models/Gym');
 const Trainer = require('../models/Trainer');
 const Dietitian = require('../models/Dietitian');
@@ -66,6 +67,7 @@ exports.getDashboardData = async (req, res) => {
 // 2. All Users
 exports.getAllUsers = async (req, res) => {
   try {
+    const MobileUser = require('../models/MobileUser');
     const cities = getAuthorizedCities(req.admin, req.query.city);
     if (cities && cities.length === 0) {
       return res.status(403).json({
@@ -75,21 +77,124 @@ exports.getAllUsers = async (req, res) => {
       });
     }
 
-    let query = { role: 'member' };
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const userType = req.query.userType || 'all';
+
+    let query = {};
     if (cities) {
       const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
       query.city = { $in: cityRegexes };
     }
 
     if (req.query.search) {
-      const regex = new RegExp(req.query.search, 'i');
-      query.$and = [
-        { $or: [{ name: regex }, { email: regex }] }
+      const searchRegex = new RegExp(req.query.search, 'i');
+      query.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex }
       ];
     }
 
-    const users = await User.find(query).select('-password').sort({ createdAt: -1 });
-    res.status(200).json({ success: true, data: users });
+    if (req.query.status && req.query.status !== 'all') {
+      query.status = req.query.status;
+    }
+
+    // Base query for counts: just city
+    let countQuery = {};
+    if (cities) {
+      const cityRegexes = cities.map(c => new RegExp(`^${c}$`, 'i'));
+      countQuery.city = { $in: cityRegexes };
+    }
+
+    // Get stats
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const statWebsiteCount = await WebsiteUser.countDocuments(countQuery);
+    const statMobileCount = await MobileUser.countDocuments(countQuery);
+    const statTotalCount = statWebsiteCount + statMobileCount;
+
+    // New this month
+    const newWebsiteCount = await WebsiteUser.countDocuments({ ...countQuery, joinDate: { $gte: startOfMonth } });
+    const newMobileCount = await MobileUser.countDocuments({ ...countQuery, joinDate: { $gte: startOfMonth } });
+    const statNewThisMonth = newWebsiteCount + newMobileCount;
+
+    let users = [];
+    let totalCount = 0;
+
+    const formatUser = (u, type) => ({
+      _id: u._id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      city: u.city,
+      status: u.status,
+      joinDate: u.joinDate || u.createdAt,
+      createdAt: u.createdAt || u.joinDate,
+      userType: type
+    });
+
+    const sortField = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    if (userType === 'website') {
+      totalCount = await WebsiteUser.countDocuments(query);
+      const dbUsers = await WebsiteUser.find(query)
+        .sort({ [sortField]: sortOrder })
+        .skip(skip)
+        .limit(limit)
+        .select('-password');
+      users = dbUsers.map(u => formatUser(u, 'website'));
+    } else if (userType === 'mobile') {
+      totalCount = await MobileUser.countDocuments(query);
+      const dbUsers = await MobileUser.find(query)
+        .sort({ [sortField]: sortOrder })
+        .skip(skip)
+        .limit(limit)
+        .select('-password');
+      users = dbUsers.map(u => formatUser(u, 'mobile'));
+    } else {
+      // Combined 'all' users
+      const websiteUsers = await WebsiteUser.find(query).select('-password');
+      const mobileUsers = await MobileUser.find(query).select('-password');
+
+      const allUsersCombined = [
+        ...websiteUsers.map(u => formatUser(u, 'website')),
+        ...mobileUsers.map(u => formatUser(u, 'mobile'))
+      ];
+
+      // Sort combined array
+      allUsersCombined.sort((a, b) => {
+        const valA = a[sortField] ? new Date(a[sortField]).getTime() : 0;
+        const valB = b[sortField] ? new Date(b[sortField]).getTime() : 0;
+        return sortOrder === 1 ? valA - valB : valB - valA;
+      });
+
+      totalCount = allUsersCombined.length;
+      users = allUsersCombined.slice(skip, skip + limit);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        users,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          totalCount,
+          limit
+        },
+        stats: {
+          total: statTotalCount,
+          website: statWebsiteCount,
+          mobile: statMobileCount,
+          newThisMonth: statNewThisMonth
+        }
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -679,3 +784,203 @@ exports.rejectGymOwner = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.blockUser = async (req, res) => {
+  try {
+    const MobileUser = require('../models/MobileUser');
+    
+    let user = await WebsiteUser.findById(req.params.userId);
+    let isMobile = false;
+    if (!user) {
+      user = await MobileUser.findById(req.params.userId);
+      isMobile = true;
+    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const userCity = user.city;
+    const cities = getAuthorizedCities(req.admin, userCity);
+    if (cities && cities.length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this city",
+        code: "CITY_ACCESS_DENIED"
+      });
+    }
+
+    if (isMobile) {
+      user = await MobileUser.findByIdAndUpdate(req.params.userId, { status: 'blocked' }, { new: true });
+    } else {
+      user = await WebsiteUser.findByIdAndUpdate(req.params.userId, { status: 'blocked' }, { new: true });
+    }
+
+    await ActivityLog.create({
+      type: 'user_blocked',
+      userId: user._id,
+      adminId: req.admin._id,
+      city: userCity,
+      description: `User ${user.name} was blocked by City Admin. Reason: ${req.body.reason || 'None provided'}`,
+    });
+
+    res.status(200).json({ success: true, message: 'User blocked successfully', user: { id: user._id, status: 'blocked' } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.unblockUser = async (req, res) => {
+  try {
+    const MobileUser = require('../models/MobileUser');
+    
+    let user = await WebsiteUser.findById(req.params.userId);
+    let isMobile = false;
+    if (!user) {
+      user = await MobileUser.findById(req.params.userId);
+      isMobile = true;
+    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const userCity = user.city;
+    const cities = getAuthorizedCities(req.admin, userCity);
+    if (cities && cities.length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this city",
+        code: "CITY_ACCESS_DENIED"
+      });
+    }
+
+    if (isMobile) {
+      user = await MobileUser.findByIdAndUpdate(req.params.userId, { status: 'active' }, { new: true });
+    } else {
+      user = await WebsiteUser.findByIdAndUpdate(req.params.userId, { status: 'active' }, { new: true });
+    }
+
+    await ActivityLog.create({
+      type: 'user_unblocked',
+      userId: user._id,
+      adminId: req.admin._id,
+      city: userCity,
+      description: `User ${user.name} was unblocked by City Admin.`,
+    });
+
+    res.status(200).json({ success: true, message: 'User unblocked successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getUserDetails = async (req, res) => {
+  try {
+    const MobileUser = require('../models/MobileUser');
+    
+    let user = await WebsiteUser.findById(req.params.userId).select('-password');
+    let userType = 'website';
+    if (!user) {
+      user = await MobileUser.findById(req.params.userId).select('-password');
+      userType = 'mobile';
+    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const userCity = user.city;
+    const cities = getAuthorizedCities(req.admin, userCity);
+    if (cities && cities.length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this city",
+        code: "CITY_ACCESS_DENIED"
+      });
+    }
+
+    const Transaction = require('../models/Transaction');
+    const bookings = await Transaction.aggregate([
+      { $match: { userId: user._id, status: 'success' } },
+      { $group: { _id: null, count: { $sum: 1 }, amount: { $sum: '$amount' } } }
+    ]);
+
+    const stats = bookings.length ? bookings[0] : { count: 0, amount: 0 };
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        fullName: user.name,
+        email: user.email,
+        phone: user.phone,
+        age: user.age,
+        gender: user.gender,
+        height: user.height,
+        weight: user.weight,
+        profilePhoto: user.profilePhoto,
+        fitnessGoal: user.fitnessGoal,
+        location: user.location,
+        city: user.city,
+        status: user.status,
+        joinDate: user.joinDate || user.createdAt,
+        lastLogin: user.lastLogin,
+        emailVerified: user.emailVerified,
+        phoneVerified: user.phoneVerified,
+        totalBookings: stats.count,
+        totalAmount: stats.amount,
+        userType
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getUserActivity = async (req, res) => {
+  try {
+    const MobileUser = require('../models/MobileUser');
+    
+    let user = await WebsiteUser.findById(req.params.userId);
+    if (!user) {
+      user = await MobileUser.findById(req.params.userId);
+    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const userCity = user.city;
+    const cities = getAuthorizedCities(req.admin, userCity);
+    if (cities && cities.length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this city",
+        code: "CITY_ACCESS_DENIED"
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const activities = await ActivityLog.find({ userId: req.params.userId })
+      .sort({ timestamp: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalCount = await ActivityLog.countDocuments({ userId: req.params.userId });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        activities: activities.map(a => ({
+          id: a._id,
+          type: a.type,
+          description: a.description,
+          timestamp: a.timestamp,
+          details: a.metadata
+        })),
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          totalCount,
+          limit
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+

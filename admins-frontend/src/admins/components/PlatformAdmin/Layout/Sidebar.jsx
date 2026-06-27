@@ -18,13 +18,13 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col shadow-lg transition-all duration-300">
-      <div className="p-6 border-b border-slate-700 flex items-center justify-center">
+    <aside className="w-64 bg-slate-900 text-white h-screen flex flex-col shadow-lg transition-all duration-300">
+      <div className="p-6 border-b border-slate-700 flex items-center justify-center shrink-0">
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
           livesale.Fitness Admin
         </h1>
       </div>
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           return (
@@ -86,7 +86,7 @@ const Sidebar = () => {
           )}
         </div>
       </nav>
-      <div className="p-4 border-t border-slate-700">
+      <div className="p-4 border-t border-slate-700 shrink-0">
         <button className="w-full flex items-center justify-center space-x-2 bg-slate-800 hover:bg-red-500 hover:text-white text-slate-300 px-4 py-2 rounded-lg transition-colors duration-200" onClick={() => {
           localStorage.removeItem('adminToken');
           window.location.href = '/login';

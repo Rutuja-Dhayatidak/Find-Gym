@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const mobileUserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: {
     type: String,
@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema({
   },
   phone: { type: String },
   age: { type: Number },
-  gender: { type: String, enum: ['male', 'female', 'other'] },
-  height: { type: Number }, // in cm
-  weight: { type: Number }, // in kg
+  gender: { type: String },
+  height: { type: Number },
+  weight: { type: Number },
   fitnessGoal: { type: String },
   location: { type: String },
   city: { type: String },
@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema({
   phoneVerified: { type: Boolean, default: false },
   role: {
     type: String,
-    enum: ["superadmin", "admin", "trainer", "member", "gym_owner", "customer", "city_admin", "user"],
     default: "user",
   },
   isSubscribed: {
@@ -46,4 +45,4 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", userSchema, "Website User");
+module.exports = mongoose.model("MobileUser", mobileUserSchema, "Mobile User");

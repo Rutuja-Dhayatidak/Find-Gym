@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { login } from '../../../../services/healthStoreOwnerApi';
 
@@ -85,6 +85,15 @@ const HealthStoreLogin = () => {
                 >
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
+              </div>
+
+              <div className="mt-4 text-center">
+                <Link
+                  to="/login"
+                  className="text-xs font-semibold text-red-500 hover:text-red-600 hover:underline transition-all"
+                >
+                  Standard Admin? Sign In here
+                </Link>
               </div>
             </form>
           </div>

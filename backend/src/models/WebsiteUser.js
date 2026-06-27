@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const websiteUserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: {
     type: String,
@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema({
   },
   phone: { type: String },
   age: { type: Number },
-  gender: { type: String, enum: ['male', 'female', 'other'] },
-  height: { type: Number }, // in cm
-  weight: { type: Number }, // in kg
+  gender: { type: String },
+  height: { type: Number },
+  weight: { type: Number },
   fitnessGoal: { type: String },
   location: { type: String },
   city: { type: String },
@@ -27,17 +27,8 @@ const userSchema = new mongoose.Schema({
   phoneVerified: { type: Boolean, default: false },
   role: {
     type: String,
-    enum: ["superadmin", "admin", "trainer", "member", "gym_owner", "customer", "city_admin", "user"],
+    enum: ["user", "member"],
     default: "user",
-  },
-  isSubscribed: {
-    type: Boolean,
-    default: false
-  },
-  activeMembership: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Membership",
-    default: null
   },
   gymOwnerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -46,4 +37,4 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", userSchema, "Website User");
+module.exports = mongoose.model("WebsiteUser", websiteUserSchema, "Website User");

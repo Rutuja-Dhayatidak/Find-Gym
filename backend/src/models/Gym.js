@@ -130,6 +130,12 @@ const gymSchema = new mongoose.Schema({
       date: { type: Date, default: Date.now }
     }
   ],
+  services: [
+    {
+      name: { type: String },
+      description: { type: String }
+    }
+  ],
   openingTime: { type: String },
   closingTime: { type: String },
   latitude: { type: Number },

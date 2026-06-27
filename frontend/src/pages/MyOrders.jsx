@@ -250,6 +250,15 @@ const MyOrders = () => {
                   <div className="flex gap-2">
                     <span
                       className={`px-2.5 py-1 rounded-md text-[8px] font-extrabold uppercase tracking-wider ${
+                        (order.orderSource === 'website' || order.sourceLabel === 'Website')
+                          ? 'bg-zinc-800 border border-zinc-700 text-zinc-300'
+                          : 'bg-[#FF7A00]/10 border border-[#FF7A00]/20 text-[#FF7A00]'
+                      }`}
+                    >
+                      Source: {order.orderSource === 'website' || order.sourceLabel === 'Website' ? 'Website' : 'Mobile App'}
+                    </span>
+                    <span
+                      className={`px-2.5 py-1 rounded-md text-[8px] font-extrabold uppercase tracking-wider ${
                         order.paymentStatus === "Paid"
                           ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
                           : "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400"

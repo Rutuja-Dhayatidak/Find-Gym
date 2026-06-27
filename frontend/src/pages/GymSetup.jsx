@@ -57,6 +57,8 @@ const GymSetup = () => {
     days: 3,
     description: ''
   });
+  const [services, setServices] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   // Predefined facilities/amenities options
   const facilityOptions = [
@@ -70,6 +72,8 @@ const GymSetup = () => {
   const [newTrainer, setNewTrainer] = useState({ name: '', photo: '', experience: '', specialization: '', bio: '', skills: '', instagramLink: '', certification: '', availability: '', trainingType: 'Weight Loss' });
   const [newPlan, setNewPlan] = useState({ title: '', price: '', duration: '', validity: '', saving: '', isPopular: false });
   const [newOffer, setNewOffer] = useState({ title: '', description: '', image: '', expiryDate: '', offerType: '' });
+  const [newService, setNewService] = useState({ name: '', description: '' });
+  const [newReview, setNewReview] = useState({ userName: '', rating: 5, comment: '' });
 
   useEffect(() => {
     if (!gymId) {
@@ -110,6 +114,8 @@ const GymSetup = () => {
           days: gym.freeTrial?.days || 3,
           description: gym.freeTrial?.description || ''
         });
+        setServices(gym.services || []);
+        setReviews(gym.reviews || []);
 
       } catch (err) {
         console.error(err);
@@ -137,7 +143,9 @@ const GymSetup = () => {
         trainers,
         membershipPlans,
         offers,
-        freeTrial
+        freeTrial,
+        services,
+        reviews
       };
 
       const res = await setupGym(gymId, payload);
@@ -332,6 +340,32 @@ const GymSetup = () => {
     setOffers(prev => prev.filter((_, i) => i !== index));
   };
 
+  const addService = () => {
+    if (!newService.name || !newService.description) {
+      toast.error('Service Name and Description are required');
+      return;
+    }
+    setServices(prev => [...prev, { ...newService }]);
+    setNewService({ name: '', description: '' });
+  };
+
+  const removeService = (index) => {
+    setServices(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const addReview = () => {
+    if (!newReview.userName || !newReview.comment) {
+      toast.error('Reviewer Name and Comment are required');
+      return;
+    }
+    setReviews(prev => [...prev, { ...newReview, rating: parseInt(newReview.rating) }]);
+    setNewReview({ userName: '', rating: 5, comment: '' });
+  };
+
+  const removeReview = (index) => {
+    setReviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   const detectLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -394,9 +428,11 @@ const GymSetup = () => {
             { id: 'basic', label: 'About & Timings', icon: Clock },
             { id: 'images', label: 'Banner & Gallery', icon: ImageIcon },
             { id: 'facilities', label: 'Facilities & Location', icon: MapPin },
+            { id: 'services', label: 'Services Offered', icon: Sparkles },
             { id: 'trainers', label: 'Our Trainers', icon: Users },
             { id: 'plans', label: 'Membership Plans', icon: DollarSign },
             { id: 'offers', label: 'Offers & Free Trial', icon: Tag },
+            { id: 'reviews', label: 'Reviews & Testimonials', icon: HelpCircle },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -1122,6 +1158,169 @@ const GymSetup = () => {
                           <button
                             type="button"
                             onClick={() => removeOffer(idx)}
+                            className="p-2 hover:bg-red-50 text-slate-450 hover:text-red-600 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tab: Services Offered */}
+            {activeTab === 'services' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 pb-2 border-b border-slate-100 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-orange-500" />
+                    <span>Gym Services List</span>
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-1">Manage core services offered by your gym location (e.g. Zumba, Yoga, CrossFit, Personal Training)</p>
+                </div>
+
+                <div className="space-y-5 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                  <h4 className="text-xs font-extrabold uppercase text-slate-700 tracking-wider">Add New Service</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Service Name</label>
+                      <input
+                        type="text"
+                        value={newService.name}
+                        onChange={(e) => setNewService(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="e.g. Special Zumba Sessions / Personal CrossFit Training"
+                        className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs text-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Service Description</label>
+                      <textarea
+                        value={newService.description}
+                        onChange={(e) => setNewService(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Describe the schedule, targets, and benefits of this service..."
+                        rows={3}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs text-slate-800"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addService}
+                    className="w-full mt-3 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" /> Add Service to List
+                  </button>
+                </div>
+
+                <div className="space-y-3.5 mt-5">
+                  <h4 className="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Services ({services.length})</h4>
+                  {services.length === 0 ? (
+                    <p className="text-slate-400 text-xs italic">No services listed yet. Add one to show on gym details page.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {services.map((s, idx) => (
+                        <div key={idx} className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 justify-between">
+                          <div className="text-left flex-grow">
+                            <h5 className="font-bold text-sm text-slate-800">{s.name}</h5>
+                            <p className="text-xs text-slate-550 mt-1">{s.description}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeService(idx)}
+                            className="p-2 hover:bg-red-50 text-slate-450 hover:text-red-600 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tab: Reviews & Testimonials */}
+            {activeTab === 'reviews' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 pb-2 border-b border-slate-100 flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5 text-orange-500" />
+                    <span>Reviews & Testimonials Management</span>
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-1">Manage public testimonials or reviews shown to users</p>
+                </div>
+
+                <div className="space-y-5 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                  <h4 className="text-xs font-extrabold uppercase text-slate-700 tracking-wider">Add New Review / Testimonial</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Reviewer Name</label>
+                      <input
+                        type="text"
+                        value={newReview.userName}
+                        onChange={(e) => setNewReview(prev => ({ ...prev, userName: e.target.value }))}
+                        placeholder="e.g. Siddharth J."
+                        className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs text-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rating (Stars)</label>
+                      <select
+                        value={newReview.rating}
+                        onChange={(e) => setNewReview(prev => ({ ...prev, rating: parseInt(e.target.value) }))}
+                        className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs text-slate-800 font-bold"
+                      >
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Comment</label>
+                      <textarea
+                        value={newReview.comment}
+                        onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
+                        placeholder="Write comments/feedback here..."
+                        rows={3}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 text-xs text-slate-800"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addReview}
+                    className="w-full mt-3 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" /> Add Review to List
+                  </button>
+                </div>
+
+                <div className="space-y-3.5 mt-5">
+                  <h4 className="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Reviews ({reviews.length})</h4>
+                  {reviews.length === 0 ? (
+                    <p className="text-slate-400 text-xs italic">No reviews registered yet. Add one to show on gym details page.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {reviews.map((r, idx) => (
+                        <div key={idx} className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 justify-between">
+                          <div className="text-left flex-grow">
+                            <div className="flex justify-between items-center">
+                              <h5 className="font-bold text-sm text-slate-800">{r.userName}</h5>
+                              <div className="flex text-yellow-500 text-xs gap-0.5">
+                                {Array.from({ length: r.rating || 5 }).map((_, i) => (
+                                  <span key={i}>★</span>
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-xs text-slate-555 mt-1">{r.comment}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeReview(idx)}
                             className="p-2 hover:bg-red-50 text-slate-450 hover:text-red-600 rounded-lg transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />

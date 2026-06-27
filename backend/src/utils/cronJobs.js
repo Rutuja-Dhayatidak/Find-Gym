@@ -1,6 +1,7 @@
 const Booking = require('../models/Booking');
 const Trainer = require('../models/Trainer');
 const User = require('../models/User');
+const HealthStoreOrder = require('../models/HealthStoreOrder');
 const { getTransporter } = require('./email');
 const { getFrontendUrl } = require('./urls');
 
@@ -77,6 +78,21 @@ const runScheduler = () => {
             });
           }
         }
+      }
+
+      // 2. Auto-cancel Health Store Orders pending for more than 30 minutes
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const expiredOrders = await HealthStoreOrder.find({
+        orderStatus: 'Pending',
+        createdAt: { $lte: thirtyMinutesAgo }
+      });
+
+      for (const order of expiredOrders) {
+        order.orderStatus = 'Cancelled';
+        order.paymentStatus = 'Failed';
+        order.notes = (order.notes ? order.notes + '\n' : '') + 'Automatically cancelled: No status change within 30 minutes of creation.';
+        await order.save();
+        console.log(`❌ Order ${order._id} automatically cancelled after 30 minutes of no action.`);
       }
     } catch (err) {
       console.error("Session Scheduler Error:", err);

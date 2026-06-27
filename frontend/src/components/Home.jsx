@@ -3,11 +3,13 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import defaultHeroBg from '../assets/home background img2.png';
 import ctaBgImg from '../assets/hone baner img2.png';
 import giftBoxImg from '../assets/3d_gift_box.png';
 import { getActiveBanners } from '../userServices/homeApi';
 import { resolveMediaUrl } from '../userServices/config';
+import { getPublicSupplements } from '../userServices/publicHealthStoreApi';
 import FeaturedGyms from './FeaturedGyms';
 const tofuBowlImg = "/balanced-bowl.png";
 const salmonImg = "/muscle-gain-bowl.png";
@@ -16,11 +18,13 @@ const oatsBowlImg = "/breakfast-bowl.png";
 gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
+  const navigate = useNavigate();
   const container = useRef(null);
   const [heroBg, setHeroBg] = useState(defaultHeroBg);
   const [mediaType, setMediaType] = useState('image/png');
   const [activeDishIndex, setActiveDishIndex] = useState(0);
   const [activeSupplementTab, setActiveSupplementTab] = useState("Whey Protein");
+  const [dbSupplements, setDbSupplements] = useState([]);
 
   const healthyDishes = [
     {
@@ -89,6 +93,20 @@ const Home = () => {
 
     fetchBanner();
   }, []);
+
+  useEffect(() => {
+    const fetchSupplements = async () => {
+      try {
+        const response = await getPublicSupplements({ category: activeSupplementTab, limit: 10 });
+        if (response && response.success) {
+          setDbSupplements(response.data);
+        }
+      } catch (err) {
+        console.error("Failed to load supplements:", err);
+      }
+    };
+    fetchSupplements();
+  }, [activeSupplementTab]);
 
   const [whyVisible, setWhyVisible] = useState(false);
   const whyRef = useRef(null);
@@ -650,259 +668,88 @@ const Home = () => {
 
             {/* Grid of Supplements */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+              {dbSupplements && dbSupplements.length > 0 ? (
+                dbSupplements.map((product) => {
+                  const discountPct = product.originalPrice && product.sellingPrice
+                    ? Math.round(((product.originalPrice - product.sellingPrice) / product.originalPrice) * 100)
+                    : 0;
 
-              {/* Product 1 */}
-              <div className="bg-[#08080a] border border-white/5 hover:border-[#FF7A00]/40 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_30px_rgba(255,122,0,0.08)] group relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4 z-10">
-                  <span className="border border-[#FF7A00]/30 text-[#FF7A00] bg-[#FF7A00]/5 text-[9px] font-extrabold tracking-wider uppercase px-2.5 py-0.5 rounded flex items-center gap-1 shadow-inner">
-                    ★ Bestseller
-                  </span>
-                  <button className="text-gray-600 hover:text-red-500 transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
+                  return (
+                    <div key={product._id} className="bg-[#08080a] border border-white/5 hover:border-[#FF7A00]/40 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_30px_rgba(255,122,0,0.08)] group relative overflow-hidden">
+                      <div className="flex items-center justify-between mb-4 z-10">
+                        {discountPct > 0 ? (
+                          <span className="border border-red-500/30 text-red-500 bg-red-500/5 text-[9px] font-extrabold px-2.5 py-0.5 rounded shadow-inner">
+                            {discountPct}% OFF
+                          </span>
+                        ) : (
+                          <span className="border border-[#FF7A00]/30 text-[#FF7A00] bg-[#FF7A00]/5 text-[9px] font-extrabold tracking-wider uppercase px-2.5 py-0.5 rounded flex items-center gap-1 shadow-inner">
+                            ★ Bestseller
+                          </span>
+                        )}
+                        <button className="text-gray-600 hover:text-red-500 transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Image Container with Glow Ring */}
+                      <div className="h-56 w-full flex items-center justify-center mb-5 relative">
+                        <div className="absolute w-44 h-44 bg-[#FF7A00]/5 group-hover:bg-[#FF7A00]/10 rounded-full blur-xl z-0 transition-all duration-500 scale-90 group-hover:scale-110"></div>
+                        <img
+                          src={product.images?.[0] || "https://images.unsplash.com/photo-1579758629938-03607ccdbaba?q=80&w=400&auto=format&fit=crop"}
+                          alt={product.name}
+                          className="h-48 object-contain z-10 transform group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500 rounded-lg"
+                          onError={(e) => { e.target.src = "https://placehold.co/400x400/08080a/ffffff?text=Supplement" }}
+                        />
+                      </div>
+
+                      <div className="flex flex-col flex-grow text-left">
+                        <h3 className="text-white font-bold text-xs leading-snug mb-1.5 line-clamp-2 group-hover:text-[#FF7A00] transition-colors min-h-[32px]">
+                          {product.name}
+                        </h3>
+                        <span className="bg-white/5 text-gray-400 text-[9px] font-bold px-2 py-0.5 rounded w-fit mb-3 border border-white/5">
+                          {product.variants?.[0]?.flavor || product.flavor || "Standard"}
+                        </span>
+
+                        {/* Rating */}
+                        <div className="flex items-center gap-0.5 text-[10px] text-yellow-500 mb-4">
+                          {Array.from({ length: Math.round(product.rating || 4.5) }).map((_, i) => (
+                            <span key={i}>★</span>
+                          ))}
+                          {Array.from({ length: 5 - Math.round(product.rating || 4.5) }).map((_, i) => (
+                            <span key={i} className="text-gray-700">★</span>
+                          ))}
+                          <span className="text-gray-400 font-bold ml-1">{product.rating || 4.5}</span>
+                        </div>
+                      </div>
+
+                      {/* Price & Action */}
+                      <div className="pt-3.5 border-t border-white/5 text-left">
+                        <div className="flex items-baseline gap-1.5 mb-3">
+                          <span className="text-white font-black text-sm">₹{(product.sellingPrice || product.oneTimePrice || 0).toLocaleString()}</span>
+                          {product.originalPrice && product.originalPrice > (product.sellingPrice || product.oneTimePrice) && (
+                            <>
+                              <span className="text-gray-500 line-through text-[11px]">₹{product.originalPrice.toLocaleString()}</span>
+                              <span className="text-[#FF7A00] text-[10px] font-bold">{discountPct}% OFF</span>
+                            </>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => navigate(`/categories?tab=supplements&productId=${product._id}`)}
+                          className="w-full bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-[0_4px_12px_rgba(255,122,0,0.2)] hover:shadow-[0_4px_18px_rgba(255,122,0,0.35)] flex items-center justify-center gap-1 cursor-pointer transform active:scale-95"
+                        >
+                          View Product <span className="text-xs transition-transform group-hover:translate-x-0.5">&gt;</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="col-span-full py-12 text-center">
+                  <p className="text-gray-500 text-sm">No supplements found in this category.</p>
                 </div>
-
-                {/* Image Container with Glow Ring */}
-                <div className="h-36 w-full flex items-center justify-center mb-5 relative">
-                  <div className="absolute w-28 h-28 bg-[#FF7A00]/5 group-hover:bg-[#FF7A00]/10 rounded-full blur-xl z-0 transition-all duration-500 scale-90 group-hover:scale-110"></div>
-                  <img
-                    src="https://images.unsplash.com/photo-1579758629938-03607ccdbaba?q=80&w=400&auto=format&fit=crop"
-                    alt="ON Whey Protein"
-                    className="h-28 object-contain z-10 transform group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500"
-                  />
-                </div>
-
-                <div className="flex flex-col flex-grow text-left">
-                  <h3 className="text-white font-bold text-xs leading-snug mb-1.5 line-clamp-2 group-hover:text-[#FF7A00] transition-colors min-h-[32px]">
-                    Optimum Nutrition Gold Standard 100% Whey Protein
-                  </h3>
-                  <span className="bg-white/5 text-gray-400 text-[9px] font-bold px-2 py-0.5 rounded w-fit mb-3 border border-white/5">
-                    Double Rich Chocolate
-                  </span>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-0.5 text-[10px] text-yellow-500 mb-4">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-gray-700">★</span>
-                    <span className="text-gray-400 font-bold ml-1">4.8 (12.5k)</span>
-                  </div>
-                </div>
-
-                {/* Price & Action */}
-                <div className="pt-3.5 border-t border-white/5 text-left">
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-white font-black text-sm">₹4,499</span>
-                    <span className="text-gray-500 line-through text-[11px]">₹5,999</span>
-                    <span className="text-[#FF7A00] text-[10px] font-bold">25% OFF</span>
-                  </div>
-                  <button className="w-full bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-[0_4px_12px_rgba(255,122,0,0.2)] hover:shadow-[0_4px_18px_rgba(255,122,0,0.35)] flex items-center justify-center gap-1 cursor-pointer transform active:scale-95">
-                    View Product <span className="text-xs transition-transform group-hover:translate-x-0.5">&gt;</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Product 2 */}
-              <div className="bg-[#08080a] border border-white/5 hover:border-[#FF7A00]/40 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_30px_rgba(255,122,0,0.08)] group relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4 z-10">
-                  <span className="border border-red-500/30 text-red-500 bg-red-500/5 text-[9px] font-extrabold px-2.5 py-0.5 rounded shadow-inner">
-                    20% OFF
-                  </span>
-                  <button className="text-gray-600 hover:text-red-500 transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Image Container with Glow Ring */}
-                <div className="h-36 w-full flex items-center justify-center mb-5 relative">
-                  <div className="absolute w-28 h-28 bg-[#FF7A00]/5 group-hover:bg-[#FF7A00]/10 rounded-full blur-xl z-0 transition-all duration-500 scale-90 group-hover:scale-110"></div>
-                  <img
-                    src="https://images.unsplash.com/photo-1593095948071-474c5cc2989d?q=80&w=400&auto=format&fit=crop"
-                    alt="ON Creatine"
-                    className="h-28 object-contain z-10 transform group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500"
-                  />
-                </div>
-
-                <div className="flex flex-col flex-grow text-left">
-                  <h3 className="text-white font-bold text-xs leading-snug mb-1.5 line-clamp-2 group-hover:text-[#FF7A00] transition-colors min-h-[32px]">
-                    Optimum Nutrition Micronized Creatine Monohydrate
-                  </h3>
-                  <span className="bg-white/5 text-gray-400 text-[9px] font-bold px-2 py-0.5 rounded w-fit mb-3 border border-white/5">
-                    Unflavored
-                  </span>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-0.5 text-[10px] text-yellow-500 mb-4">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-gray-700">★</span>
-                    <span className="text-gray-400 font-bold ml-1">4.7 (8.3k)</span>
-                  </div>
-                </div>
-
-                {/* Price & Action */}
-                <div className="pt-3.5 border-t border-white/5 text-left">
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-white font-black text-sm">₹1,199</span>
-                    <span className="text-gray-500 line-through text-[11px]">₹1,499</span>
-                    <span className="text-[#FF7A00] text-[10px] font-bold">20% OFF</span>
-                  </div>
-                  <button className="w-full bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-[0_4px_12px_rgba(255,122,0,0.2)] hover:shadow-[0_4px_18px_rgba(255,122,0,0.35)] flex items-center justify-center gap-1 cursor-pointer transform active:scale-95">
-                    View Product <span className="text-xs transition-transform group-hover:translate-x-0.5">&gt;</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Product 3 */}
-              <div className="bg-[#08080a] border border-white/5 hover:border-[#FF7A00]/40 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_30px_rgba(255,122,0,0.08)] group relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4 z-10">
-                  <span className="border border-[#FF7A00]/30 text-[#FF7A00] bg-[#FF7A00]/5 text-[9px] font-extrabold tracking-wider uppercase px-2.5 py-0.5 rounded flex items-center gap-1 shadow-inner">
-                    ★ Bestseller
-                  </span>
-                  <button className="text-gray-600 hover:text-red-500 transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Image Container with Glow Ring */}
-                <div className="h-36 w-full flex items-center justify-center mb-5 relative">
-                  <div className="absolute w-28 h-28 bg-[#FF7A00]/5 group-hover:bg-[#FF7A00]/10 rounded-full blur-xl z-0 transition-all duration-500 scale-90 group-hover:scale-110"></div>
-                  <img
-                    src="https://images.unsplash.com/photo-1611926653458-09294b3142bf?q=80&w=400&auto=format&fit=crop"
-                    alt="Muscletech Multivitamin"
-                    className="h-28 object-contain z-10 transform group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500"
-                  />
-                </div>
-
-                <div className="flex flex-col flex-grow text-left">
-                  <h3 className="text-white font-bold text-xs leading-snug mb-1.5 line-clamp-2 group-hover:text-[#FF7A00] transition-colors min-h-[32px]">
-                    Muscletech Platinum Multivitamin
-                  </h3>
-                  <span className="bg-white/5 text-gray-400 text-[9px] font-bold px-2 py-0.5 rounded w-fit mb-3 border border-white/5">
-                    90 Tablets
-                  </span>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-0.5 text-[10px] text-yellow-500 mb-4">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-gray-700">★</span>
-                    <span className="text-gray-400 font-bold ml-1">4.8 (6.9k)</span>
-                  </div>
-                </div>
-
-                {/* Price & Action */}
-                <div className="pt-3.5 border-t border-white/5 text-left">
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-white font-black text-sm">₹899</span>
-                    <span className="text-gray-500 line-through text-[11px]">₹1,199</span>
-                    <span className="text-[#FF7A00] text-[10px] font-bold">25% OFF</span>
-                  </div>
-                  <button className="w-full bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-[0_4px_12px_rgba(255,122,0,0.2)] hover:shadow-[0_4px_18px_rgba(255,122,0,0.35)] flex items-center justify-center gap-1 cursor-pointer transform active:scale-95">
-                    View Product <span className="text-xs transition-transform group-hover:translate-x-0.5">&gt;</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Product 4 */}
-              <div className="bg-[#08080a] border border-white/5 hover:border-[#FF7A00]/40 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_30px_rgba(255,122,0,0.08)] group relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4 z-10">
-                  <span className="border border-orange-500/30 text-orange-500 bg-orange-500/5 text-[9px] font-extrabold px-2.5 py-0.5 rounded shadow-inner">
-                    New
-                  </span>
-                  <button className="text-gray-600 hover:text-red-500 transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Image Container with Glow Ring */}
-                <div className="h-36 w-full flex items-center justify-center mb-5 relative">
-                  <div className="absolute w-28 h-28 bg-[#FF7A00]/5 group-hover:bg-[#FF7A00]/10 rounded-full blur-xl z-0 transition-all duration-500 scale-90 group-hover:scale-110"></div>
-                  <img
-                    src="https://images.unsplash.com/photo-1512152272829-e3139592d56f?q=80&w=400&auto=format&fit=crop"
-                    alt="Cellucor Preworkout"
-                    className="h-28 object-contain z-10 transform group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500"
-                  />
-                </div>
-
-                <div className="flex flex-col flex-grow text-left">
-                  <h3 className="text-white font-bold text-xs leading-snug mb-1.5 line-clamp-2 group-hover:text-[#FF7A00] transition-colors min-h-[32px]">
-                    Cellucor C4 Ultimate Pre-Workout
-                  </h3>
-                  <span className="bg-white/5 text-gray-400 text-[9px] font-bold px-2 py-0.5 rounded w-fit mb-3 border border-white/5">
-                    Fruit Punch
-                  </span>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-0.5 text-[10px] text-yellow-500 mb-4">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-gray-700">★</span>
-                    <span className="text-gray-400 font-bold ml-1">4.6 (5.2k)</span>
-                  </div>
-                </div>
-
-                {/* Price & Action */}
-                <div className="pt-3.5 border-t border-white/5 text-left">
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-white font-black text-sm">₹2,199</span>
-                  </div>
-                  <button className="w-full bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-[0_4px_12px_rgba(255,122,0,0.2)] hover:shadow-[0_4px_18px_rgba(255,122,0,0.35)] flex items-center justify-center gap-1 cursor-pointer transform active:scale-95">
-                    View Product <span className="text-xs transition-transform group-hover:translate-x-0.5">&gt;</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Product 5 */}
-              <div className="bg-[#08080a] border border-white/5 hover:border-[#FF7A00]/40 rounded-2xl p-4.5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_30px_rgba(255,122,0,0.08)] group relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4 z-10">
-                  <span className="border border-orange-500/30 text-orange-500 bg-orange-500/5 text-[9px] font-extrabold px-2.5 py-0.5 rounded shadow-inner">
-                    15% OFF
-                  </span>
-                  <button className="text-gray-600 hover:text-red-500 transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Image Container with Glow Ring */}
-                <div className="h-36 w-full flex items-center justify-center mb-5 relative">
-                  <div className="absolute w-28 h-28 bg-[#FF7A00]/5 group-hover:bg-[#FF7A00]/10 rounded-full blur-xl z-0 transition-all duration-500 scale-90 group-hover:scale-110"></div>
-                  <img
-                    src="https://images.unsplash.com/photo-1579758682665-53a1a614eea6?q=80&w=400&auto=format&fit=crop"
-                    alt="ON Serious Mass"
-                    className="h-28 object-contain z-10 transform group-hover:-translate-y-2 group-hover:rotate-2 transition-all duration-500"
-                  />
-                </div>
-
-                <div className="flex flex-col flex-grow text-left">
-                  <h3 className="text-white font-bold text-xs leading-snug mb-1.5 line-clamp-2 group-hover:text-[#FF7A00] transition-colors min-h-[32px]">
-                    Optimum Nutrition Serious Mass High Protein Weight Gainer
-                  </h3>
-                  <span className="bg-white/5 text-gray-400 text-[9px] font-bold px-2 py-0.5 rounded w-fit mb-3 border border-white/5">
-                    Chocolate
-                  </span>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-0.5 text-[10px] text-yellow-500 mb-4">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-gray-700">★</span>
-                    <span className="text-gray-400 font-bold ml-1">4.7 (7.1k)</span>
-                  </div>
-                </div>
-
-                {/* Price & Action */}
-                <div className="pt-3.5 border-t border-white/5 text-left">
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-white font-black text-sm">₹3,399</span>
-                    <span className="text-gray-500 line-through text-[11px]">₹3,999</span>
-                    <span className="text-[#FF7A00] text-[10px] font-bold">15% OFF</span>
-                  </div>
-                  <button className="w-full bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-[0_4px_12px_rgba(255,122,0,0.2)] hover:shadow-[0_4px_18px_rgba(255,122,0,0.35)] flex items-center justify-center gap-1 cursor-pointer transform active:scale-95">
-                    View Product <span className="text-xs transition-transform group-hover:translate-x-0.5">&gt;</span>
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -1021,7 +868,10 @@ const Home = () => {
                   <p className="text-gray-400 text-sm max-w-xs mt-4 mb-8">
                     Find the perfect gym that fits your goals and lifestyle.
                   </p>
-                  <button className="bg-[#FF7A00] hover:bg-green-600 text-black font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-colors shadow-[0_4px_14px_0_rgba(255,122,0,0.39)]">
+                  <button
+                    onClick={() => navigate('/gyms')}
+                    className="bg-[#FF7A00] hover:bg-green-600 text-black font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-colors shadow-[0_4px_14px_0_rgba(255,122,0,0.39)] cursor-pointer"
+                  >
                     Explore Gyms
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                   </button>
@@ -1108,7 +958,10 @@ const Home = () => {
                     </div>
                   </div>
 
-                  <button className="bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white font-black py-4 px-8 rounded-2xl flex items-center gap-2 transition-all duration-300 shadow-[0_6px_20px_rgba(255,122,0,0.35)] cursor-pointer text-xs w-fit uppercase tracking-wider">
+                  <button
+                    onClick={() => navigate('/categories?tab=diet')}
+                    className="bg-gradient-to-r from-[#FF7A00] to-[#E66E00] hover:to-[#FF7A00] text-white font-black py-4 px-8 rounded-2xl flex items-center gap-2 transition-all duration-300 shadow-[0_6px_20px_rgba(255,122,0,0.35)] cursor-pointer text-xs w-fit uppercase tracking-wider"
+                  >
                     Explore Healthy Food <span>➔</span>
                   </button>
                 </div>

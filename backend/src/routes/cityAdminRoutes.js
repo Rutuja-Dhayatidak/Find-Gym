@@ -8,6 +8,10 @@ router.use(cityAdminAuth);
 
 router.get('/dashboard', cityAdminController.getDashboardData);
 router.get('/users', cityAdminController.getAllUsers);
+router.patch('/users/:userId/block', cityAdminController.blockUser);
+router.patch('/users/:userId/unblock', cityAdminController.unblockUser);
+router.get('/users/:userId', cityAdminController.getUserDetails);
+router.get('/users/:userId/activity', cityAdminController.getUserActivity);
 router.get('/gyms', cityAdminController.getAllGyms);
 router.patch('/gyms/:gymId/approve', cityAdminController.approveGym);
 router.patch('/gyms/:gymId/reject', cityAdminController.rejectGym);

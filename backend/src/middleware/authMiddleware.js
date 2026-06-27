@@ -87,8 +87,12 @@ const protectUser = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
     
-    // Find User
-    const user = await User.findById(decoded.id).select('-password');
+    // Find User (check Website User collection first, then fallback to original users collection)
+    const WebsiteUser = require('../models/WebsiteUser');
+    let user = await WebsiteUser.findById(decoded.id).select('-password');
+    if (!user) {
+      user = await User.findById(decoded.id).select('-password');
+    }
     if (!user) {
       return res.status(401).json({
         success: false,

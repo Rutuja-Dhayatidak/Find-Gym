@@ -36,8 +36,8 @@ exports.getAllGyms = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
 
-    const total = await Gym.countDocuments({ active: true, verified: true });
-    const gyms = await Gym.find({ active: true, verified: true })
+    const total = await Gym.countDocuments({ active: true, verified: true, setupCompleted: true });
+    const gyms = await Gym.find({ active: true, verified: true, setupCompleted: true })
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -86,7 +86,8 @@ exports.getNearbyGyms = async (req, res, next) => {
         }
       },
       active: true,
-      verified: true
+      verified: true,
+      setupCompleted: true
     };
 
     // Retrieve matching active gyms sorted by proximity
@@ -214,7 +215,7 @@ exports.setupGym = async (req, res, next) => {
     const fields = [
       'about', 'heroImage', 'galleryImages', 'facilities', 'trainers',
       'membershipPlans', 'offers', 'freeTrial', 'reviews',
-      'openingTime', 'closingTime', 'latitude', 'longitude'
+      'openingTime', 'closingTime', 'latitude', 'longitude', 'services'
     ];
 
     fields.forEach(field => {

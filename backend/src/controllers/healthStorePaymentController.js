@@ -93,9 +93,15 @@ exports.createRazorpayOrder = async (req, res) => {
         }
       : address;
 
+    const modelName = req.user?.constructor?.modelName || 'WebsiteUser';
+    const customerModel = (modelName === 'User') ? 'User' : 'WebsiteUser';
+
     const order = await HealthStoreOrder.create({
       orderNumber: generateOrderNumber(),
       customer: req.user._id,
+      customerModel,
+      orderSource: 'website',
+      customerType: 'website_user',
       healthStore: storeId,
       city: store.city,
       items: orderItems,

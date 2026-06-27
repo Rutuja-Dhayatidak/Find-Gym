@@ -132,7 +132,7 @@ const GymDetails = () => {
 
     } catch (err) {
       console.error("Purchase error:", err);
-      toast.error(err?.response?.data?.message || 'Failed to process membership purchase.');
+      toast.error(err.message || 'Failed to process membership purchase.');
     } finally {
       setPurchaseLoading(false);
     }
@@ -375,6 +375,14 @@ const GymDetails = () => {
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
           <path d="M9 17v-5H5v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5H9" />
           <circle cx="12" cy="7" r="2.5" />
+        </svg>
+      )
+    },
+    {
+      id: 'Services',
+      icon: (color) => (
+        <svg className="w-5 h-5 transition-colors" fill="none" stroke={color} viewBox="0 0 24 24" strokeWidth="2.2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       )
     },
@@ -768,7 +776,7 @@ const GymDetails = () => {
               {/* Card 2: Expert Trainers */}
               <div className="col-span-6 sm:col-span-2 relative aspect-[3/3.8] rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
-                  src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=300&auto=format&fit=crop"
+                  src={gym.trainers?.[0]?.photo || "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=300&auto=format&fit=crop"}
                   alt="Expert Trainers"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -787,7 +795,7 @@ const GymDetails = () => {
               {/* Card 3: Diet Plans */}
               <div className="col-span-6 sm:col-span-2 relative aspect-[3/3.8] rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
-                  src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=300&auto=format&fit=crop"
+                  src={gym.offers?.[0]?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=300&auto=format&fit=crop"}
                   alt="Diet Plans"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -806,7 +814,7 @@ const GymDetails = () => {
               {/* Card 4: Premium Lockers */}
               <div className="col-span-6 sm:col-span-3 relative h-[140px] rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
-                  src="https://images.unsplash.com/photo-1564229056182-4f36a3ad8278?q=80&w=400&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=400&auto=format&fit=crop"
                   alt="Premium Lockers"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -817,7 +825,7 @@ const GymDetails = () => {
                   </div>
                   <div>
                     <h4 className="text-[10px] font-black text-white uppercase tracking-wider">PREMIUM LOCKERS</h4>
-                    <p className="text-[8px] text-zinc-300 font-medium">Secure & spacious locker rooms</p>
+                    <p className="text-[8px] text-zinc-350 font-medium">Secure & spacious locker rooms</p>
                   </div>
                 </div>
               </div>
@@ -899,6 +907,40 @@ const GymDetails = () => {
           ))}
         </div>
       </motion.div>
+
+      {/* 5b. Services Offered Section */}
+      {gym.services && gym.services.length > 0 && (
+        <motion.div
+          id="services"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="whileInView"
+          viewport={{ once: true, margin: "-40px" }}
+          className="max-w-6xl mx-auto px-4 md:px-8 mt-14 text-left"
+        >
+          <motion.div variants={fadeInUp} className="flex justify-between items-center mb-6">
+            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white border-l-4 border-orange-500 pl-3">
+              Services Offered
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {gym.services.map((service, idx) => (
+              <motion.div
+                key={idx}
+                variants={cardScaleUp}
+                className="bg-[#121214]/40 border border-zinc-900 p-6 rounded-2xl flex flex-col gap-3 hover:border-orange-500/25 transition-all group text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-xl text-orange-500">✨</span>
+                  <h4 className="font-extrabold text-sm text-white uppercase tracking-wider">{service.name}</h4>
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">{service.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* 6. Our Trainers Section */}
       <motion.div
@@ -1172,33 +1214,54 @@ const GymDetails = () => {
             ))}
           </div>
 
-          {/* Sample Comments List */}
+          {/* Dynamic Reviews or Sample Comments List */}
           <div className="lg:col-span-4 flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5 bg-zinc-950/20 p-4 rounded-2xl border border-[#27272a]/20">
-              <div className="flex justify-between items-center">
-                <span className="font-extrabold text-xs text-zinc-300">Siddharth J.</span>
-                <span className="text-[10px] text-zinc-500">2 days ago</span>
-              </div>
-              <div className="flex text-yellow-500 text-[10px]">
-                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-              </div>
-              <p className="text-xs text-zinc-400 leading-normal">
-                Great gym with all modern equipment. Trainers are very supportive and helpful.
-              </p>
-            </div>
+            {gym.reviews && gym.reviews.length > 0 ? (
+              gym.reviews.map((r, idx) => (
+                <div key={idx} className="flex flex-col gap-1.5 bg-zinc-950/20 p-4 rounded-2xl border border-[#27272a]/20">
+                  <div className="flex justify-between items-center">
+                    <span className="font-extrabold text-xs text-zinc-305">{r.userName}</span>
+                    <span className="text-[10px] text-zinc-500">{r.date ? new Date(r.date).toLocaleDateString() : 'Just now'}</span>
+                  </div>
+                  <div className="flex text-yellow-500 text-[10px] gap-0.5">
+                    {Array.from({ length: r.rating || 5 }).map((_, i) => (
+                      <span key={i}>★</span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-zinc-400 leading-normal">
+                    {r.comment}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="flex flex-col gap-1.5 bg-zinc-950/20 p-4 rounded-2xl border border-[#27272a]/20">
+                  <div className="flex justify-between items-center">
+                    <span className="font-extrabold text-xs text-zinc-300">Siddharth J.</span>
+                    <span className="text-[10px] text-zinc-500">2 days ago</span>
+                  </div>
+                  <div className="flex text-yellow-500 text-[10px]">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 leading-normal">
+                    Great gym with all modern equipment. Trainers are very supportive and helpful.
+                  </p>
+                </div>
 
-            <div className="flex flex-col gap-1.5 bg-zinc-950/20 p-4 rounded-2xl border border-[#27272a]/20">
-              <div className="flex justify-between items-center">
-                <span className="font-extrabold text-xs text-zinc-300">Priya K.</span>
-                <span className="text-[10px] text-zinc-500">1 week ago</span>
-              </div>
-              <div className="flex text-yellow-500 text-[10px]">
-                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-              </div>
-              <p className="text-xs text-zinc-400 leading-normal">
-                Very clean and spacious gym. Love the atmosphere!
-              </p>
-            </div>
+                <div className="flex flex-col gap-1.5 bg-zinc-950/20 p-4 rounded-2xl border border-[#27272a]/20">
+                  <div className="flex justify-between items-center">
+                    <span className="font-extrabold text-xs text-zinc-300">Priya K.</span>
+                    <span className="text-[10px] text-zinc-500">1 week ago</span>
+                  </div>
+                  <div className="flex text-yellow-500 text-[10px]">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 leading-normal">
+                    Very clean and spacious gym. Love the atmosphere!
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </motion.div>

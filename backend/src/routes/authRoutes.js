@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const GymOwner = require('../models/GymOwner');
 const User = require('../models/User');
+const WebsiteUser = require('../models/WebsiteUser');
 const { uploadToCloudinary } = require('../utils/cloudinary');
 const { sendRegistrationEmail, sendAdminNotification, sendOTPEmail } = require('../utils/email');
 const { protectUser } = require('../middleware/authMiddleware');
@@ -219,8 +220,9 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
     }
 
     // Check unique email
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
+    const existingUser = await WebsiteUser.findOne({ email: email.toLowerCase() });
+    const existingAdmin = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser || existingAdmin) {
       return res.status(400).json({ success: false, message: "Email already registered", statusCode: 400 });
     }
 
@@ -239,7 +241,7 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create User record
-    const user = new User({
+    const user = new WebsiteUser({
       name: fullName,
       email: email.toLowerCase(),
       password: hashedPassword,
@@ -252,7 +254,7 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
       location,
       city,
       profilePhoto: profilePhotoUrl,
-      role: 'member' // normal user
+      role: 'user' // normal user (defaults to user initially)
     });
 
     await user.save();
@@ -282,7 +284,10 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, message: "Please fill all required fields", statusCode: 400 });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    let user = await WebsiteUser.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      user = await User.findOne({ email: email.toLowerCase() });
+    }
     if (!user) {
       return res.status(400).json({ success: false, message: "Invalid credentials", statusCode: 400 });
     }
@@ -423,7 +428,10 @@ router.get('/me', protectUser, async (req, res) => {
 // PUT /api/auth/profile (Update authenticated user profile)
 router.put('/profile', protectUser, upload.single('profilePhoto'), async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    let user = await WebsiteUser.findById(req.user._id);
+    if (!user) {
+      user = await User.findById(req.user._id);
+    }
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found", statusCode: 404 });
     }

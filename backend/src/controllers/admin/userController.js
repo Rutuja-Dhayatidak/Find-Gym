@@ -1,4 +1,5 @@
-const User = require('../../models/User');
+const WebsiteUser = require('../../models/WebsiteUser');
+const MobileUser = require('../../models/MobileUser');
 const ActivityLog = require('../../models/ActivityLog');
 
 exports.getAllUsers = async (req, res) => {
@@ -6,8 +7,9 @@ exports.getAllUsers = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    const userType = req.query.userType || 'all';
 
-    let query = {};
+    let query = { role: 'user' };
     
     if (req.query.search) {
       const searchRegex = new RegExp(req.query.search, 'i');
@@ -28,37 +30,80 @@ exports.getAllUsers = async (req, res) => {
       if (req.query.dateTo) query.joinDate.$lte = new Date(req.query.dateTo);
     }
 
+    // Get total counts for the stats cards regardless of search/status filters
+    const statWebsiteCount = await WebsiteUser.countDocuments({ role: 'user' });
+    const statMobileCount = await MobileUser.countDocuments({ role: 'user' });
+    const statTotalCount = statWebsiteCount + statMobileCount;
+
+    let users = [];
+    let totalCount = 0;
+
+    const formatUser = (u, type) => ({
+      id: u._id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      status: u.status,
+      joinDate: u.joinDate || u.createdAt,
+      lastLogin: u.lastLogin,
+      fitnessGoal: u.fitnessGoal,
+      userType: type
+    });
+
     const sortField = req.query.sortBy || 'joinDate';
     const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
-    let sort = {};
-    sort[sortField] = sortOrder;
 
-    const users = await User.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .select('-password'); // Exclude password
+    if (userType === 'website') {
+      totalCount = await WebsiteUser.countDocuments(query);
+      const dbUsers = await WebsiteUser.find(query)
+        .sort({ [sortField]: sortOrder })
+        .skip(skip)
+        .limit(limit)
+        .select('-password');
+      users = dbUsers.map(u => formatUser(u, 'website'));
+    } else if (userType === 'mobile') {
+      totalCount = await MobileUser.countDocuments(query);
+      const dbUsers = await MobileUser.find(query)
+        .sort({ [sortField]: sortOrder })
+        .skip(skip)
+        .limit(limit)
+        .select('-password');
+      users = dbUsers.map(u => formatUser(u, 'mobile'));
+    } else {
+      // Combined 'all' users
+      const websiteUsers = await WebsiteUser.find(query).select('-password');
+      const mobileUsers = await MobileUser.find(query).select('-password');
 
-    const totalCount = await User.countDocuments(query);
+      const allUsersCombined = [
+        ...websiteUsers.map(u => formatUser(u, 'website')),
+        ...mobileUsers.map(u => formatUser(u, 'mobile'))
+      ];
+
+      // Sort combined array
+      allUsersCombined.sort((a, b) => {
+        const valA = a[sortField] ? new Date(a[sortField]).getTime() : 0;
+        const valB = b[sortField] ? new Date(b[sortField]).getTime() : 0;
+        return sortOrder === 1 ? valA - valB : valB - valA;
+      });
+
+      totalCount = allUsersCombined.length;
+      users = allUsersCombined.slice(skip, skip + limit);
+    }
 
     res.status(200).json({
       success: true,
       data: {
-        users: users.map(u => ({
-          id: u._id,
-          name: u.name,
-          email: u.email,
-          phone: u.phone,
-          status: u.status,
-          joinDate: u.joinDate,
-          lastLogin: u.lastLogin,
-          fitnessGoal: u.fitnessGoal
-        })),
+        users,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(totalCount / limit),
           totalCount,
           limit
+        },
+        stats: {
+          total: statTotalCount,
+          website: statWebsiteCount,
+          mobile: statMobileCount
         }
       }
     });
@@ -69,10 +114,14 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserDetails = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).select('-password');
+    let user = await WebsiteUser.findById(req.params.userId).select('-password');
+    let userType = 'website';
+    if (!user) {
+      user = await MobileUser.findById(req.params.userId).select('-password');
+      userType = 'mobile';
+    }
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     
-    // In a real scenario, you'd aggregate totalBookings and totalAmount from Transaction model
     const Transaction = require('../../models/Transaction');
     const bookings = await Transaction.aggregate([
       { $match: { userId: user._id, status: 'success' } },
@@ -97,12 +146,13 @@ exports.getUserDetails = async (req, res) => {
         location: user.location,
         city: user.city,
         status: user.status,
-        joinDate: user.joinDate,
+        joinDate: user.joinDate || user.createdAt,
         lastLogin: user.lastLogin,
         emailVerified: user.emailVerified,
         phoneVerified: user.phoneVerified,
         totalBookings: stats.count,
-        totalAmount: stats.amount
+        totalAmount: stats.amount,
+        userType
       }
     });
   } catch (error) {
@@ -112,7 +162,10 @@ exports.getUserDetails = async (req, res) => {
 
 exports.blockUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.userId, { status: 'blocked' }, { new: true });
+    let user = await WebsiteUser.findByIdAndUpdate(req.params.userId, { status: 'blocked' }, { new: true });
+    if (!user) {
+      user = await MobileUser.findByIdAndUpdate(req.params.userId, { status: 'blocked' }, { new: true });
+    }
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     
     await ActivityLog.create({
@@ -130,7 +183,10 @@ exports.blockUser = async (req, res) => {
 
 exports.unblockUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.userId, { status: 'active' }, { new: true });
+    let user = await WebsiteUser.findByIdAndUpdate(req.params.userId, { status: 'active' }, { new: true });
+    if (!user) {
+      user = await MobileUser.findByIdAndUpdate(req.params.userId, { status: 'active' }, { new: true });
+    }
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     await ActivityLog.create({
@@ -142,16 +198,18 @@ exports.unblockUser = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'User unblocked successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    res.status(550).json({ success: false, message: 'Server error', error: error.message });
   }
 };
 
 exports.deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.userId);
+    let user = await WebsiteUser.findByIdAndDelete(req.params.userId);
+    if (!user) {
+      user = await MobileUser.findByIdAndDelete(req.params.userId);
+    }
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-    // In a real app, you might want to soft delete or handle cascade deletes of bookings, etc.
     res.status(200).json({ success: true, message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
@@ -193,3 +251,4 @@ exports.getUserActivity = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
+

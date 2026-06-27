@@ -33,7 +33,22 @@ const addressSchema = new mongoose.Schema(
 const healthStoreOrderSchema = new mongoose.Schema(
   {
     orderNumber: { type: String, unique: true },
-    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    customer: { type: mongoose.Schema.Types.ObjectId, refPath: 'customerModel', required: true },
+    customerModel: {
+      type: String,
+      enum: ["WebsiteUser", "MobileUser", "User"],
+      default: "WebsiteUser"
+    },
+    orderSource: {
+      type: String,
+      enum: ["website", "mobile_app"],
+      default: "website"
+    },
+    customerType: {
+      type: String,
+      enum: ["website_user", "mobile_user"],
+      default: "website_user"
+    },
     healthStore: { type: mongoose.Schema.Types.ObjectId, ref: 'HealthStore', required: true },
     city: { type: String },
     items: [orderItemSchema],
@@ -58,8 +73,34 @@ const healthStoreOrderSchema = new mongoose.Schema(
     invoiceNumber: { type: String },
     notes: { type: String },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
+
+// Virtual properties
+healthStoreOrderSchema.virtual('sourceLabel').get(function() {
+  return this.orderSource === 'website' ? 'Website' : 'Mobile App';
+});
+
+healthStoreOrderSchema.virtual('customerTypeLabel').get(function() {
+  return this.customerType === 'website_user' ? 'Website User' : 'Mobile User';
+});
+
+// Post-init hook for legacy orders fallback
+healthStoreOrderSchema.post('init', function(doc) {
+  if (!doc.orderSource) {
+    doc.orderSource = 'website';
+  }
+  if (!doc.customerType) {
+    doc.customerType = 'website_user';
+  }
+  if (!doc.customerModel) {
+    doc.customerModel = 'WebsiteUser';
+  }
+});
 
 // Indexes
 healthStoreOrderSchema.index({ customer: 1 });

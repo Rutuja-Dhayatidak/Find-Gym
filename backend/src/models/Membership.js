@@ -24,6 +24,7 @@ const membershipSchema = new mongoose.Schema({
   invoiceNumber: { type: String },
   membershipStatus: { type: String, enum: ['pending', 'active', 'expired'], default: 'pending' },
   facilitiesIncluded: { type: [String], default: [] },
+  orderSource: { type: String, enum: ['Mobile App', 'Website'], default: 'Website' },
   expireAt: { type: Date } // TTL index field for pending locks
 }, { timestamps: true });
 

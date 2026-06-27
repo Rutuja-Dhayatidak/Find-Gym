@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import logo from "../assets/Gemini_Generated_Image_e93s7pe93s7pe93s-removebg-preview.png";
 import {
   createRazorpayOrder,
   verifyRazorpayPayment,
@@ -39,6 +40,77 @@ const Navbar = () => {
     pincode: "",
     landmark: ""
   });
+
+  const [userCity, setUserCity] = useState(localStorage.getItem("user_city") || "PUNE");
+
+  const detectUserCity = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser.");
+      return;
+    }
+    toast.loading("Detecting your location...", { id: "geo-city" });
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        localStorage.setItem('user_latitude', latitude.toString());
+        localStorage.setItem('user_longitude', longitude.toString());
+        window.dispatchEvent(new Event('location-updated'));
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data && data.address) {
+            const detectedCity = data.address.city || data.address.town || data.address.village || data.address.county || "PUNE";
+            const cleanCity = detectedCity.toUpperCase();
+            localStorage.setItem("user_city", cleanCity);
+            setUserCity(cleanCity);
+            toast.success(`Location set to ${cleanCity}!`, { id: "geo-city" });
+          } else {
+            toast.error("Could not resolve city name.", { id: "geo-city" });
+          }
+        } catch (err) {
+          console.error("Error reverse geocoding:", err);
+          toast.error("Failed to detect city.", { id: "geo-city" });
+        }
+      },
+      (err) => {
+        toast.error("Permission denied or error: " + err.message, { id: "geo-city" });
+      }
+    );
+  };
+
+  useEffect(() => {
+    const handleLocationChange = async () => {
+      const lat = localStorage.getItem('user_latitude');
+      const lon = localStorage.getItem('user_longitude');
+      const storedCity = localStorage.getItem('user_city');
+      
+      if (storedCity) {
+        setUserCity(storedCity);
+        return;
+      }
+      
+      if (lat && lon) {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+          const data = await res.json();
+          if (data && data.address) {
+            const detectedCity = data.address.city || data.address.town || data.address.village || data.address.county || "PUNE";
+            const cleanCity = detectedCity.toUpperCase();
+            localStorage.setItem("user_city", cleanCity);
+            setUserCity(cleanCity);
+          }
+        } catch (err) {
+          console.error("Error fetching location on event:", err);
+        }
+      }
+    };
+    
+    handleLocationChange();
+    window.addEventListener('location-updated', handleLocationChange);
+    return () => {
+      window.removeEventListener('location-updated', handleLocationChange);
+    };
+  }, []);
 
   const handleLocateUser = () => {
     if (!navigator.geolocation) {
@@ -297,10 +369,9 @@ const Navbar = () => {
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link to="/">
-                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-                  livesale<span className="text-[#FF7A00]">.Fitness</span>
-                </h1>
+              <Link to="/" className="flex items-center gap-2.5">
+                <img src={logo} alt="livesale.Fitness Logo" className="h-20 w-auto object-contain rounded" />
+
               </Link>
             </div>
 
@@ -311,6 +382,7 @@ const Navbar = () => {
 
               {/* Mobile Location button */}
               <button
+                onClick={detectUserCity}
                 className="
                 flex
                 md:hidden
@@ -326,15 +398,17 @@ const Navbar = () => {
                 text-white
                 text-xs
                 font-bold
+                cursor-pointer
               "
               >
-                <span>PUNE</span>
+                <span>{userCity}</span>
                 📍
               </button>
 
               {/* Desktop Right (Hidden on mobile) */}
               <div className="hidden md:flex items-center gap-4">
                 <button
+                  onClick={detectUserCity}
                   className="
                   flex
                   items-center
@@ -349,9 +423,10 @@ const Navbar = () => {
                   text-white
                   hover:bg-white/20
                   transition-all
+                  cursor-pointer
                 "
                 >
-                  <span className="font-semibold text-sm">PUNE</span>
+                  <span className="font-semibold text-sm">{userCity}</span>
                   📍
                 </button>
 

@@ -1359,14 +1359,8 @@ const FindGym = () => {
           ))}
         </div>
 
-        {/* Floating grid apps and avatar at top-right of map */}
+        {/* Floating avatar at top-right of map */}
         <div className="absolute top-4 right-4 z-10 flex items-center gap-3 pointer-events-auto">
-          <button className="w-9 h-9 bg-white hover:bg-gray-50 rounded-full shadow-md flex items-center justify-center border border-gray-200 cursor-pointer">
-            <svg className="w-5.5 h-5.5 text-gray-600" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z" />
-            </svg>
-          </button>
-
           <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-indigo-500 shadow-md border-2 border-white flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-105 transition-transform" title="User Account">
             WA
           </div>
@@ -1437,43 +1431,6 @@ const FindGym = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
               </svg>
             </button>
-          </div>
-        </div>
-
-        {/* Pegman / Photos Panel at bottom right */}
-        <div className="absolute bottom-4 right-4 z-10 flex items-center bg-white border border-gray-200 shadow-md rounded-lg p-1 px-2 gap-2.5 pointer-events-auto select-none">
-          {/* Yellow Pegman SVG Icon */}
-          <div className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors text-base flex items-center justify-center w-7 h-7" title="Street View">
-            <svg className="w-5 h-5 text-yellow-500 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm2 14v5h-4v-5H8V9c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v7h-2z" />
-            </svg>
-          </div>
-          
-          <div className="h-6 w-[1px] bg-gray-200"></div>
-
-          {/* 3 landscape thumbnails */}
-          <div className="flex gap-1">
-            <img 
-              src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=40&auto=format&fit=crop" 
-              alt="Street view 1"
-              className="w-8 h-5.5 object-cover rounded border border-gray-150 shadow-sm"
-            />
-            <img 
-              src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=40&auto=format&fit=crop" 
-              alt="Street view 2"
-              className="w-8 h-5.5 object-cover rounded border border-gray-150 shadow-sm"
-            />
-            <img 
-              src="https://images.unsplash.com/photo-1590069261209-f8e9b8642343?q=80&w=40&auto=format&fit=crop" 
-              alt="Street view 3"
-              className="w-8 h-5.5 object-cover rounded border border-gray-150 shadow-sm"
-            />
-          </div>
-
-          <div className="text-gray-400 hover:text-gray-700 cursor-pointer p-0.5 rounded hover:bg-gray-100">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-            </svg>
           </div>
         </div>
 

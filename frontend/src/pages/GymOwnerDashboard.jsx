@@ -33,6 +33,7 @@ const GymOwnerDashboard = () => {
   const [membershipsLoading, setMembershipsLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview'); // overview, kyc, memberships
+  const [membershipSourceFilter, setMembershipSourceFilter] = useState('All'); // All, Mobile App, Website
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedGymForModal, setSelectedGymForModal] = useState(null);
 
@@ -119,6 +120,11 @@ const GymOwnerDashboard = () => {
   const verifiedGymsCount = gyms.filter(g => g.verified).length;
   const pendingGymsCount = gyms.filter(g => !g.verified).length;
   const totalCapacity = gyms.reduce((acc, curr) => acc + (curr.capacity || 0), 0);
+
+  const filteredMemberships = memberships.filter(m => {
+    if (membershipSourceFilter === 'All') return true;
+    return m.orderSource === membershipSourceFilter;
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row relative">
@@ -428,62 +434,103 @@ const GymOwnerDashboard = () => {
                   <p className="text-slate-500 font-medium">No memberships purchased yet.</p>
                 </div>
               ) : (
-                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm font-semibold">
-                          <th className="p-4">Customer Details</th>
-                          <th className="p-4">Gym Name</th>
-                          <th className="p-4">Plan Name</th>
-                          <th className="p-4">Invoice No</th>
-                          <th className="p-4">Price Paid</th>
-                          <th className="p-4">Validity</th>
-                          <th className="p-4">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-slate-700 text-sm divide-y divide-slate-100">
-                        {memberships.map((membership) => (
-                          <tr key={membership._id} className="hover:bg-slate-50 transition-colors">
-                            <td className="p-4">
-                              <div className="font-semibold text-slate-900">{membership.customerId?.name || 'N/A'}</div>
-                              <div className="text-xs text-slate-500">{membership.customerId?.email}</div>
-                              <div className="text-xs text-slate-500">{membership.customerId?.phone}</div>
-                            </td>
-                            <td className="p-4 font-medium text-slate-800">
-                              {membership.gymId?.name || 'N/A'}
-                            </td>
-                            <td className="p-4">
-                              <span className="font-medium">{membership.planTitle}</span>
-                              {membership.planType && (
-                                <span className="text-xs text-slate-500 block">Type: {membership.planType}</span>
-                              )}
-                            </td>
-                            <td className="p-4 font-mono text-slate-600">
-                              {membership.invoiceNumber || 'N/A'}
-                            </td>
-                            <td className="p-4 font-semibold text-slate-900">
-                              ₹{membership.pricePaid?.toLocaleString()}
-                            </td>
-                            <td className="p-4 text-xs text-slate-600">
-                              <div>From: {membership.startDate ? new Date(membership.startDate).toLocaleDateString() : 'N/A'}</div>
-                              <div>To: {membership.endDate ? new Date(membership.endDate).toLocaleDateString() : 'N/A'}</div>
-                            </td>
-                            <td className="p-4">
-                              <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${membership.status === 'active'
-                                  ? 'bg-green-50 text-green-700 border-green-200'
-                                  : membership.status === 'pending'
-                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                                    : 'bg-red-50 text-red-700 border-red-200'
-                                }`}>
-                                {membership.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                <div className="space-y-4">
+                  {/* Source Tabs */}
+                  <div className="flex flex-wrap items-center gap-2 pb-2">
+                    {['All', 'Mobile App', 'Website'].map((source) => {
+                      const isActive = membershipSourceFilter === source;
+                      const count = source === 'All' ? memberships.length : memberships.filter(m => m.orderSource === source).length;
+                      return (
+                        <button
+                          key={source}
+                          onClick={() => setMembershipSourceFilter(source)}
+                          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 cursor-pointer border ${
+                            isActive
+                              ? 'bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-500/20'
+                              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          {source} <span className={`ml-1 px-1.5 py-0.5 text-[10px] rounded-md ${
+                            isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                          }`}>{count}</span>
+                        </button>
+                      );
+                    })}
                   </div>
+
+                  {filteredMemberships.length === 0 ? (
+                    <div className="bg-white border border-slate-200 p-12 text-center rounded-2xl shadow-sm">
+                      <p className="text-slate-500 font-medium">No memberships from {membershipSourceFilter} found.</p>
+                    </div>
+                  ) : (
+                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm font-semibold">
+                              <th className="p-4">Customer Details</th>
+                              <th className="p-4">Gym Name</th>
+                              <th className="p-4">Plan Name</th>
+                              <th className="p-4">Invoice No</th>
+                              <th className="p-4">Price Paid</th>
+                              <th className="p-4">Validity</th>
+                              <th className="p-4">Source</th>
+                              <th className="p-4">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody className="text-slate-700 text-sm divide-y divide-slate-100">
+                            {filteredMemberships.map((membership) => (
+                              <tr key={membership._id} className="hover:bg-slate-50 transition-colors">
+                                <td className="p-4">
+                                  <div className="font-semibold text-slate-900">{membership.customerId?.name || 'N/A'}</div>
+                                  <div className="text-xs text-slate-500">{membership.customerId?.email}</div>
+                                  <div className="text-xs text-slate-500">{membership.customerId?.phone}</div>
+                                </td>
+                                <td className="p-4 font-medium text-slate-800">
+                                  {membership.gymId?.name || 'N/A'}
+                                </td>
+                                <td className="p-4">
+                                  <span className="font-medium">{membership.planTitle}</span>
+                                  {membership.planType && (
+                                    <span className="text-xs text-slate-500 block">Type: {membership.planType}</span>
+                                  )}
+                                </td>
+                                <td className="p-4 font-mono text-slate-600">
+                                  {membership.invoiceNumber || 'N/A'}
+                                </td>
+                                <td className="p-4 font-semibold text-slate-900">
+                                  ₹{membership.pricePaid?.toLocaleString()}
+                                </td>
+                                <td className="p-4 text-xs text-slate-600">
+                                  <div>From: {membership.startDate ? new Date(membership.startDate).toLocaleDateString() : 'N/A'}</div>
+                                  <div>To: {membership.endDate ? new Date(membership.endDate).toLocaleDateString() : 'N/A'}</div>
+                                </td>
+                                <td className="p-4">
+                                  <span className={`px-2.5 py-0.5 text-xs rounded-full font-bold border ${
+                                    membership.orderSource === 'Mobile App'
+                                      ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                      : 'bg-blue-50 text-blue-700 border-blue-200'
+                                  }`}>
+                                    {membership.orderSource || 'Website'}
+                                  </span>
+                                </td>
+                                <td className="p-4">
+                                  <span className={`px-2.5 py-0.5 text-xs rounded-full font-semibold border ${membership.status === 'active'
+                                      ? 'bg-green-50 text-green-700 border-green-200'
+                                      : membership.status === 'pending'
+                                        ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                                        : 'bg-red-50 text-red-700 border-red-200'
+                                    }`}>
+                                    {membership.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

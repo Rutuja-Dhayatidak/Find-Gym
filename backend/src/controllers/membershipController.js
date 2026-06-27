@@ -64,7 +64,7 @@ exports.initiatePurchase = async (req, res) => {
     });
 
     if (existingActive) {
-      return res.status(400).json({ success: false, message: "You already have an active membership at this gym." });
+      return res.status(400).json({ success: false, message: "An active membership for this gym already exists under your account. You can view your active plans in your Profile." });
     }
 
     // Create Razorpay Order
@@ -77,7 +77,9 @@ exports.initiatePurchase = async (req, res) => {
 
     const order = await razorpay.orders.create(orderOptions);
 
-    const durationInMonths = calculateDurationInMonths(duration);
+    const MobileUser = require('../models/MobileUser');
+    const isMobileUser = await MobileUser.exists({ _id: customerId });
+    const orderSource = isMobileUser ? 'Mobile App' : 'Website';
 
     // Save pending membership with TTL index lock (10 minutes)
     const membership = new Membership({
@@ -95,6 +97,7 @@ exports.initiatePurchase = async (req, res) => {
       status: 'pending',
       paymentStatus: 'pending',
       membershipStatus: 'pending',
+      orderSource,
       expireAt: new Date(Date.now() + 10 * 60 * 1000)
     });
 
@@ -162,6 +165,21 @@ exports.verifyPurchase = async (req, res) => {
     membership.expireAt = undefined; // Unset TTL index lock
     await membership.save();
 
+    // Update user's role to member and set membership status (checking both Website and Mobile user models)
+    let userToUpdate = await User.findByIdAndUpdate(membership.customerId, { 
+      role: 'member',
+      isSubscribed: true,
+      activeMembership: membership._id
+    });
+    if (!userToUpdate) {
+      const MobileUser = require('../models/MobileUser');
+      await MobileUser.findByIdAndUpdate(membership.customerId, { 
+        role: 'member',
+        isSubscribed: true,
+        activeMembership: membership._id
+      });
+    }
+
     // Increment current members and monthly revenue of the gym
     await Gym.findByIdAndUpdate(membership.gymId, {
       $inc: { currentMembers: 1, monthlyRevenue: membership.pricePaid },
@@ -206,13 +224,40 @@ exports.getOwnerGymMemberships = async (req, res) => {
 
     // Fetch memberships matching the gymIds
     const memberships = await Membership.find({ gymId: { $in: gymIds } })
-      .populate('customerId', 'name email phone')
       .populate('gymId', 'name location')
       .sort({ createdAt: -1 });
 
+    const MobileUser = require('../models/MobileUser');
+    const User = require('../models/User');
+
+    const resolvedMemberships = [];
+    for (const m of memberships) {
+      const mObj = m.toObject();
+      if (mObj.customerId) {
+        // Try finding in Website User
+        let user = await User.findById(mObj.customerId).select('name email phone');
+        let resolvedSource = mObj.orderSource || 'Website';
+        
+        if (!user) {
+          // Try finding in Mobile User
+          user = await MobileUser.findById(mObj.customerId).select('name email phone');
+          if (user) {
+            resolvedSource = 'Mobile App';
+          }
+        }
+        
+        mObj.customerId = user || { name: 'N/A', email: 'N/A', phone: 'N/A' };
+        mObj.orderSource = resolvedSource;
+      } else {
+        mObj.customerId = { name: 'N/A', email: 'N/A', phone: 'N/A' };
+        mObj.orderSource = mObj.orderSource || 'Website';
+      }
+      resolvedMemberships.push(mObj);
+    }
+
     res.status(200).json({
       success: true,
-      data: memberships
+      data: resolvedMemberships
     });
   } catch (error) {
     console.error("Get owner gym memberships error:", error);
