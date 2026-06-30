@@ -88,7 +88,7 @@ export const VerticalNavbar = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed top-4 right-4 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-[#FF7A00] text-white shadow-[0_0_15px_rgba(255,122,0,0.5)] hover:scale-105 transition-all duration-300 cursor-pointer"
+          className="fixed top-4 right-4 z-[100] flex items-center justify-center w-10 h-10 rounded-full bg-[#FF7A00] text-white shadow-[0_0_15px_rgba(255,122,0,0.5)] hover:scale-105 transition-all duration-300 cursor-pointer"
           title="Open Menu"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,13 +100,13 @@ export const VerticalNavbar = () => {
       {/* Backdrop for mobile drawer */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[99] transition-opacity duration-300"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       <div
-        className={`fixed top-0 right-0 h-screen z-50 bg-black/95 lg:bg-black/85 backdrop-blur-xl border-l border-white/10 flex flex-col items-center justify-between py-6 transition-all duration-300 ${
+        className={`fixed top-0 right-0 h-screen z-[100] bg-black/95 lg:bg-black/85 backdrop-blur-xl border-l border-white/10 flex flex-col items-center justify-between py-6 transition-all duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } w-[100px]`}
       >

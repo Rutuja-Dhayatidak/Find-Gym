@@ -228,4 +228,38 @@ export const getCityAdmins = async () => {
   return response.data;
 };
 
+// Mobile App Banners
+export const getMobileAppBanners = async () => {
+  const response = await api.get(apiPath('/admin/mobile-app-banners'));
+  return response.data;
+};
+
+export const createMobileAppBanner = async (formData) => {
+  const response = await api.post(apiPath('/admin/mobile-app-banners'), formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+};
+
+export const updateMobileAppBanner = async (bannerId, formData) => {
+  const response = await api.put(apiPath(`/admin/mobile-app-banners/${bannerId}`), formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+};
+
+export const deleteMobileAppBanner = async (bannerId) => {
+  const response = await api.delete(apiPath(`/admin/mobile-app-banners/${bannerId}`));
+  return response.data;
+};
+
+export const toggleMobileAppBannerStatus = async (bannerId) => {
+  const response = await api.patch(apiPath(`/admin/mobile-app-banners/${bannerId}/status`));
+  return response.data;
+};
+
 export default api;

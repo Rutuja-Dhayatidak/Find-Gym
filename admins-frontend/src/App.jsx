@@ -25,6 +25,7 @@ import PATransactionHistory from './admins/components/PlatformAdmin/Payments/Tra
 import PARevenueReports from './admins/components/PlatformAdmin/Payments/RevenueReports';
 import PAPayoutManagement from './admins/components/PlatformAdmin/Payments/PayoutManagement';
 import PAGymCategories from './admins/components/PlatformAdmin/CMS/GymCategories';
+import MobileAppBanners from './admins/components/PlatformAdmin/CMS/MobileAppBanners';
 import PACityAdminsList from './admins/components/PlatformAdmin/CityAdmins/CityAdminsList';
 
 // City Admin Imports
@@ -102,6 +103,7 @@ function App() {
           <Route path="cms">
             <Route index element={<CMSManagement />} />
             <Route path="gym-categories" element={<PAGymCategories />} />
+            <Route path="mobile-app-banners" element={<MobileAppBanners />} />
           </Route>
         </Route>
 

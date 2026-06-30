@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../userServices/Auth";
+import { loginUser, googleLogin } from "../userServices/Auth";
 import toast from "react-hot-toast";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
@@ -9,7 +9,45 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const handleGoogleCallback = async (response) => {
+    const toastId = toast.loading("Processing Google Sign-in...");
+    try {
+      const res = await googleLogin(response.credential);
+      if (res.success) {
+        toast.success(res.message || "Google Login successful!", { id: toastId });
+        
+        // Save to localStorage
+        localStorage.setItem("userToken", res.data.token);
+        localStorage.setItem("userRole", res.data.user.role);
+        localStorage.setItem("userName", res.data.user.name);
+        window.dispatchEvent(new Event("storage"));
+
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      } else {
+        toast.error(res.message || "Google Authentication failed", { id: toastId });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message || "Google Sign-in failed", { id: toastId });
+    }
+  };
+
+  useEffect(() => {
+    if (window.google) {
+      const clientID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "717837798350-t1n3gbm7oiv8lnvkhcdvihss49ql87fe.apps.googleusercontent.com";
+      window.google.accounts.id.initialize({
+        client_id: clientID,
+        callback: handleGoogleCallback
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-login-button"),
+        { theme: "filled_blue", size: "large", width: 380, text: "signin_with" }
+      );
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -229,6 +267,9 @@ const UserLogin = () => {
             <span className="text-white/20 text-xs">or</span>
             <div className="flex-1 h-px bg-white/[0.07]" />
           </div>
+
+          {/* Google Sign-in */}
+          <div id="google-login-button" className="w-full flex justify-center py-1 mb-5"></div>
 
           {/* Back to home */}
           <Link

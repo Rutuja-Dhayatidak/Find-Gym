@@ -3,9 +3,44 @@ import { useGeoLocation } from "../hooks/useGeoLocation";
 import { getAllGyms, getNearbyGyms } from "../userServices/gymApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import {
+  Wind,
+  Car,
+  Lock,
+  Flame,
+  Waves,
+  Activity,
+  Music,
+  Dumbbell,
+  User,
+  Wifi,
+  Apple,
+  Sparkles,
+  Droplets
+} from "lucide-react";
 
 // Mappings for gym amenities chips
 const gymAmenityChips = ["All", "AC", "Parking", "Locker", "Sauna", "Pool", "Cardio", "Zumba"];
+
+const getAmenityIcon = (amenity) => {
+  const name = String(amenity).toLowerCase();
+  const iconProps = { className: "w-4 h-4 text-slate-800", strokeWidth: 2.5 };
+
+  if (name.includes("ac") || name.includes("air")) return <Wind {...iconProps} />;
+  if (name.includes("park")) return <Car {...iconProps} />;
+  if (name.includes("lock")) return <Lock {...iconProps} />;
+  if (name.includes("saun") || name.includes("steam")) return <Flame {...iconProps} />;
+  if (name.includes("pool") || name.includes("swim")) return <Waves {...iconProps} />;
+  if (name.includes("cardio") || name.includes("heart") || name.includes("activity")) return <Activity {...iconProps} />;
+  if (name.includes("zumb") || name.includes("danc")) return <Music {...iconProps} />;
+  if (name.includes("trainer") || name.includes("coach") || name.includes("personal")) return <User {...iconProps} />;
+  if (name.includes("wifi") || name.includes("internet")) return <Wifi {...iconProps} />;
+  if (name.includes("diet") || name.includes("food") || name.includes("nutrition")) return <Apple {...iconProps} />;
+  if (name.includes("yoga") || name.includes("stretch")) return <Sparkles {...iconProps} />;
+  if (name.includes("show") || name.includes("bath")) return <Droplets {...iconProps} />;
+
+  return <Dumbbell {...iconProps} />;
+};
 
 // Realistic fallback gyms from screenshot to guarantee visual match
 const defaultMockGyms = [
@@ -56,7 +91,7 @@ const defaultMockGyms = [
 
 const translateNameToHindi = (name) => {
   if (!name) return "";
-  
+
   // Mapping of common English words in gym names to Hindi
   const mapping = {
     "iron": "आयरन",
@@ -87,7 +122,7 @@ const translateNameToHindi = (name) => {
   const translatedWords = words.map(word => {
     return mapping[word] || word.charAt(0).toUpperCase() + word.slice(1);
   });
-  
+
   return translatedWords.join(" ");
 };
 
@@ -158,13 +193,13 @@ const FindGym = () => {
     if (!gym) return;
     const gymLink = `${window.location.origin}/gym-details?id=${gym._id || gym.id}`;
     const shareText = `📍 *${gym.name}*\n\n🏠 Address: ${gym.location?.address || gym.address?.fullAddress || "Akurdi, Pune"}\n💰 Fee: ₹${getGymMonthlyFee(gym)}/month\n\nCheck out the gym details here:\n${gymLink}`;
-    
+
     // Check if the device is a mobile phone
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const whatsappUrl = isMobile 
+    const whatsappUrl = isMobile
       ? `whatsapp://send?text=${encodeURIComponent(shareText)}`
       : `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-      
+
     window.open(whatsappUrl, "_blank");
     toast.success("Opening WhatsApp directly...");
   };
@@ -195,7 +230,7 @@ const FindGym = () => {
         data = await getAllGyms({ limit: 100 });
       }
       const fetchedGyms = data.data || [];
-      
+
       setGyms(fetchedGyms);
     } catch (err) {
       console.error(err);
@@ -217,7 +252,7 @@ const FindGym = () => {
       const matchesSearch =
         gym.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         addressText.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesTag =
         selectedTag === "All" ||
         (gym.amenities && gym.amenities.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase()));
@@ -461,7 +496,7 @@ const FindGym = () => {
     const hours = parseInt(match[1], 10);
     const minutes = match[2];
     const ampm = match[3] || "";
-    
+
     const formattedMins = minutes === "00" ? "" : `:${minutes}`;
     return `${hours}${formattedMins} ${ampm}`.trim();
   };
@@ -561,7 +596,7 @@ const FindGym = () => {
         }
 
         const routeCoords = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-        
+
         // Draw blue route line matching Google Maps directions
         const polyline = L.polyline(routeCoords, {
           color: "#1a73e8",
@@ -639,16 +674,15 @@ const FindGym = () => {
   };
 
   return (
-    <div 
+    <div
       className="w-full h-screen overflow-hidden bg-white text-gray-900 flex flex-row relative select-none"
       style={{ fontFamily: "'Roboto', 'Arial', sans-serif" }}
     >
-      
+
       {/* 2. Main sidebar/detail card overlay */}
-      <div className={`h-full bg-white border-r border-gray-200 shadow-xl flex flex-col z-20 flex-shrink-0 relative transition-all duration-300 ${
-        isSidebarOpen ? "w-[390px]" : "w-0 overflow-hidden border-r-0 shadow-none"
-      }`}>
-        
+      <div className={`h-full bg-white border-r border-gray-200 shadow-xl flex flex-col z-20 flex-shrink-0 relative transition-all duration-300 ${isSidebarOpen ? "w-[390px]" : "w-0 overflow-hidden border-r-0 shadow-none"
+        }`}>
+
         {showDirectionsPanel ? (
           /* Google-style Directions Input Header */
           <div className="p-4 bg-white border-b border-gray-200 flex flex-col gap-3.5 flex-shrink-0 select-none">
@@ -656,11 +690,10 @@ const FindGym = () => {
             <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pr-2">
                 {/* Best Mode */}
-                <button 
+                <button
                   onClick={() => setTravelMode("best")}
-                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${
-                    travelMode === "best" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${travelMode === "best" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
+                    }`}
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M22.43 10.42L13.58 1.57c-.77-.77-2.03-.77-2.8 0L1.57 10.98c-.77.77-.77 2.03 0 2.8l8.85 8.85c.78.78 2.04.78 2.82 0l8.86-8.86c.78-.78.78-2.04.01-2.82zM14 14.5V12H9.5c-.28 0-.5.22-.5.5v3H7v-3c0-1.38 1.12-2.5 2.5-2.5H14V7.5l4.5 4.5-4.5 4.5z" />
@@ -669,11 +702,10 @@ const FindGym = () => {
                 </button>
 
                 {/* Car Mode */}
-                <button 
+                <button
                   onClick={() => setTravelMode("car")}
-                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${
-                    travelMode === "car" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${travelMode === "car" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
+                    }`}
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
@@ -682,11 +714,10 @@ const FindGym = () => {
                 </button>
 
                 {/* Bike Mode */}
-                <button 
+                <button
                   onClick={() => setTravelMode("bike")}
-                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${
-                    travelMode === "bike" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${travelMode === "bike" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
+                    }`}
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M15.5 2.01L5.99 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V6c0-2.21-1.79-4-4-3.99zM9 20c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm6 12c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
@@ -695,11 +726,10 @@ const FindGym = () => {
                 </button>
 
                 {/* Transit Mode */}
-                <button 
+                <button
                   onClick={() => setTravelMode("transit")}
-                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${
-                    travelMode === "transit" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${travelMode === "transit" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
+                    }`}
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M12 2c-4.42 0-8 3.58-8 8v7.5c0 .83.67 1.5 1.5 1.5H5v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h8v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h.5c.83 0 1.5-.67 1.5-1.5V10c0-4.42-3.58-8-8-8zm5 14H7v-2h10v2zm0-4.5H7V7h10v4.5z" />
@@ -708,11 +738,10 @@ const FindGym = () => {
                 </button>
 
                 {/* Walk Mode */}
-                <button 
+                <button
                   onClick={() => setTravelMode("walk")}
-                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${
-                    travelMode === "walk" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`flex flex-col items-center gap-1 p-1 px-2.5 rounded-full transition-all cursor-pointer ${travelMode === "walk" ? "bg-[#e0f2f1] text-[#006064]" : "text-gray-500 hover:bg-gray-50"
+                    }`}
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.7-1.1-1-1.8-1-.3 0-.5.1-.8.1L6 8.3v5.2h2V9.8l1.8-.9" />
@@ -722,7 +751,7 @@ const FindGym = () => {
               </div>
 
               {/* Close directions */}
-              <button 
+              <button
                 onClick={() => {
                   setShowDirectionsPanel(false);
                   setRoutingGym(null);
@@ -782,7 +811,7 @@ const FindGym = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-grow bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-sm pr-2"
               />
-              
+
               {searchQuery && (
                 <button
                   onClick={() => {
@@ -805,12 +834,12 @@ const FindGym = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
-                
+
                 {/* Divider line */}
                 <div className="h-5 w-[1px] bg-gray-300"></div>
 
                 {/* Directions button (Teal diamond icon) */}
-                <button 
+                <button
                   onClick={() => {
                     if (selectedGymDetail) {
                       drawRouteToGym(selectedGymDetail);
@@ -839,7 +868,7 @@ const FindGym = () => {
 
         {/* Main scrollable body (Switch between listing or detail) */}
         {/* Main scrollable body (Conditionally displays gym list or route details) */}
-        <div 
+        <div
           className="flex-grow overflow-y-auto w-full min-h-0"
           onWheel={(e) => {
             e.currentTarget.scrollTop += e.deltaY;
@@ -851,14 +880,14 @@ const FindGym = () => {
                 <>
                   {/* Steps Header */}
                   <div className="px-5 py-3.5 border-b border-gray-200 bg-white flex items-center justify-between text-xs text-[#00838f] font-bold flex-shrink-0">
-                    <button 
+                    <button
                       onClick={() => setShowSteps(false)}
                       className="text-[#00838f] hover:text-[#006064] transition-colors py-1 flex items-center gap-1 cursor-pointer font-bold"
                     >
                       ◀ Back
                     </button>
                     <span className="text-gray-700 font-extrabold uppercase tracking-wide">Turn-by-turn Directions</span>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowDirectionsPanel(false);
                         setRoutingGym(null);
@@ -920,7 +949,7 @@ const FindGym = () => {
                   {/* Options row */}
                   <div className="px-5 py-3.5 border-b border-gray-200 bg-white flex items-center justify-between text-xs text-[#00838f] font-bold flex-shrink-0">
                     <span className="text-gray-700 font-extrabold uppercase tracking-wide">Driving Route Details</span>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowDirectionsPanel(false);
                         setRoutingGym(null);
@@ -954,8 +983,8 @@ const FindGym = () => {
                         </div>
                         <p className="text-[13px] text-gray-500 mt-1 font-semibold">Distance: {routeDetails.distance} km</p>
                         <p className="text-[12px] text-gray-400 mt-1.5 leading-normal">Fastest route now based on traffic conditions. Real-time OSRM routing active.</p>
-                        
-                        <button 
+
+                        <button
                           onClick={() => setShowSteps(true)}
                           className="w-fit mt-4 px-4 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
                         >
@@ -1002,68 +1031,94 @@ const FindGym = () => {
                       <div
                         key={gym._id || gym.id}
                         onClick={() => handleGymSelect(gym)}
-                        className={`p-5 hover:bg-gray-50 cursor-pointer flex flex-row justify-between items-start gap-4 transition-all ${
-                          isSelected ? "bg-blue-50/50" : ""
-                        }`}
+                        className={`p-3 bg-white rounded-xl border transition-all duration-200 cursor-pointer flex flex-col hover:shadow-lg relative m-2 ${isSelected ? "border-black ring-2 ring-black/20 shadow-md" : "border-black"
+                          }`}
                       >
-                        <div className="flex-grow text-left">
-                          <h3 className="font-semibold text-[17px] text-[#1a73e8] hover:underline transition-colors leading-snug">
-                            {gym.name}
-                          </h3>
-                          
-                          {/* Rating with SVG Stars */}
-                          <div className="flex items-center gap-1.5 mt-0.5 text-xs text-gray-500 font-semibold">
-                            <span className="text-gray-800">{rating}</span>
-                            <div className="flex text-yellow-500 gap-0.5">
-                              {[1, 2, 3, 4, 5].map((s) => (
-                                <svg key={s} className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                </svg>
-                              ))}
-                            </div>
-                            <span className="text-gray-500">({reviewsCount})</span>
+                        {/* Upper row: Image and details */}
+                        <div className="flex gap-3 items-start">
+                          {/* Left Image Section */}
+                          <div className="w-24 h-24 rounded-xl overflow-hidden relative flex-shrink-0 bg-slate-100 border border-slate-100 shadow-inner">
+                            <img
+                              src={gymImage}
+                              alt={gym.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <span className="absolute top-2.5 left-2.5 bg-[#e8f5e9] text-[#2e7d32] border border-[#a5d6a7] text-[10px] font-black px-2 py-0.5 rounded-lg shadow-sm uppercase tracking-wider">
+                              Open
+                            </span>
                           </div>
 
-                          {/* Subtitle Category + address */}
-                          <p className="text-[13px] text-gray-500 mt-1 font-medium">
-                            Gym • {gym.location?.address || gym.address?.fullAddress || "Akurdi, Pune"}
-                          </p>
-
-                          {/* Open/Close Hours Status */}
-                          {(() => {
-                            const status = getGymOpenStatus(gym);
-                            const parts = status.text.split("·");
-                            return (
-                              <div className="flex items-center gap-1 mt-1 text-[13px]">
-                                <span className={status.isOpen ? "text-green-700 font-bold" : "text-red-600 font-bold"}>
-                                  {parts[0] ? parts[0].trim() : (status.isOpen ? "Open" : "Closed")}
-                                </span>
-                                {parts[1] && (
-                                  <span className="text-gray-400 font-medium">
-                                    · {parts[1].trim()}
-                                  </span>
-                                )}
+                          {/* Right Details Section */}
+                          <div className="flex-grow flex flex-col justify-between text-left min-w-0 pr-6">
+                            <div>
+                              <div className="flex justify-between items-start">
+                                <h3 className="font-bold text-[16px] text-slate-800 leading-snug hover:text-[#0d9488] transition-colors truncate">
+                                  {gym.name}
+                                </h3>
                               </div>
-                            );
-                          })()}
 
-                          {/* Review Snippet with User Avatar */}
-                          <div className="mt-3 flex items-start gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 font-sans leading-relaxed">
-                            <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-0.5 flex-shrink-0">
-                              <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                              </svg>
+                              {/* Rating block */}
+                              <div className="flex items-center space-x-1.5 mt-0.5 text-xs font-semibold text-slate-500">
+                                <span className="text-slate-800 font-extrabold">{rating}</span>
+                                <span className="text-amber-500 text-sm">★★★★★</span>
+                                <span className="text-slate-400">({reviewsCount})</span>
+                              </div>
+
+                              {/* Address */}
+                              <div className="flex items-start mt-1 text-xs text-slate-500 font-medium leading-relaxed">
+                                <svg className="w-3.5 h-3.5 text-slate-400 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                <span className="line-clamp-2">
+                                  {gym.location?.address || gym.address?.fullAddress || "Akurdi, Pune"}
+                                </span>
+                              </div>
                             </div>
-                            <span className="italic">"{gym.review || "Excellent equipment and helpful trainers."}"</span>
+
+                            {/* Circular Amenity Badges in a Row */}
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {(gym.amenities && gym.amenities.length > 0 ? gym.amenities : ["AC", "Parking", "Locker", "Sauna", "Cardio"]).slice(0, 5).map((item) => (
+                                <span key={item} className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800 text-xs shadow-inner" title={item}>
+                                  {getAmenityIcon(item)}
+                                </span>
+                              ))}
+                              {gym.amenities && gym.amenities.length > 5 && (
+                                <span className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 text-[10px] font-black">
+                                  +{gym.amenities.length - 5}
+                                </span>
+                              )}
+                            </div>
                           </div>
+
+                          {/* Absolute Wishlist Heart Icon */}
+                          <button className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
+                          </button>
                         </div>
 
-                        {/* Image Thumbnail on the Right */}
-                        <img
-                          src={gymImage}
-                          alt={gym.name}
-                          className="w-[84px] h-[84px] object-cover rounded-xl border border-gray-200 flex-shrink-0 shadow-sm"
-                        />
+                        {/* Lower row: Distance & View Details Action button */}
+                        <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
+                          <span className="text-[#0d9488] font-black text-xs flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-[#0d9488] transform -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                              <path d="M12 2L2 22l10-6 10 6L12 2z" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            {gym.distanceKm ? `${gym.distanceKm.toFixed(1)} km` : "1.2 km"}
+                          </span>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/gym-details?id=${gym._id || gym.id}`);
+                            }}
+                            className="bg-black hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center shadow-md shadow-black/10 active:scale-95"
+                          >
+                            <span>View Details</span>
+                            <span className="ml-1.5 text-[9px] font-black">&rarr;</span>
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -1074,10 +1129,10 @@ const FindGym = () => {
 
               {/* Bottom footer bar with Map Moves update checkbox */}
               <div className="mt-auto border-t border-gray-200 p-4 bg-white flex items-center gap-2 text-xs text-gray-600 font-semibold select-none flex-shrink-0">
-                <input 
-                  type="checkbox" 
-                  id="map-move-update" 
-                  checked={updateOnMove} 
+                <input
+                  type="checkbox"
+                  id="map-move-update"
+                  checked={updateOnMove}
                   onChange={(e) => setUpdateOnMove(e.target.checked)}
                   className="rounded text-[#1a73e8] focus:ring-[#1a73e8] border-gray-300 w-4 h-4"
                 />
@@ -1106,9 +1161,9 @@ const FindGym = () => {
 
         {/* Floating Detailed Card Container (Overlay on the Map) */}
         {selectedGymDetail && (
-          <div 
+          <div
             className="absolute top-4 left-4 z-20 w-[408px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col pointer-events-auto"
-            style={{ 
+            style={{
               boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
               maxHeight: 'calc(100vh - 48px)'
             }}
@@ -1120,7 +1175,7 @@ const FindGym = () => {
                   alt={selectedGymDetail.name}
                   className="w-full h-full object-cover"
                 />
-                
+
                 <button
                   onClick={handleCloseDetail}
                   className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center shadow-lg transition-all cursor-pointer z-30 font-bold"
@@ -1147,7 +1202,7 @@ const FindGym = () => {
                 <p className="text-[13px] text-gray-500 font-semibold mt-0.5 uppercase">
                   {translateNameToHindi(selectedGymDetail.name)}
                 </p>
-                
+
                 <div className="flex items-center gap-1 mt-1 text-[13px] text-gray-500 font-medium">
                   <span className="font-bold text-gray-800">{getRatingValue(selectedGymDetail.rating)}</span>
                   <div className="flex text-yellow-500 gap-0.5">
@@ -1165,14 +1220,13 @@ const FindGym = () => {
 
               <div className="flex border-b border-gray-200 text-[13px] font-bold text-gray-500 px-3 select-none flex-shrink-0">
                 {["Overview", "Reviews", "About"].map((t) => (
-                  <button 
+                  <button
                     key={t}
                     onClick={() => setActiveTab(t)}
-                    className={`flex-1 py-3 border-b-2 text-center transition-all ${
-                      activeTab === t 
-                        ? "border-[#00838f] text-[#00838f]" 
-                        : "border-transparent hover:text-gray-800"
-                    }`}
+                    className={`flex-1 py-3 border-b-2 text-center transition-all ${activeTab === t
+                      ? "border-[#00838f] text-[#00838f]"
+                      : "border-transparent hover:text-gray-800"
+                      }`}
                   >
                     {t}
                   </button>
@@ -1195,7 +1249,7 @@ const FindGym = () => {
                       <span className="text-[10px] font-bold text-[#1a73e8] group-hover:underline">Directions</span>
                     </button>
 
-                    <button 
+                    <button
                       onClick={() => navigate(`/gym-details?id=${selectedGymDetail._id || selectedGymDetail.id}`)}
                       className="flex flex-col items-center gap-1.5 group w-[64px] cursor-pointer"
                     >
@@ -1209,7 +1263,7 @@ const FindGym = () => {
                       <span className="text-[10px] font-bold text-[#1a73e8] group-hover:underline leading-tight text-center">View Website</span>
                     </button>
 
-                    <button 
+                    <button
                       onClick={() => handleShareGym(selectedGymDetail)}
                       className="flex flex-col items-center gap-1.5 group w-[64px] cursor-pointer"
                     >
@@ -1348,11 +1402,10 @@ const FindGym = () => {
             <button
               key={tag}
               onClick={() => setSelectedTag(tag)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border shadow-md transition-all cursor-pointer ${
-                selectedTag === tag
-                  ? "bg-[#008080] text-white border-[#008080]"
-                  : "bg-white text-gray-700 border-gray-300 hover:text-black"
-              }`}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border shadow-md transition-all cursor-pointer ${selectedTag === tag
+                ? "bg-[#008080] text-white border-[#008080]"
+                : "bg-white text-gray-700 border-gray-300 hover:text-black"
+                }`}
             >
               <span>{tag}</span>
             </button>
@@ -1367,16 +1420,16 @@ const FindGym = () => {
         </div>
 
         {/* Satellite/Streets Layer selector at the bottom-left of the map */}
-        <div 
+        <div
           onClick={() => setMapLayer(mapLayer === "streets" ? "satellite" : "streets")}
           className="absolute bottom-6 left-6 z-10 bg-white border-2 border-white rounded-lg overflow-hidden shadow-lg cursor-pointer flex flex-col items-center hover:scale-105 transition-all select-none w-[64px] h-[64px]"
         >
           <div className="w-full h-2/3 bg-gray-200 overflow-hidden relative">
-            <img 
-              src={mapLayer === "streets" 
+            <img
+              src={mapLayer === "streets"
                 ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/10/362/703"
                 : "https://a.tile.openstreetmap.org/10/362/703.png"
-              } 
+              }
               alt="Layer Thumbnail"
               className="w-full h-full object-cover"
             />
@@ -1396,8 +1449,8 @@ const FindGym = () => {
               {/* Arrow */}
               <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 border-y-4 border-y-transparent border-l-4 border-l-black"></div>
             </div>
-            
-            <button 
+
+            <button
               onClick={getCurrentLocation}
               disabled={locLoading}
               className="w-10 h-10 bg-white hover:bg-gray-50 rounded-full shadow-md border border-gray-200 flex items-center justify-center cursor-pointer transition-colors"
@@ -1413,7 +1466,7 @@ const FindGym = () => {
 
           {/* Zoom Buttons Stack */}
           <div className="flex flex-col bg-white border border-gray-200 shadow-md rounded-lg overflow-hidden w-10">
-            <button 
+            <button
               onClick={zoomIn}
               className="w-10 h-9 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 border-b border-gray-200 transition-colors font-semibold cursor-pointer"
               title="Zoom In"
@@ -1422,7 +1475,7 @@ const FindGym = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
             </button>
-            <button 
+            <button
               onClick={zoomOut}
               className="w-10 h-9 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors font-semibold cursor-pointer"
               title="Zoom Out"

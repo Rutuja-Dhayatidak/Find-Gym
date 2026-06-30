@@ -41,3 +41,9 @@ export const updateUserProfile = async (formData) => {
   const response = await api.put('/auth/profile', formData, config);
   return response.data;
 };
+
+// Google Login / Sign-up
+export const googleLogin = async (token) => {
+  const response = await api.post('/auth/google-login', { token });
+  return response.data;
+};

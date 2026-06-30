@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const User = require('../models/User');
 
 const platformAdminAuth = async (req, res, next) => {
   try {
@@ -10,7 +11,22 @@ const platformAdminAuth = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret'); // Replace with your actual secret strategy
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+
+    // Check if user is Super Admin
+    if (decoded.role === 'Super Admin') {
+      const superAdmin = await User.findById(decoded.id);
+      if (superAdmin && superAdmin.role === 'superadmin') {
+        req.admin = {
+          _id: superAdmin._id,
+          fullName: superAdmin.name,
+          email: superAdmin.email,
+          adminType: 'Super Admin',
+          status: 'Active'
+        };
+        return next();
+      }
+    }
 
     const admin = await Admin.findById(decoded.id);
     if (!admin) {

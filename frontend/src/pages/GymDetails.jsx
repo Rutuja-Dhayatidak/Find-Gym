@@ -448,8 +448,10 @@ const GymDetails = () => {
       <div className="absolute top-[800px] right-[-100px] w-[500px] h-[500px] bg-orange-500/3 rounded-full blur-[120px] pointer-events-none z-0"></div>
       <div className="absolute bottom-[200px] left-[15%] w-[600px] h-[600px] bg-amber-500/3 rounded-full blur-[150px] pointer-events-none z-0"></div>
 
+
+
       {/* 1. Hero Slideshow Area */}
-      <div className="relative w-full h-[480px] md:h-[520px] overflow-hidden">
+      <div className="relative w-full h-[380px] sm:h-[480px] md:h-[520px] overflow-hidden">
 
         {/* Slideshow Image */}
         <img
@@ -464,58 +466,58 @@ const GymDetails = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/35 z-10"></div>
 
         {/* Slide Counter */}
-        <div className="absolute top-6 left-6 z-20 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 border border-zinc-800">
+        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 bg-black/60 backdrop-blur-md px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1.5 border border-zinc-800">
           <span>📷</span> {currentSlide + 1} / {slideshowImages.length}
         </div>
 
         {/* Slide navigation controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-sm text-white flex items-center justify-center border border-zinc-850 hover:scale-105 active:scale-95 transition-all cursor-pointer text-lg font-bold"
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-sm text-white flex items-center justify-center border border-zinc-850 hover:scale-105 active:scale-95 transition-all cursor-pointer text-sm sm:text-lg font-bold"
         >
           ❮
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-sm text-white flex items-center justify-center border border-zinc-850 hover:scale-105 active:scale-95 transition-all cursor-pointer text-lg font-bold"
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-sm text-white flex items-center justify-center border border-zinc-850 hover:scale-105 active:scale-95 transition-all cursor-pointer text-sm sm:text-lg font-bold"
         >
           ❯
         </button>
 
         {/* Left Side Content Overlay */}
-        <div className="absolute bottom-6 left-6 md:left-12 z-20 max-w-xl text-left">
-          <div className="flex items-center gap-2.5 mb-3">
-            <span className="px-2.5 py-0.5 text-[9px] font-black tracking-wider bg-orange-600 text-white rounded uppercase">
+        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 md:left-12 z-20 max-w-xl text-left">
+          <div className="flex items-center gap-2 mb-2 sm:mb-3">
+            <span className="px-2 py-0.5 text-[8px] sm:text-[9px] font-black tracking-wider bg-orange-600 text-white rounded uppercase">
               Premium Gym
             </span>
-            <div className="flex items-center gap-1 text-[#ffc107] text-[13px] font-extrabold">
+            <div className="flex items-center gap-1 text-[#ffc107] text-[11px] sm:text-[13px] font-extrabold">
               <span>★</span>
               <span>{ratingVal}</span>
               <span className="text-zinc-400 font-medium">({reviewsCount} Reviews)</span>
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase leading-none mb-3">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white uppercase leading-tight mb-2 sm:mb-3">
             {gym.name}
           </h1>
 
-          <p className="text-green-500 text-xs font-bold mb-4 flex items-center gap-2">
+          <p className="text-green-500 text-[10px] sm:text-xs font-bold mb-3 sm:mb-4 flex items-center gap-2">
             <span>🟢 Open Now</span>
             <span className="text-zinc-500 font-medium">•</span>
-            <span className="text-zinc-300 font-medium">{timingsText}</span>
+            <span className="text-zinc-350 font-medium">{timingsText}</span>
           </p>
 
-          <p className="text-zinc-300 text-xs md:text-sm font-semibold leading-relaxed flex items-start gap-1.5 max-w-md mb-5">
+          <p className="text-zinc-300 text-[11px] sm:text-xs md:text-sm font-semibold leading-relaxed flex items-start gap-1.5 max-w-md mb-4 sm:mb-5">
             <span className="text-orange-500 mt-0.5">📍</span>
-            <span>{address}</span>
+            <span className="line-clamp-1 sm:line-clamp-none">{address}</span>
           </p>
 
           {/* Badges row */}
-          <div className="flex flex-wrap gap-2 text-[10px] font-extrabold uppercase tracking-wide">
-            <span className="px-3 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">🚲 2.5 km away</span>
-            <span className="px-3 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">Unisex Gym</span>
-            <span className="px-3 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">AC</span>
-            <span className="px-3 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">Parking</span>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide">
+            <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">🚲 2.5 km away</span>
+            <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">Unisex Gym</span>
+            <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">AC</span>
+            <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300">Parking</span>
           </div>
         </div>
 
@@ -558,24 +560,25 @@ const GymDetails = () => {
           </div>
         </div>
 
-        {/* Floating circular icon buttons on the right of title info */}
-        <div className="absolute bottom-6 right-6 lg:right-[352px] z-20 flex flex-col gap-3">
-          <button className="w-10 h-10 rounded-full bg-black/45 border border-zinc-800 text-white flex items-center justify-center hover:bg-zinc-900 transition-colors cursor-pointer" title="Share">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+        {/* Floating circular icon buttons on the top right */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:right-[352px] z-20 flex sm:flex-col gap-2">
+          <button onClick={() => handleShareGym(gym)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/45 border border-zinc-800 text-white flex items-center justify-center hover:bg-zinc-900 transition-colors cursor-pointer" title="Share">
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186l5.572 3.251m-5.572-3.251l5.56-3.248a2.25 2.25 0 1 1 3.06 3.19l-5.56 3.248m5.57 1.09a2.25 2.25 0 1 1-3.136 3.062l-5.572-3.251" />
             </svg>
           </button>
           <button
             onClick={() => setIsFavorite(!isFavorite)}
-            className="w-10 h-10 rounded-full bg-black/45 border border-zinc-800 text-white flex items-center justify-center hover:bg-zinc-900 transition-colors cursor-pointer"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/45 border border-zinc-800 text-white flex items-center justify-center hover:bg-zinc-900 transition-colors cursor-pointer"
             title="Add to Favorites"
           >
-            <svg className={`w-4 h-4 transition-colors ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+            <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
           </button>
         </div>
       </div>
+
 
       {/* 2. Four Horizontal Buttons Below Banner */}
       <motion.div
@@ -663,7 +666,7 @@ const GymDetails = () => {
               </p>
 
               {/* Statistics Row */}
-              <div className="grid grid-cols-4 gap-2 py-6 border-y border-zinc-900/60 my-5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-6 gap-x-2 py-6 border-y border-zinc-900/60 my-5">
                 <div className="flex flex-col items-center justify-center text-center">
                   <span className="text-base text-[#ff7a00] mb-1">👥</span>
                   <span className="text-lg md:text-xl font-black text-white">5000+</span>
@@ -674,12 +677,12 @@ const GymDetails = () => {
                   <span className="text-lg md:text-xl font-black text-white">15+</span>
                   <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Trainers</span>
                 </div>
-                <div className="flex flex-col items-center justify-center text-center border-l border-zinc-900/60">
+                <div className="flex flex-col items-center justify-center text-center border-t sm:border-t-0 pt-4 sm:pt-0 border-zinc-900/60 sm:border-l">
                   <span className="text-base text-[#ff7a00] mb-1">📅</span>
                   <span className="text-lg md:text-xl font-black text-white">8+</span>
                   <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Years</span>
                 </div>
-                <div className="flex flex-col items-center justify-center text-center border-l border-zinc-900/60">
+                <div className="flex flex-col items-center justify-center text-center border-l border-t sm:border-t-0 pt-4 sm:pt-0 border-zinc-900/60">
                   <span className="text-base text-[#ff7a00] mb-1">⭐</span>
                   <span className="text-lg md:text-xl font-black text-white">{ratingVal}/5</span>
                   <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Ratings</span>
@@ -752,99 +755,99 @@ const GymDetails = () => {
             </div>
 
             {/* Right Column - Photos & Feature Cards Grid */}
-            <div id="gallery" className="lg:col-span-7 grid grid-cols-6 gap-4">
+            <div id="gallery" className="lg:col-span-7 grid grid-cols-6 gap-3 sm:gap-4">
 
               {/* Card 1: Our Gym */}
-              <div className="col-span-6 sm:col-span-2 relative aspect-[3/3.8] rounded-3xl overflow-hidden group border border-zinc-900">
+              <div className="col-span-3 sm:col-span-2 relative aspect-square sm:aspect-[3/3.8] rounded-2xl sm:rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
                   src={slideshowImages[0]}
                   alt="Our Gym"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-xs flex-shrink-0 shadow-lg">
+                <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 right-3 sm:right-4 flex items-center gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-[10px] sm:text-xs flex-shrink-0 shadow-lg">
                     📷
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-wider">OUR GYM</h4>
-                    <p className="text-[8px] text-zinc-300 font-medium">State-of-the-art infrastructure</p>
+                    <h4 className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-wider">OUR GYM</h4>
+                    <p className="text-[6.5px] sm:text-[8px] text-zinc-300 font-medium">State-of-the-art infrastructure</p>
                   </div>
                 </div>
               </div>
 
               {/* Card 2: Expert Trainers */}
-              <div className="col-span-6 sm:col-span-2 relative aspect-[3/3.8] rounded-3xl overflow-hidden group border border-zinc-900">
+              <div className="col-span-3 sm:col-span-2 relative aspect-square sm:aspect-[3/3.8] rounded-2xl sm:rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
                   src={gym.trainers?.[0]?.photo || "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=300&auto=format&fit=crop"}
                   alt="Expert Trainers"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-xs flex-shrink-0 shadow-lg">
+                <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 right-3 sm:right-4 flex items-center gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-[10px] sm:text-xs flex-shrink-0 shadow-lg">
                     👥
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-wider">EXPERT TRAINERS</h4>
-                    <p className="text-[8px] text-zinc-300 font-medium">Certified professionals with experience</p>
+                    <h4 className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-wider">EXPERT TRAINERS</h4>
+                    <p className="text-[6.5px] sm:text-[8px] text-zinc-300 font-medium">Certified professionals with experience</p>
                   </div>
                 </div>
               </div>
 
               {/* Card 3: Diet Plans */}
-              <div className="col-span-6 sm:col-span-2 relative aspect-[3/3.8] rounded-3xl overflow-hidden group border border-zinc-900">
+              <div className="col-span-3 sm:col-span-2 relative aspect-square sm:aspect-[3/3.8] rounded-2xl sm:rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
                   src={gym.offers?.[0]?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=300&auto=format&fit=crop"}
                   alt="Diet Plans"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-xs flex-shrink-0 shadow-lg">
+                <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 right-3 sm:right-4 flex items-center gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-[10px] sm:text-xs flex-shrink-0 shadow-lg">
                     🍎
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-wider">DIET PLANS</h4>
-                    <p className="text-[8px] text-zinc-300 font-medium">Customized nutrition for your goals</p>
+                    <h4 className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-wider">DIET PLANS</h4>
+                    <p className="text-[6.5px] sm:text-[8px] text-zinc-300 font-medium">Customized nutrition for your goals</p>
                   </div>
                 </div>
               </div>
 
               {/* Card 4: Premium Lockers */}
-              <div className="col-span-6 sm:col-span-3 relative h-[140px] rounded-3xl overflow-hidden group border border-zinc-900">
+              <div className="col-span-3 sm:col-span-3 relative h-[110px] sm:h-[140px] rounded-2xl sm:rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
                   src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=400&auto=format&fit=crop"
                   alt="Premium Lockers"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-xs flex-shrink-0 shadow-lg">
+                <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 right-3 sm:right-4 flex items-center gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-[10px] sm:text-xs flex-shrink-0 shadow-lg">
                     🔒
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-wider">PREMIUM LOCKERS</h4>
-                    <p className="text-[8px] text-zinc-350 font-medium">Secure & spacious locker rooms</p>
+                    <h4 className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-wider">PREMIUM LOCKERS</h4>
+                    <p className="text-[6.5px] sm:text-[8px] text-zinc-350 font-medium">Secure & spacious locker rooms</p>
                   </div>
                 </div>
               </div>
 
               {/* Card 5: Ample Parking */}
-              <div className="col-span-6 sm:col-span-3 relative h-[140px] rounded-3xl overflow-hidden group border border-zinc-900">
+              <div className="col-span-3 sm:col-span-3 relative h-[110px] sm:h-[140px] rounded-2xl sm:rounded-3xl overflow-hidden group border border-zinc-900">
                 <img
                   src="https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=400&auto=format&fit=crop"
                   alt="Ample Parking"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-xs flex-shrink-0 shadow-lg">
+                <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 right-3 sm:right-4 flex items-center gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#ff7a00] flex items-center justify-center text-white text-[10px] sm:text-xs flex-shrink-0 shadow-lg">
                     🚗
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-wider">AMPLE PARKING</h4>
-                    <p className="text-[8px] text-zinc-300 font-medium">Hassle-free parking for members</p>
+                    <h4 className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-wider">AMPLE PARKING</h4>
+                    <p className="text-[6.5px] sm:text-[8px] text-zinc-300 font-medium">Hassle-free parking for members</p>
                   </div>
                 </div>
               </div>
@@ -892,17 +895,17 @@ const GymDetails = () => {
           </button>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-2 sm:gap-3">
           {displayFacilities.map((facility, idx) => (
             <motion.div
               key={idx}
               variants={cardScaleUp}
-              className="bg-[#121214]/40 border border-zinc-900 p-4.5 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 hover:border-orange-500/25 transition-all group"
+              className="bg-[#121214]/40 border border-zinc-900 p-2.5 sm:p-4.5 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2.5 hover:border-orange-500/25 transition-all group"
             >
-              <span className="text-2xl text-orange-500 group-hover:scale-110 transition-transform">
+              <span className="text-xl sm:text-2xl text-orange-500 group-hover:scale-110 transition-transform">
                 {facilityIconMap[facility] || '⭐'}
               </span>
-              <span className="text-[9.5px] font-extrabold tracking-wider uppercase text-zinc-350">{facility}</span>
+              <span className="text-[8.5px] sm:text-[9.5px] font-extrabold tracking-wider uppercase text-zinc-350 leading-tight break-words max-w-full">{facility}</span>
             </motion.div>
           ))}
         </div>

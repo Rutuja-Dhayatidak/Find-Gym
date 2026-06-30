@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import defaultHeroBg from '../assets/home background img2.png';
 import ctaBgImg from '../assets/hone baner img2.png';
 import giftBoxImg from '../assets/3d_gift_box.png';
-import { getActiveBanners } from '../userServices/homeApi';
+import { getActiveBanners, getPublicStats } from '../userServices/homeApi';
 import { resolveMediaUrl } from '../userServices/config';
 import { getPublicSupplements } from '../userServices/publicHealthStoreApi';
 import FeaturedGyms from './FeaturedGyms';
@@ -70,7 +70,27 @@ const Home = () => {
       ]
     }
   ];
+  const [platformStats, setPlatformStats] = useState({
+    gymsCount: 15,
+    trainersCount: 8,
+    usersCount: 120,
+    citiesCount: 3,
+    avgRating: "4.8"
+  });
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await getPublicStats();
+        if (res.success && res.data) {
+          setPlatformStats(res.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch public stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     const fetchBanner = async () => {
@@ -508,7 +528,7 @@ const Home = () => {
                       <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z" />
                     </svg>
                   </div>
-                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">500+</h4>
+                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">{platformStats.gymsCount}+</h4>
                   <p className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-wider">Gyms Listed</p>
                   <div className="w-6 h-0.5 bg-[#FF7A00] rounded-full mt-4 transition-all duration-300 group-hover:w-10"></div>
                 </div>
@@ -521,7 +541,7 @@ const Home = () => {
                       <path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z" />
                     </svg>
                   </div>
-                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">50+</h4>
+                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">{platformStats.citiesCount}+</h4>
                   <p className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-wider">Cities Covered</p>
                   <div className="w-6 h-0.5 bg-[#FF7A00] rounded-full mt-4 transition-all duration-300 group-hover:w-10"></div>
                 </div>
@@ -534,7 +554,7 @@ const Home = () => {
                       <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                     </svg>
                   </div>
-                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">10K+</h4>
+                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">{platformStats.usersCount}+</h4>
                   <p className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-wider">Happy Users</p>
                   <div className="w-6 h-0.5 bg-[#FF7A00] rounded-full mt-4 transition-all duration-300 group-hover:w-10"></div>
                 </div>
@@ -547,7 +567,7 @@ const Home = () => {
                       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                     </svg>
                   </div>
-                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">4.8</h4>
+                  <h4 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">{platformStats.avgRating}</h4>
                   <p className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-wider">Average Rating</p>
                   <div className="w-6 h-0.5 bg-[#FF7A00] rounded-full mt-4 transition-all duration-300 group-hover:w-10"></div>
                 </div>

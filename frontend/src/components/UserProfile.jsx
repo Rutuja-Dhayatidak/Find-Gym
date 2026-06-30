@@ -514,8 +514,8 @@ const UserProfile = () => {
 
       {/* Edit Profile Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4 overflow-y-auto">
-          <div className="bg-[#111112] border border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4 overflow-y-auto" data-lenis-prevent>
+          <div className="bg-[#111112] border border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200" data-lenis-prevent>
             <button 
               onClick={() => setIsEditModalOpen(false)}
               className="absolute right-5 top-5 text-zinc-400 hover:text-white transition-colors cursor-pointer border-0 bg-transparent outline-none"
@@ -651,8 +651,8 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              {/* Grid 3: City and Region */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Grid 3: City */}
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">City</label>
                   <div className="flex items-center gap-2 border border-white/10 rounded-xl bg-black/40 focus-within:border-[#FF7A00] focus-within:ring-1 focus-within:ring-[#FF7A00] px-3.5 py-3 transition-all">
@@ -667,23 +667,6 @@ const UserProfile = () => {
                       <option value="Pune">Pune</option>
                       <option value="Mumbai">Mumbai</option>
                       <option value="Bangalore">Bangalore</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Region / Location</label>
-                  <div className="flex items-center gap-2 border border-white/10 rounded-xl bg-black/40 focus-within:border-[#FF7A00] focus-within:ring-1 focus-within:ring-[#FF7A00] px-3.5 py-3 transition-all">
-                    <MapPin className="w-4 h-4 text-zinc-500" />
-                    <select
-                      name="location"
-                      value={editForm.location}
-                      onChange={handleEditInputChange}
-                      className="bg-transparent border-0 outline-none w-full text-sm text-white focus:bg-[#111112] [&>option]:bg-[#111112] cursor-pointer"
-                    >
-                      <option value="">Select Region</option>
-                      <option value="Maharashtra">Maharashtra</option>
-                      <option value="Karnataka">Karnataka</option>
-                      <option value="Delhi">Delhi</option>
                     </select>
                   </div>
                 </div>

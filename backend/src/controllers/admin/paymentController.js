@@ -1,5 +1,7 @@
 const Transaction = require('../../models/Transaction');
 const ActivityLog = require('../../models/ActivityLog');
+const MembershipPurchase = require('../../models/MembershipPurchase');
+const HealthStoreOrder = require('../../models/HealthStoreOrder');
 
 exports.getAllTransactions = async (req, res) => {
   try {
@@ -7,52 +9,105 @@ exports.getAllTransactions = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    let query = {};
-    
+    // Fetch from all collections
+    const [rawTransactions, rawMemberships, rawHealthStoreOrders] = await Promise.all([
+      Transaction.find({}),
+      MembershipPurchase.find({}),
+      HealthStoreOrder.find({})
+    ]);
+
+    let all = [];
+
+    // 1. Generic Transactions
+    rawTransactions.forEach(t => {
+      all.push({
+        id: t._id,
+        userId: t.userId,
+        userName: t.userName,
+        amount: t.amount,
+        type: t.type || 'booking',
+        date: t.date || t.createdAt,
+        status: t.status,
+        paymentMethod: t.paymentMethod || 'Razorpay'
+      });
+    });
+
+    // 2. Membership purchases
+    rawMemberships.forEach(m => {
+      let status = 'pending';
+      if (m.status === 'PAID') status = 'success';
+      else if (m.status === 'FAILED' || m.status === 'CANCELLED') status = 'failed';
+      else if (m.status === 'PAY_AT_GYM_PENDING') status = 'pending';
+
+      all.push({
+        id: m._id,
+        userId: m.userId,
+        userName: m.userDetails?.fullName || 'Gym Member',
+        amount: m.totalAmount,
+        type: 'gym_membership',
+        date: m.createdAt,
+        status,
+        paymentMethod: m.paymentMethod || 'Razorpay'
+      });
+    });
+
+    // 3. Health Store orders
+    rawHealthStoreOrders.forEach(o => {
+      let status = 'pending';
+      if (o.paymentStatus === 'Paid' || o.paymentStatus === 'paid' || o.paymentStatus === 'PAID') status = 'success';
+      else if (o.paymentStatus === 'Failed' || o.paymentStatus === 'failed') status = 'failed';
+
+      all.push({
+        id: o._id,
+        userId: o.customer,
+        userName: o.address?.fullName || 'Store Customer',
+        amount: o.total || o.subtotal || 0,
+        type: 'health_store',
+        date: o.createdAt,
+        status,
+        paymentMethod: o.paymentMethod || 'Razorpay'
+      });
+    });
+
+    // Filtering
     if (req.query.search) {
-      const searchRegex = new RegExp(req.query.search, 'i');
-      query.userName = searchRegex;
+      const searchStr = req.query.search.toLowerCase();
+      all = all.filter(item => 
+        (item.userName && item.userName.toLowerCase().includes(searchStr)) ||
+        (item.id && item.id.toString().includes(searchStr))
+      );
     }
 
     if (req.query.type) {
-      query.type = req.query.type;
+      all = all.filter(item => item.type === req.query.type);
     }
 
     if (req.query.status) {
-      query.status = req.query.status;
+      all = all.filter(item => item.status === req.query.status);
     }
 
-    if (req.query.dateFrom || req.query.dateTo) {
-      query.date = {};
-      if (req.query.dateFrom) query.date.$gte = new Date(req.query.dateFrom);
-      if (req.query.dateTo) query.date.$lte = new Date(req.query.dateTo);
-    }
-
+    // Sort
     const sortField = req.query.sortBy || 'date';
     const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
-    let sort = {};
-    sort[sortField] = sortOrder;
+    all.sort((a, b) => {
+      let valA = a[sortField];
+      let valB = b[sortField];
+      if (sortField === 'date') {
+        valA = new Date(valA).getTime();
+        valB = new Date(valB).getTime();
+      }
+      if (valA < valB) return -sortOrder;
+      if (valA > valB) return sortOrder;
+      return 0;
+    });
 
-    const transactions = await Transaction.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit);
-
-    const totalCount = await Transaction.countDocuments(query);
+    const totalCount = all.length;
+    const paginatedTransactions = all.slice(skip, skip + limit);
 
     res.status(200).json({
       success: true,
       data: {
-        transactions: transactions.map(t => ({
-          id: t._id,
-          userId: t.userId,
-          userName: t.userName,
-          amount: t.amount,
-          type: t.type,
-          date: t.date,
-          status: t.status,
-          paymentMethod: t.paymentMethod
-        })),
+        transactions: paginatedTransactions,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(totalCount / limit),

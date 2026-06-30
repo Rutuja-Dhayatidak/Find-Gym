@@ -56,6 +56,7 @@ const FooterWrapper = () => {
   if (
     hideFooter.includes(location.pathname) ||
     location.pathname.startsWith('/gym-owner') ||
+    location.pathname.startsWith('/gym-setup') ||
     location.pathname.startsWith('/health-store/register')
   ) return null;
   return <Footer />;

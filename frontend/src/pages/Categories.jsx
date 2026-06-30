@@ -2168,85 +2168,121 @@ const Categories = () => {
             </div>
 
             {/* You May Also Like Section */}
-            <div className="lg:col-span-12 border-t border-zinc-900/60 pt-8 mt-4 space-y-6 text-left">
-              <div className="flex justify-between items-center px-1">
-                <h3 className="text-xs font-black tracking-widest text-zinc-300 uppercase">You May Also Like</h3>
-                <button type="button" className="text-red-500 hover:text-red-400 font-extrabold text-xs flex items-center gap-1.5 uppercase tracking-widest transition-all">
-                  <span>View All</span>
-                  <span className="text-sm">→</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {/* Product 1 */}
-                <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
-                  <button type="button" className="absolute top-3.5 right-3.5 text-red-500 hover:scale-110 transition-transform z-10 text-xs">
-                    ❤️
-                  </button>
-                  <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
-                    <img src={muscleBlazeImg} alt="MuscleBlaze" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
+            {(() => {
+              const relatedItems = items.filter(item => item._id !== selectedProduct?._id);
+              const displayItems = relatedItems.length > 0 ? relatedItems.slice(0, 4) : [];
+              
+              return (
+                <div className="lg:col-span-12 border-t border-zinc-900/60 pt-8 mt-4 space-y-6 text-left">
+                  <div className="flex justify-between items-center px-1">
+                    <h3 className="text-xs font-black tracking-widest text-zinc-300 uppercase">You May Also Like</h3>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setSelectedProduct(null);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }} 
+                      className="text-red-500 hover:text-red-400 font-extrabold text-xs flex items-center gap-1.5 uppercase tracking-widest transition-all"
+                    >
+                      <span>View All</span>
+                      <span className="text-sm">→</span>
+                    </button>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">MuscleBlaze Biozyme Whey Protein</h4>
-                    <div className="flex justify-between items-center mt-2.5">
-                      <span className="text-xs font-black text-white">₹4499</span>
-                      <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.7</span>
-                    </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {displayItems.length > 0 ? (
+                      displayItems.map((item) => {
+                        const itemPrice = item.purchaseMode === 'Subscription' ? item.monthlyPrice : (item.sellingPrice || item.oneTimePrice || 150);
+                        const itemImage = item.images?.[0] || (activeTab === 'diet' ? '/balanced-bowl.png' : muscleBlazeImg);
+                        const itemRating = item.rating || 4.5;
+                        const ratingVal = typeof itemRating === 'object' ? itemRating.average || 4.5 : itemRating;
+                        return (
+                          <div
+                            key={item._id}
+                            onClick={() => {
+                              setSelectedProduct(item);
+                              setPurchaseType(item.purchaseMode === 'Subscription' ? 'Monthly' : 'One Time');
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300 cursor-pointer"
+                          >
+                            <button type="button" className="absolute top-3.5 right-3.5 text-red-500 hover:scale-110 transition-transform z-10 text-xs">
+                              ❤️
+                            </button>
+                            <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
+                              <img src={itemImage} alt={item.name} className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
+                            </div>
+                            <div>
+                              <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">{item.name}</h4>
+                              <div className="flex justify-between items-center mt-2.5">
+                                <span className="text-xs font-black text-white">₹{itemPrice}</span>
+                                <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ {Number(ratingVal).toFixed(1)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      // Fallback when items from database are not loaded yet or empty
+                      <>
+                        {/* Hardcoded Product 1 */}
+                        <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
+                          <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
+                            <img src={muscleBlazeImg} alt="MuscleBlaze" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">MuscleBlaze Biozyme Whey Protein</h4>
+                            <div className="flex justify-between items-center mt-2.5">
+                              <span className="text-xs font-black text-white">₹4499</span>
+                              <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.7</span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Hardcoded Product 2 */}
+                        <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
+                          <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
+                            <img src={myProteinImg} alt="Myprotein" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">Myprotein Impact Whey Protein</h4>
+                            <div className="flex justify-between items-center mt-2.5">
+                              <span className="text-xs font-black text-white">₹4599</span>
+                              <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.6</span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Hardcoded Product 3 */}
+                        <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
+                          <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
+                            <img src={dymatizeImg} alt="Dymatize" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">Dymatize ISO 100 Hydrolyzed</h4>
+                            <div className="flex justify-between items-center mt-2.5">
+                              <span className="text-xs font-black text-white">₹5499</span>
+                              <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.8</span>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Hardcoded Product 4 */}
+                        <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
+                          <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
+                            <img src={isopureImg} alt="Isopure" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">Isopure Zero Carb Whey</h4>
+                            <div className="flex justify-between items-center mt-2.5">
+                              <span className="text-xs font-black text-white">₹4999</span>
+                              <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.7</span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
-
-                {/* Product 2 */}
-                <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
-                  <button type="button" className="absolute top-3.5 right-3.5 text-red-500 hover:scale-110 transition-transform z-10 text-xs">
-                    ❤️
-                  </button>
-                  <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
-                    <img src={myProteinImg} alt="Myprotein" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">Myprotein Impact Whey Protein</h4>
-                    <div className="flex justify-between items-center mt-2.5">
-                      <span className="text-xs font-black text-white">₹4599</span>
-                      <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.6</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Product 3 */}
-                <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
-                  <button type="button" className="absolute top-3.5 right-3.5 text-red-500 hover:scale-110 transition-transform z-10 text-xs">
-                    ❤️
-                  </button>
-                  <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
-                    <img src={dymatizeImg} alt="Dymatize" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">Dymatize ISO 100 Hydrolyzed</h4>
-                    <div className="flex justify-between items-center mt-2.5">
-                      <span className="text-xs font-black text-white">₹5499</span>
-                      <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.8</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Product 4 */}
-                <div className="bg-[#0c0d10] border border-zinc-900/60 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-zinc-800 transition-all duration-300">
-                  <button type="button" className="absolute top-3.5 right-3.5 text-red-500 hover:scale-110 transition-transform z-10 text-xs">
-                    ❤️
-                  </button>
-                  <div className="aspect-square w-full rounded-xl overflow-hidden bg-zinc-950 flex items-center justify-center mb-3">
-                    <img src={isopureImg} alt="Isopure" className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors line-clamp-2">Isopure Zero Carb Whey</h4>
-                    <div className="flex justify-between items-center mt-2.5">
-                      <span className="text-xs font-black text-white">₹4999</span>
-                      <span className="text-[10px] text-yellow-450 font-extrabold flex items-center gap-0.5">★ 4.7</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
           </div>
         </div>

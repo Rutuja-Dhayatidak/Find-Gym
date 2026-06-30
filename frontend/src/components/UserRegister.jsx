@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { registerUser, sendOtp, verifyOtp } from '../userServices/Auth';
+import { registerUser, sendOtp, verifyOtp, googleLogin } from '../userServices/Auth';
 import toast from 'react-hot-toast';
 
 const UserRegister = () => {
@@ -32,6 +32,47 @@ const UserRegister = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const handleGoogleCallback = async (response) => {
+    const toastId = toast.loading("Processing Google Sign-in...");
+    try {
+      const res = await googleLogin(response.credential);
+      if (res.success) {
+        toast.success(res.message || "Google Login successful!", { id: toastId });
+        
+        // Save to localStorage
+        localStorage.setItem("userToken", res.data.token);
+        localStorage.setItem("userRole", res.data.user.role);
+        localStorage.setItem("userName", res.data.user.name);
+        window.dispatchEvent(new Event("storage"));
+
+        setSuccessMsg('Logged in successfully! Redirecting...');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      } else {
+        toast.error(res.message || "Google Authentication failed", { id: toastId });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message || "Google Sign-in failed", { id: toastId });
+    }
+  };
+
+  useEffect(() => {
+    if (step === 1 && window.google) {
+      const clientID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "717837798350-t1n3gbm7oiv8lnvkhcdvihss49ql87fe.apps.googleusercontent.com";
+      window.google.accounts.id.initialize({
+        client_id: clientID,
+        callback: handleGoogleCallback
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-signup-button"),
+        { theme: "filled_blue", size: "large", width: 330, text: "signup_with" }
+      );
+    }
+  }, [step]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -116,11 +157,8 @@ const UserRegister = () => {
       if (!formData.height || formData.height < 100 || formData.height > 250) newErrors.height = 'Height must be between 100 and 250 cm';
       if (!formData.weight || formData.weight < 30 || formData.weight > 300) newErrors.weight = 'Weight must be between 30 and 300 kg';
     } else if (step === 4) {
-      if (!formData.fitnessGoal) newErrors.fitnessGoal = 'Please select a fitness goal';
-    } else if (step === 5) {
       if (!formData.location) newErrors.location = 'Please select a region';
       if (!formData.city) newErrors.city = 'Please select a city';
-    } else if (step === 6) {
       if (!formData.agreeTerms) newErrors.agreeTerms = 'You must agree to the Terms and Privacy Policy';
     }
 
@@ -185,7 +223,6 @@ const UserRegister = () => {
         data.append('gender', formData.gender);
         data.append('height', formData.height);
         data.append('weight', formData.weight);
-        data.append('fitnessGoal', formData.fitnessGoal);
         data.append('location', formData.location);
         data.append('city', formData.city);
         if (formData.profilePhoto) {
@@ -214,10 +251,10 @@ const UserRegister = () => {
     return (
       <div className="mb-6">
         <div className="flex justify-between mb-2">
-          <span className="text-xs font-semibold text-[#FF7A00]">Step {step} of 6</span>
+          <span className="text-xs font-semibold text-[#FF7A00]">Step {step} of 4</span>
         </div>
         <div className="flex gap-1.5 h-1.5">
-          {[1, 2, 3, 4, 5, 6].map((idx) => (
+          {[1, 2, 3, 4].map((idx) => (
             <div
               key={idx}
               className={`flex-1 rounded-full transition-all duration-300 ${idx <= step ? 'bg-[#FF7A00]' : 'bg-white/10'
@@ -336,18 +373,7 @@ const UserRegister = () => {
             {step === 1 && (
               <div className="space-y-4">
                 {/* Google Sign-up */}
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-white/10 rounded-xl shadow-sm bg-white/5 text-sm font-semibold text-white hover:bg-white/10 transition-all cursor-pointer"
-                >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                  </svg>
-                  Sign up with Google
-                </button>
+                <div id="google-signup-button" className="w-full flex justify-center py-1"></div>
 
                 <div className="relative flex items-center py-1">
                   <div className="flex-grow border-t border-white/5"></div>
@@ -576,44 +602,8 @@ const UserRegister = () => {
               </div>
             )}
 
-            {/* Step 4: Fitness Goal */}
+            {/* Step 4: Location */}
             {step === 4 && (
-              <div className="space-y-3">
-                <p className="text-sm text-gray-300 mb-2">Select your primary fitness goal:</p>
-                {[
-                  { id: 'weightLoss', title: 'Weight Loss', desc: 'Burn fat & lose weight' },
-                  { id: 'muscle', title: 'Build Muscle', desc: 'Gain strength & muscle' },
-                  { id: 'general', title: 'General Fitness', desc: 'Stay healthy & active' },
-                  { id: 'flexibility', title: 'Flexibility', desc: 'Yoga & wellness' }
-                ].map((goal) => (
-                  <label
-                    key={goal.id}
-                    className={`block p-3 rounded-xl border cursor-pointer transition-all ${formData.fitnessGoal === goal.id
-                        ? 'border-[#FF7A00] bg-[#FF7A00]/5'
-                        : 'border-white/5 bg-black/40 hover:border-white/10'
-                      }`}
-                  >
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name="fitnessGoal"
-                        value={goal.id}
-                        checked={formData.fitnessGoal === goal.id}
-                        onChange={handleChange}
-                        className="h-4 w-4 text-[#FF7A00] focus:ring-[#FF7A00] border-gray-600 bg-transparent"
-                      />
-                      <div className="ml-3">
-                        <span className="block text-xs font-bold text-white">{goal.title}</span>
-                        <span className="block text-[10px] text-gray-400">{goal.desc}</span>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {/* Step 5: Location */}
-            {step === 5 && (
               <div className="space-y-4">
                 <div>
                   <select
@@ -644,25 +634,6 @@ const UserRegister = () => {
               </div>
             )}
 
-            {/* Step 6: Agreement */}
-            {step === 6 && (
-              <div className="space-y-4 p-3 bg-white/5 border border-white/5 rounded-xl">
-                <div className="flex items-start">
-                  <input
-                    id="agreeTerms"
-                    name="agreeTerms"
-                    type="checkbox"
-                    checked={formData.agreeTerms}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-[#FF7A00] focus:ring-[#FF7A00] border-gray-600 rounded bg-transparent mt-0.5"
-                  />
-                  <label htmlFor="agreeTerms" className="ml-2.5 text-xs text-gray-300 leading-relaxed">
-                    I agree to the <a href="#" className="text-[#FF7A00] hover:underline">Terms of Service</a> and <a href="#" className="text-[#FF7A00] hover:underline">Privacy Policy</a>
-                  </label>
-                </div>
-              </div>
-            )}
-
             {/* Nav controls */}
             <div className="flex gap-3 pt-3 mt-4 border-t border-white/5">
               {step > 1 && (
@@ -675,7 +646,7 @@ const UserRegister = () => {
                 </button>
               )}
 
-              {step < 6 ? (
+              {step < 4 ? (
                 <button
                   type="button"
                   onClick={handleNext}
@@ -700,6 +671,22 @@ const UserRegister = () => {
                 Login
               </Link>
             </div>
+
+            {/* Terms and conditions checkmark box below login */}
+            <div className="flex items-start mt-4 px-4">
+              <input
+                id="agreeTerms"
+                name="agreeTerms"
+                type="checkbox"
+                checked={formData.agreeTerms}
+                onChange={handleChange}
+                className="h-4 w-4 text-[#FF7A00] focus:ring-[#FF7A00] border-gray-600 rounded bg-transparent mt-0.5 cursor-pointer"
+              />
+              <label htmlFor="agreeTerms" className="ml-2.5 text-xs text-gray-300 leading-relaxed text-left cursor-pointer">
+                I agree to the <a href="#" className="text-[#FF7A00] hover:underline">Terms of Service</a> and <a href="#" className="text-[#FF7A00] hover:underline">Privacy Policy</a>
+              </label>
+            </div>
+            {errors.agreeTerms && <p className="mt-1 text-xs text-red-400 text-center">{errors.agreeTerms}</p>}
           </form>
         </div>
       </div>

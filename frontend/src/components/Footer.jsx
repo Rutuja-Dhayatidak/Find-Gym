@@ -8,10 +8,8 @@ const Footer = () => {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
             <div className="flex items-center gap-2.5">
-              <img src={logo} alt="livesale.Fitness Logo" className="h-16 w-auto object-contain rounded" />
-              <h1 className="text-2xl font-bold text-white tracking-wide">
-                livesale<span className="text-[#FF7A00]">.Fitness</span>
-              </h1>
+              <img src={logo} alt="livesale.Fitness Logo" className="h-20 w-auto object-contain rounded" />
+             
             </div>
             <p className="text-gray-400 text-base">
               Making fitness accessible by connecting you with the perfect gym and trainers in your area.

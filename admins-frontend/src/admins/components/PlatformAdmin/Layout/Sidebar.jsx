@@ -74,6 +74,15 @@ const Sidebar = () => {
                 Home Page Banners
               </Link>
               <Link
+                to="/platform-admin/cms/mobile-app-banners"
+                className={`px-4 py-2 rounded-lg text-sm transition-all duration-200 ${location.pathname === '/platform-admin/cms/mobile-app-banners'
+                    ? 'text-orange-400 font-bold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+              >
+                Mobile App Banners
+              </Link>
+              <Link
                 to="/platform-admin/cms/gym-categories"
                 className={`px-4 py-2 rounded-lg text-sm transition-all duration-200 ${location.pathname === '/platform-admin/cms/gym-categories'
                     ? 'text-orange-400 font-bold'

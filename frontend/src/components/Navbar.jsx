@@ -306,13 +306,19 @@ const Navbar = () => {
   React.useEffect(() => {
     const handleToggle = () => setIsOpen((prev) => !prev);
     const handleClose = () => setIsOpen(false);
+    const handleCollapseChange = (e) => {
+      // e.detail is isCollapsed. If isCollapsed is false, then sidebar is open (isOpen = true).
+      setIsOpen(!e.detail);
+    };
     window.addEventListener("toggle-sidebar", handleToggle);
     window.addEventListener("close-sidebar", handleClose);
+    window.addEventListener("sidebar-collapse-change", handleCollapseChange);
     loadCart();
     window.addEventListener("cart-updated", loadCart);
     return () => {
       window.removeEventListener("toggle-sidebar", handleToggle);
       window.removeEventListener("close-sidebar", handleClose);
+      window.removeEventListener("sidebar-collapse-change", handleCollapseChange);
       window.removeEventListener("cart-updated", loadCart);
     };
   }, []);
@@ -350,19 +356,20 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="
+        className={`
         fixed
         top-0
         left-0
-        w-full
-        lg:w-[calc(100%-100px)]
+        ${isOpen ? 'w-full lg:w-[calc(100%-100px)]' : 'w-full'}
         z-50
         bg-black/20
         backdrop-blur-xl
         border-b
         border-white/10
         shadow-lg
-      "
+        transition-all
+        duration-300
+        `}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -470,7 +477,7 @@ const Navbar = () => {
                         className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#FF7A00] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left"
                       >
                         <span className="text-base">🏋️</span>
-                        <span>Owner Login / Register</span>
+                        <span> Gym Owner Login / Register</span>
                       </Link>
                       <Link
                         to="/trainer/register"
@@ -486,7 +493,7 @@ const Navbar = () => {
                         className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:text-[#FF7A00] hover:bg-white/[0.05] rounded-xl transition-all font-semibold text-xs text-left border-t border-zinc-800/60"
                       >
                         <span className="text-base">👤</span>
-                        <span>Normal Register</span>
+                        <span>User Register</span>
                       </Link>
                     </div>
                   )}
